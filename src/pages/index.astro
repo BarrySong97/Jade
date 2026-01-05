@@ -1,7 +1,22 @@
 ---
 import HeroSection from "@/components/home/hero-section.astro";
 import ExperienceSection from "@/components/home/experience-section";
+import RecentPostsSection from "@/components/home/recent-posts-section";
+import TechStackSection from "@/components/home/tech-stack-section";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+// 获取最近的 3 篇博客文章
+const allPosts = (await getCollection("blog")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const recentPosts = allPosts.slice(0, 3).map((post) => ({
+  id: post.id.replace(/\.mdx?$/, ""),
+  title: post.data.title,
+  description: post.data.description,
+  coverImage: post.data.heroImage?.src,
+}));
 ---
 
 <BaseLayout
@@ -16,6 +31,12 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
     </div>
     <div class="border-b border-b-border">
       <ExperienceSection />
+    </div>
+    <div class="border-b border-b-border">
+      <RecentPostsSection posts={recentPosts} />
+    </div>
+    <div class="border-b border-b-border">
+      <TechStackSection client:load />
     </div>
   </div>
 </BaseLayout>
