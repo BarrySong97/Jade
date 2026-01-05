@@ -1,0 +1,94 @@
+---
+title: "CSS Container Queries 实战"
+description: "使用容器查询构建更灵活的响应式组件"
+pubDate: "2025-01-02"
+heroImage: "../../assets/blog-placeholder-5.jpg"
+---
+
+CSS Container Queries 让我们可以基于父容器的大小来应用样式，而不是视口大小。
+
+## 基础语法
+
+```css
+.container {
+  container-type: inline-size;
+  container-name: card;
+}
+
+@container card (min-width: 400px) {
+  .card-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+  }
+}
+```
+
+## 实际应用
+
+### 响应式卡片
+
+```css
+.card-container {
+  container-type: inline-size;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+@container (min-width: 500px) {
+  .card {
+    flex-direction: row;
+  }
+  
+  .card-image {
+    width: 40%;
+  }
+}
+```
+
+### 容器查询单位
+
+```css
+.container {
+  container-type: size;
+}
+
+.text {
+  /* 基于容器宽度的字体大小 */
+  font-size: clamp(1rem, 5cqw, 2rem);
+  
+  /* 基于容器高度的间距 */
+  padding: 2cqh;
+}
+```
+
+## 与媒体查询的区别
+
+Container Queries 关注组件本身，Media Queries 关注视口：
+
+```css
+/* 媒体查询 - 基于视口 */
+@media (min-width: 768px) {
+  .sidebar {
+    width: 300px;
+  }
+}
+
+/* 容器查询 - 基于父容器 */
+@container (min-width: 768px) {
+  .sidebar {
+    width: 300px;
+  }
+}
+```
+
+## 浏览器支持
+
+现代浏览器已广泛支持容器查询，是构建响应式组件的强大工具。
+
+## 总结
+
+Container Queries 让组件可以真正独立响应其上下文，是现代 CSS 的重要特性。
+

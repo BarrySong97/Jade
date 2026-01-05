@@ -19,7 +19,8 @@
     "format": "oxfmt",
     "lint": "oxlint",
     "check": "oxlint && oxfmt",
-    "download-logos": "node scripts/download-company-logos.js"
+    "download-logos": "node scripts/download-company-logos.js",
+    "generate-blogs": "node scripts/generate-blogs.js"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",

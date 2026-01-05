@@ -31,7 +31,7 @@ export function BlogListItem({ post }: BlogListItemProps) {
     <a
       ref={containerRef}
       href={`/blog/${post.id}`}
-      className="group block py-4 pb-3 transition-colors hover:text-foreground border-b"
+      className="group block py-4 pb-2 transition-colors hover:text-foreground "
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -39,7 +39,7 @@ export function BlogListItem({ post }: BlogListItemProps) {
         <time className="shrink-0 text-sm text-muted-foreground">
           {post.date}
         </time>
-        <h3 className="flex-1 text-base font-medium text-foreground  transition-colors group-hover:text-foreground">
+        <h3 className="flex-1  font-medium text-foreground  transition-colors group-hover:text-foreground">
           {post.title}
         </h3>
       </div>

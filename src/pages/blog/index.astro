@@ -1,6 +1,8 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { BlogListItem } from "@/components/blogs/blog-list-item";
+import { YearFilter } from "@/components/blogs/year-filter";
+import { LoadMoreButton } from "@/components/blogs/load-more-button";
 import { getCollection } from "astro:content";
 
 const posts = (await getCollection("blog")).sort(
@@ -12,7 +14,95 @@ const BLOG_POSTS = posts.map((post) => ({
   title: post.data.title,
   date: post.data.pubDate.toISOString().split("T")[0],
   coverImage: post.data.heroImage?.src,
+  year: post.data.pubDate.getFullYear(),
 }));
+
+// ========== Mock 假数据生成函数（已注释，需要时可取消注释） ==========
+// function generateMockBlogPosts(count = 100) {
+//   const posts = [];
+//
+//   // 主题列表
+//   const topics = [
+//     "React Hooks 实战技巧",
+//     "TypeScript 类型编程",
+//     "Vue 3 组合式 API",
+//     "Next.js 服务端渲染",
+//     "Webpack 打包优化",
+//     "Vite 构建工具深入",
+//     "CSS Grid 布局指南",
+//     "Flexbox 完全教程",
+//     "JavaScript 异步编程",
+//     "Node.js 后端开发",
+//     "GraphQL API 设计",
+//     "MongoDB 数据库实践",
+//     "Redis 缓存策略",
+//     "Docker 容器化部署",
+//     "Kubernetes 集群管理",
+//     "CI/CD 持续集成",
+//     "Git 工作流最佳实践",
+//     "算法与数据结构",
+//     "设计模式实践",
+//     "性能优化技巧",
+//     "代码重构方法",
+//     "单元测试编写",
+//     "E2E 测试框架",
+//     "前端安全防护",
+//     "跨域问题解决",
+//     "WebSocket 实时通信",
+//     "PWA 渐进式应用",
+//     "Web Components 开发",
+//     "微前端架构设计",
+//     "服务端组件探索",
+//   ];
+//
+//   // 封面图片列表
+//   const coverImages = [
+//     "/blog-placeholder-1.jpg",
+//     "/blog-placeholder-2.jpg",
+//     "/blog-placeholder-3.jpg",
+//     "/blog-placeholder-4.jpg",
+//     "/blog-placeholder-5.jpg",
+//   ];
+//
+//   // 生成随机日期（2023-2025）
+//   function randomDate(start: Date, end: Date): Date {
+//     return new Date(
+//       start.getTime() + Math.random() * (end.getTime() - start.getTime())
+//     );
+//   }
+//
+//   const startDate = new Date("2023-01-01");
+//   const endDate = new Date("2025-12-31");
+//
+//   for (let i = 1; i <= count; i++) {
+//     const topic = topics[Math.floor(Math.random() * topics.length)];
+//     const date = randomDate(startDate, endDate);
+//     const coverImage =
+//       coverImages[Math.floor(Math.random() * coverImages.length)];
+//
+//     posts.push({
+//       id: `mock-blog-${i}`,
+//       title: `${topic} (${i})`,
+//       date: date.toISOString().split("T")[0],
+//       coverImage: coverImage,
+//       year: date.getFullYear(),
+//     });
+//   }
+//
+//   // 按日期排序（最新的在前面）
+//   return posts.sort(
+//     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+//   );
+// }
+//
+// // 生成 100 篇 mock 文章
+// const BLOG_POSTS = generateMockBlogPosts(100);
+// ========== Mock 假数据生成结束 ==========
+
+// 提取所有年份，从大到小排序
+const years = Array.from(new Set(BLOG_POSTS.map((post) => post.year))).sort(
+  (a, b) => b - a
+);
 ---
 
 <BaseLayout
@@ -20,17 +110,213 @@ const BLOG_POSTS = posts.map((post) => ({
   description="分享技术文章、项目经验和学习笔记。涵盖前端开发、全栈技术、TypeScript、React 等主题。"
 >
   <div
-    class="mx-auto max-w-5xl min-h-[calc(100vh-128px)] border border-border border-t-0 border-b-0 px-4 py-12 sm:px-6 lg:px-8"
+    class="mx-auto max-w-5xl min-h-[calc(100vh-128px)] border border-border border-t-0 border-b-0 py-12 sm:px-6 lg:px-8"
   >
-    <div class="space-y-2 mb-12">
+    <div class="space-y-2 mb-8">
       <h1 class="text-2xl font-bold sm:text-3xl">博客</h1>
       <p class="text-sm text-muted-foreground">
-        共 {BLOG_POSTS.length} 篇文章
+        共 <span id="total-posts">{BLOG_POSTS.length}</span> 篇文章
+        <span id="showing-info" class="ml-2"></span>
       </p>
     </div>
 
-    <div>
-      {BLOG_POSTS.map((post) => <BlogListItem client:load post={post} />)}
+    <div id="blog-list">
+      {
+        BLOG_POSTS.map((post) => (
+          <div data-year={post.year} data-post-item style="display: none;">
+            <BlogListItem client:load post={post} />
+          </div>
+        ))
+      }
     </div>
+
+    <!-- Load More 按钮 -->
+    <div id="load-more-container"></div>
   </div>
+
+  <!-- 年份筛选器 - Fixed 在右侧，和 TOC 位置保持一致 -->
+  <aside
+    class="hidden xl:block fixed top-24 right-[max(0px,calc(50%-47rem))] w-64"
+  >
+    <div class="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
+      <YearFilter client:load years={years} />
+    </div>
+  </aside>
+
+  <script define:vars={{ BLOG_POSTS }}>
+    // 根据屏幕大小设置每页显示数量
+    function getPageSize() {
+      // 768px 是常见的移动端断点
+      return window.innerWidth < 768 ? 10 : 20;
+    }
+
+    // 全局状态
+    let currentPage = 1;
+    let filteredPosts = [];
+    let isLoading = false;
+    let PAGE_SIZE = getPageSize();
+
+    // 处理年份筛选和分页
+    function filterAndPaginatePosts(resetPage = true) {
+      const params = new URLSearchParams(window.location.search);
+      let yearParam = params.get("year");
+
+      const blogList = document.getElementById("blog-list");
+      const totalPosts = document.getElementById("total-posts");
+      const showingInfo = document.getElementById("showing-info");
+
+      if (!blogList || !totalPosts) return;
+
+      // 使用 data-post-item 选择器获取所有博客项
+      const allPosts = blogList.querySelectorAll("[data-post-item]");
+
+      // 如果还没有渲染完成，稍后再试
+      if (allPosts.length === 0) {
+        setTimeout(() => filterAndPaginatePosts(resetPage), 100);
+        return;
+      }
+
+      // 如果没有年份参数，默认使用最新年份
+      if (!yearParam && BLOG_POSTS.length > 0) {
+        const latestYear = Math.max(...BLOG_POSTS.map((post) => post.year));
+        yearParam = latestYear.toString();
+      }
+
+      // 重置页码
+      if (resetPage) {
+        currentPage = 1;
+      }
+
+      // 筛选符合条件的文章
+      filteredPosts = [];
+      allPosts.forEach((post) => {
+        const postYear = parseInt(post.getAttribute("data-year"));
+        if (yearParam && postYear === parseInt(yearParam)) {
+          filteredPosts.push(post);
+        }
+      });
+
+      // 计算应该显示的文章
+      const totalToShow = currentPage * PAGE_SIZE;
+      const showingCount = Math.min(totalToShow, filteredPosts.length);
+
+      // 隐藏所有文章，然后只显示当前页的文章
+      allPosts.forEach((post) => {
+        post.style.display = "none";
+      });
+
+      filteredPosts.slice(0, showingCount).forEach((post) => {
+        post.style.display = "";
+      });
+
+      // 更新显示信息
+      totalPosts.textContent = filteredPosts.length.toString();
+      if (filteredPosts.length > 0) {
+        showingInfo.textContent = `(显示 ${showingCount} / ${filteredPosts.length})`;
+      } else {
+        showingInfo.textContent = "";
+      }
+
+      // 更新 Load More 按钮
+      updateLoadMoreButton();
+    }
+
+    // 更新 Load More 按钮
+    function updateLoadMoreButton() {
+      const container = document.getElementById("load-more-container");
+      if (!container) return;
+
+      const totalShowing = currentPage * PAGE_SIZE;
+      const hasMore = totalShowing < filteredPosts.length;
+
+      // 清空容器
+      container.innerHTML = "";
+
+      if (!hasMore && filteredPosts.length > PAGE_SIZE) {
+        // 只有当文章数量超过一页时，才显示"已加载完"的提示
+        // 获取当前选中的年份
+        const params = new URLSearchParams(window.location.search);
+        const yearParam = params.get("year");
+        const currentYear = yearParam || new Date().getFullYear();
+
+        const endMessage = document.createElement("div");
+        endMessage.className = "flex justify-center py-8";
+        endMessage.innerHTML = `<p class="text-sm text-muted-foreground">已加载 ${currentYear} 年的全部文章</p>`;
+        container.appendChild(endMessage);
+      } else if (hasMore) {
+        // 显示加载更多按钮
+        const buttonWrapper = document.createElement("div");
+        buttonWrapper.className = "flex justify-center py-8";
+
+        const button = document.createElement("button");
+        button.id = "load-more-btn";
+        button.className =
+          "px-6 py-2.5 text-sm font-medium rounded-lg border border-border bg-background text-foreground hover:bg-muted transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2";
+        button.innerHTML = `
+          <span>加载更多</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        `;
+
+        button.addEventListener("click", handleLoadMore);
+        buttonWrapper.appendChild(button);
+        container.appendChild(buttonWrapper);
+      }
+      // 如果 !hasMore && filteredPosts.length <= PAGE_SIZE，则不显示任何内容
+    }
+
+    // 处理加载更多
+    function handleLoadMore() {
+      if (isLoading) return;
+
+      isLoading = true;
+      const button = document.getElementById("load-more-btn");
+
+      if (button) {
+        button.disabled = true;
+        button.innerHTML = `
+          <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>加载中...</span>
+        `;
+      }
+
+      // 模拟加载延迟
+      setTimeout(() => {
+        currentPage++;
+        filterAndPaginatePosts(false);
+        isLoading = false;
+      }, 300);
+    }
+
+    // 监听窗口大小变化，更新 PAGE_SIZE
+    window.addEventListener("resize", () => {
+      const newPageSize = getPageSize();
+      if (newPageSize !== PAGE_SIZE) {
+        PAGE_SIZE = newPageSize;
+        // 重新计算当前应该显示到第几页
+        filterAndPaginatePosts(false);
+      }
+    });
+
+    // 初始化
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () =>
+        filterAndPaginatePosts(true)
+      );
+    } else {
+      setTimeout(() => filterAndPaginatePosts(true), 100);
+    }
+
+    // 监听年份筛选变化
+    window.addEventListener("yearfilterchange", () =>
+      filterAndPaginatePosts(true)
+    );
+
+    // 监听浏览器前进后退
+    window.addEventListener("popstate", () => filterAndPaginatePosts(true));
+  </script>
 </BaseLayout>
