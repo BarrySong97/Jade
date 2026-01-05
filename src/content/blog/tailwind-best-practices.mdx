@@ -1,0 +1,248 @@
+---
+title: "Tailwind CSS 最佳实践"
+description: "如何高效使用 Tailwind CSS 构建现代化 UI"
+pubDate: "2024-01-05"
+heroImage: "../../assets/blog-placeholder-3.jpg"
+---
+
+Tailwind CSS 是一个功能类优先的 CSS 框架，它改变了我们编写样式的方式。
+
+## 为什么选择 Tailwind CSS？
+
+Tailwind 提供了低级别的工具类，让你可以直接在 HTML 中构建完全自定义的设计，而无需离开 HTML。
+
+## 响应式设计
+
+Tailwind 使响应式设计变得简单：
+
+```html
+<div class="text-sm md:text-base lg:text-lg xl:text-xl">
+  响应式文字大小
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+</div>
+```
+
+## 状态变体
+
+使用状态变体处理交互状态：
+
+```html
+<button class="bg-blue-500 hover:bg-blue-700 active:bg-blue-800 focus:ring-2 focus:ring-blue-300">
+  点击我
+</button>
+
+<input 
+  class="border-2 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
+  type="text"
+/>
+```
+
+## 自定义配置
+
+在 `tailwind.config.js` 中扩展默认主题：
+
+```javascript
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          500: '#0ea5e9',
+          900: '#0c4a6e',
+        },
+      },
+      spacing: {
+        '128': '32rem',
+        '144': '36rem',
+      },
+      fontSize: {
+        'xxs': '0.625rem',
+      },
+    },
+  },
+  plugins: [],
+}
+```
+
+## 组件复用
+
+使用 `@apply` 指令创建可复用的组件类：
+
+```css
+@layer components {
+  .btn-primary {
+    @apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-md p-6;
+  }
+}
+```
+
+在 HTML 中使用：
+
+```html
+<button class="btn-primary">
+  Primary Button
+</button>
+
+<div class="card">
+  <h2 class="text-2xl font-bold mb-4">Card Title</h2>
+  <p class="text-gray-700">Card content goes here.</p>
+</div>
+```
+
+## 暗黑模式
+
+Tailwind 内置暗黑模式支持：
+
+```javascript
+// tailwind.config.js
+module.exports = {
+  darkMode: 'class', // 或 'media'
+  // ...
+}
+```
+
+```html
+<div class="bg-white dark:bg-gray-800 text-black dark:text-white">
+  支持暗黑模式的内容
+</div>
+```
+
+## 实用的布局模式
+
+### Flexbox 布局
+
+```html
+<!-- 水平居中 -->
+<div class="flex justify-center items-center h-screen">
+  <div>居中内容</div>
+</div>
+
+<!-- 两端对齐 -->
+<div class="flex justify-between items-center">
+  <div>左侧</div>
+  <div>右侧</div>
+</div>
+
+<!-- 垂直堆叠 -->
+<div class="flex flex-col space-y-4">
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+</div>
+```
+
+### Grid 布局
+
+```html
+<!-- 响应式网格 -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+  <div class="bg-gray-200 p-4">1</div>
+  <div class="bg-gray-200 p-4">2</div>
+  <div class="bg-gray-200 p-4">3</div>
+  <div class="bg-gray-200 p-4">4</div>
+</div>
+
+<!-- 复杂网格 -->
+<div class="grid grid-cols-3 gap-4">
+  <div class="col-span-2 bg-blue-200 p-4">Span 2 columns</div>
+  <div class="bg-blue-200 p-4">1 column</div>
+  <div class="bg-blue-200 p-4">1 column</div>
+  <div class="col-span-2 bg-blue-200 p-4">Span 2 columns</div>
+</div>
+```
+
+## 动画和过渡
+
+```html
+<!-- 过渡效果 -->
+<button class="transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
+  悬停放大
+</button>
+
+<!-- 动画 -->
+<div class="animate-pulse bg-gray-200 h-12 w-12 rounded-full"></div>
+<div class="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+<div class="animate-bounce h-12 w-12 bg-blue-500 rounded-full"></div>
+```
+
+## 自定义动画
+
+在配置文件中添加自定义动画：
+
+```javascript
+module.exports = {
+  theme: {
+    extend: {
+      keyframes: {
+        wiggle: {
+          '0%, 100%': { transform: 'rotate(-3deg)' },
+          '50%': { transform: 'rotate(3deg)' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+      },
+      animation: {
+        wiggle: 'wiggle 1s ease-in-out infinite',
+        fadeIn: 'fadeIn 0.5s ease-in-out',
+      },
+    },
+  },
+}
+```
+
+使用自定义动画：
+
+```html
+<div class="animate-wiggle">
+  摇摆动画
+</div>
+
+<div class="animate-fadeIn">
+  淡入动画
+</div>
+```
+
+## 性能优化
+
+### 清除未使用的样式
+
+Tailwind 自动清除生产环境中未使用的样式：
+
+```javascript
+// tailwind.config.js
+module.exports = {
+  content: [
+    './src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}',
+  ],
+  // ...
+}
+```
+
+### 使用 JIT 模式
+
+Just-In-Time 模式可以生成更小的 CSS 文件：
+
+```javascript
+module.exports = {
+  mode: 'jit', // Tailwind CSS v3+ 默认启用
+  // ...
+}
+```
+
+## 总结
+
+Tailwind CSS 通过提供低级别的工具类，让开发者能够快速构建自定义设计。掌握这些最佳实践可以帮助你更高效地使用 Tailwind CSS。
+

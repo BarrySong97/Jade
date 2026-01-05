@@ -1,6 +1,7 @@
 ---
 import { type CollectionEntry, getCollection, render } from "astro:content";
 import BlogPost from "../../layouts/BlogPost.astro";
+import CodeWrapper from "@/components/blogs/code-wrapper.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -12,9 +13,14 @@ export async function getStaticPaths() {
 type Props = CollectionEntry<"blog">;
 
 const post = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+
+// 自定义 MDX 组件映射 - 替换默认的 pre 标签
+const components = {
+  pre: CodeWrapper,
+};
 ---
 
-<BlogPost {...post.data}>
-  <Content />
+<BlogPost {...post.data} headings={headings}>
+  <Content components={components} />
 </BlogPost>

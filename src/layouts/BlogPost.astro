@@ -1,18 +1,57 @@
 ---
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
+import type { MarkdownHeading } from "astro";
 import BaseLayout from "./BaseLayout.astro";
+import { Toc } from "@/components/blogs/Toc";
+import { AuthorCard } from "@/components/blogs/author-card";
+import { SocialQRCodes } from "@/components/blogs/social-qrcodes";
 
-type Props = CollectionEntry<"blog">["data"];
+type Props = CollectionEntry<"blog">["data"] & {
+  headings?: MarkdownHeading[];
+};
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, headings } =
+  Astro.props;
+
+// 作者信息（可以从配置文件或数据库获取）
+const author = {
+  name: "Barry Song",
+  avatar: "/og-image.png", // 替换为实际的头像路径
+  title: "什么都会点软件工程师",
+};
+
+// 社交媒体二维码（替换为实际的二维码图片）
+const socialQRCodes = [
+  {
+    platform: "哔哩哔哩",
+    label: "B站",
+    qrCodeUrl: "/og-image.png", // 替换为实际的二维码
+  },
+  {
+    platform: "小红书",
+    label: "小红书",
+    qrCodeUrl: "/og-image.png", // 替换为实际的二维码
+  },
+  {
+    platform: "抖音",
+    label: "抖音",
+    qrCodeUrl: "/og-image.png", // 替换为实际的二维码
+  },
+  {
+    platform: "微信",
+    label: "微信公众号",
+    qrCodeUrl: "/og-image.png", // 替换为实际的二维码
+  },
+];
 ---
 
 <BaseLayout title={title} description={description}>
   <div
     class="mx-auto max-w-5xl min-h-[calc(100vh-128px)] border border-border border-t-0 border-b-0 px-4 py-12 sm:px-6 lg:px-8"
   >
-    <article>
+    {/* Article Content - 完全居中显示 */}
+    <article class="mx-auto max-w-4xl">
       <!-- Hero Image -->
       {
         heroImage && (
@@ -47,9 +86,14 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 
       <!-- Article Content -->
       <div
-        class="prose max-w-none prose-headings:font-bold prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-primary prose-blockquote:italic prose-code:text-primary prose-code:bg-muted prose-code:rounded prose-code:px-1 prose-code:py-0.5 prose-pre:bg-muted"
+        class="prose max-w-none prose-headings:font-bold prose-headings:scroll-mt-20 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-primary prose-blockquote:italic prose-code:text-primary prose-code:bg-muted prose-code:rounded prose-code:px-1 prose-code:py-0.5"
       >
         <slot />
+      </div>
+
+      <!-- 社交媒体二维码 -->
+      <div class="mt-16">
+        <SocialQRCodes client:load qrCodes={socialQRCodes} />
       </div>
 
       <!-- Back Link -->
@@ -63,4 +107,16 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
       </div>
     </article>
   </div>
+
+  {/* Table of Contents - Fixed 在右侧，独立于页面布局 */}
+  {
+    headings && headings.length > 0 && (
+      <aside class="hidden xl:block fixed top-24 right-[max(0px,calc(50%-49rem))] w-64">
+        <AuthorCard client:load author={author} />
+        <div class="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
+          <Toc client:load headings={headings} />
+        </div>
+      </aside>
+    )
+  }
 </BaseLayout>

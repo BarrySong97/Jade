@@ -1,0 +1,21 @@
+---
+import { CodeBlockWrapper } from "./code-wrapper-client";
+
+interface Props {
+  class?: string;
+  style?: any;
+  tabindex?: string;
+  "data-language"?: string;
+}
+
+const { class: className, style, "data-language": language } = Astro.props;
+---
+
+<CodeBlockWrapper
+  client:load
+  className={className}
+  style={style}
+  language={language}
+>
+  <slot />
+</CodeBlockWrapper>

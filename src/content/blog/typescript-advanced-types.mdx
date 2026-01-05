@@ -1,0 +1,264 @@
+---
+title: "TypeScript 高级类型技巧"
+description: "探索 TypeScript 中的高级类型系统特性"
+pubDate: "2024-01-10"
+heroImage: "../../assets/blog-placeholder-2.jpg"
+---
+
+TypeScript 的类型系统非常强大，掌握高级类型技巧可以让你的代码更加类型安全和优雅。
+
+## 联合类型与交叉类型
+
+### 联合类型 (Union Types)
+
+联合类型表示一个值可以是几种类型之一：
+
+```typescript
+type Status = 'pending' | 'success' | 'error';
+
+function handleStatus(status: Status) {
+  switch (status) {
+    case 'pending':
+      console.log('Loading...');
+      break;
+    case 'success':
+      console.log('Success!');
+      break;
+    case 'error':
+      console.log('Error occurred');
+      break;
+  }
+}
+```
+
+### 交叉类型 (Intersection Types)
+
+交叉类型将多个类型合并为一个类型：
+
+```typescript
+interface Colorful {
+  color: string;
+}
+
+interface Circle {
+  radius: number;
+}
+
+type ColorfulCircle = Colorful & Circle;
+
+const cc: ColorfulCircle = {
+  color: 'red',
+  radius: 42,
+};
+```
+
+## 泛型 (Generics)
+
+泛型是 TypeScript 中最强大的特性之一，它允许我们创建可重用的组件。
+
+### 基础泛型函数
+
+```typescript
+function identity<T>(arg: T): T {
+  return arg;
+}
+
+const num = identity<number>(42);
+const str = identity<string>('hello');
+```
+
+### 泛型约束
+
+```typescript
+interface Lengthwise {
+  length: number;
+}
+
+function logLength<T extends Lengthwise>(arg: T): T {
+  console.log(arg.length);
+  return arg;
+}
+
+logLength('hello'); // ✅ string 有 length 属性
+logLength([1, 2, 3]); // ✅ array 有 length 属性
+// logLength(3); // ❌ number 没有 length 属性
+```
+
+### 泛型接口
+
+```typescript
+interface GenericIdentityFn<T> {
+  (arg: T): T;
+}
+
+function identity<T>(arg: T): T {
+  return arg;
+}
+
+const myIdentity: GenericIdentityFn<number> = identity;
+```
+
+## 条件类型 (Conditional Types)
+
+条件类型允许我们根据条件选择类型：
+
+```typescript
+type IsString<T> = T extends string ? true : false;
+
+type A = IsString<string>; // true
+type B = IsString<number>; // false
+```
+
+### 实用的条件类型
+
+```typescript
+// 提取函数返回类型
+type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
+
+function greet() {
+  return { name: 'Alice', age: 30 };
+}
+
+type GreetReturn = ReturnType<typeof greet>;
+// { name: string; age: number; }
+```
+
+## 映射类型 (Mapped Types)
+
+映射类型可以从旧类型创建新类型：
+
+```typescript
+type Readonly<T> = {
+  readonly [P in keyof T]: T[P];
+};
+
+type Partial<T> = {
+  [P in keyof T]?: T[P];
+};
+
+interface User {
+  name: string;
+  age: number;
+}
+
+type ReadonlyUser = Readonly<User>;
+type PartialUser = Partial<User>;
+```
+
+### 自定义映射类型
+
+```typescript
+type Getters<T> = {
+  [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K];
+};
+
+interface Person {
+  name: string;
+  age: number;
+}
+
+type PersonGetters = Getters<Person>;
+// {
+//   getName: () => string;
+//   getAge: () => number;
+// }
+```
+
+## 模板字面量类型
+
+TypeScript 4.1+ 支持模板字面量类型：
+
+```typescript
+type EventName<T extends string> = `${T}Changed`;
+
+type NameEvent = EventName<'name'>; // "nameChanged"
+type AgeEvent = EventName<'age'>; // "ageChanged"
+
+// 实际应用
+type PropEventSource<Type> = {
+  on<Key extends string & keyof Type>(
+    eventName: `${Key}Changed`,
+    callback: (newValue: Type[Key]) => void
+  ): void;
+};
+
+declare function makeWatchedObject<Type>(obj: Type): Type & PropEventSource<Type>;
+
+const person = makeWatchedObject({
+  firstName: "Saoirse",
+  lastName: "Ronan",
+  age: 26
+});
+
+person.on("firstNameChanged", (newName) => {
+  console.log(`new name is ${newName.toUpperCase()}`);
+});
+
+person.on("ageChanged", (newAge) => {
+  if (newAge < 0) {
+    console.warn("warning! negative age");
+  }
+});
+```
+
+## 实用工具类型
+
+TypeScript 提供了许多内置的工具类型：
+
+```typescript
+// Pick - 选择属性
+interface Todo {
+  title: string;
+  description: string;
+  completed: boolean;
+}
+
+type TodoPreview = Pick<Todo, 'title' | 'completed'>;
+
+// Omit - 排除属性
+type TodoInfo = Omit<Todo, 'completed'>;
+
+// Record - 创建对象类型
+type PageInfo = {
+  title: string;
+};
+
+type Page = 'home' | 'about' | 'contact';
+
+const nav: Record<Page, PageInfo> = {
+  home: { title: 'Home' },
+  about: { title: 'About' },
+  contact: { title: 'Contact' },
+};
+
+// Exclude - 从联合类型中排除
+type T0 = Exclude<'a' | 'b' | 'c', 'a'>; // 'b' | 'c'
+
+// Extract - 从联合类型中提取
+type T1 = Extract<'a' | 'b' | 'c', 'a' | 'f'>; // 'a'
+```
+
+## 类型守卫 (Type Guards)
+
+类型守卫帮助 TypeScript 理解运行时的类型：
+
+```typescript
+function isString(value: unknown): value is string {
+  return typeof value === 'string';
+}
+
+function processValue(value: string | number) {
+  if (isString(value)) {
+    // TypeScript 知道这里 value 是 string
+    console.log(value.toUpperCase());
+  } else {
+    // TypeScript 知道这里 value 是 number
+    console.log(value.toFixed(2));
+  }
+}
+```
+
+## 总结
+
+TypeScript 的高级类型系统提供了强大的工具来构建类型安全的应用程序。掌握这些技巧可以让你的代码更加健壮和易于维护。
+
