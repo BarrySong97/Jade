@@ -164,10 +164,10 @@ export const CodeBlock = forwardRef<HTMLElement, CodeBlockProps>(
             ease: "easeInOut",
           }}
         >
-          <ScrollArea dir="ltr" className="w-full ">
+          <div dir="ltr" className="w-full ">
             {childWithRef}
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+            {/* <ScrollBar orientation="horizontal" /> */}
+          </div>
         </motion.div>
         {shouldCollapse && (
           <div

@@ -10,13 +10,17 @@ React Hooks 改变了我们编写 React 组件的方式，让函数组件也能�
 ## 什么是 Hooks？
 
 Hooks 是 React 16.8 引入的新特性，它让你在不编写 class 的情况下使用 state 和其他 React 特性。
+我读了 10 到 20 本书，然后文章写了十来篇，健身也没有在偷懒，心态也变得更好了。
+我可以很自豪的说，我实现了一半。
+下半年最大的变化就是学英语，基本上从 9 月底开始就找到了外教练习口语，然后在小红书发现了英语角的直播，天天在直播间里面说英语。
+然后就是关于生活上的一些变化：大部分三年前买的家具，比如说升降桌、电脑、牙刷、手机什么的，坏的坏、慢的慢，然后全部更新了一波。
 
 ## useState - 状态管理
 
 `useState` 是最常用的 Hook，用于在函数组件中添加状态。
 
 ```tsx
-import { useState } from 'react';
+import { useState } from "react";
 
 function Counter() {
   const [count, setCount] = useState(0);
@@ -24,9 +28,7 @@ function Counter() {
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
+      <button onClick={() => setCount(count + 1)}>Click me</button>
     </div>
   );
 }
@@ -38,26 +40,26 @@ function Counter() {
 
 ```tsx
 function UserProfile() {
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [age, setAge] = useState(0);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
 
   return (
     <form>
-      <input 
-        value={name} 
-        onChange={(e) => setName(e.target.value)} 
+      <input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
         placeholder="Name"
       />
-      <input 
-        value={age} 
-        onChange={(e) => setAge(Number(e.target.value))} 
+      <input
+        value={age}
+        onChange={(e) => setAge(Number(e.target.value))}
         placeholder="Age"
         type="number"
       />
-      <input 
-        value={email} 
-        onChange={(e) => setEmail(e.target.value)} 
+      <input
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         placeholder="Email"
         type="email"
       />
@@ -71,7 +73,7 @@ function UserProfile() {
 `useEffect` 让你在函数组件中执行副作用操作，如数据获取、订阅或手动修改 DOM。
 
 ```tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 function DataFetcher() {
   const [data, setData] = useState(null);
@@ -80,11 +82,11 @@ function DataFetcher() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch('https://api.example.com/data');
+        const response = await fetch("https://api.example.com/data");
         const result = await response.json();
         setData(result);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -108,7 +110,7 @@ function Timer() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setSeconds(prev => prev + 1);
+      setSeconds((prev) => prev + 1);
     }, 1000);
 
     // 清理函数
@@ -124,17 +126,17 @@ function Timer() {
 `useContext` 让你无需手动传递 props 就能在组件树中共享值。
 
 ```tsx
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState } from "react";
 
-const ThemeContext = createContext('light');
+const ThemeContext = createContext("light");
 
 function App() {
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState("light");
 
   return (
     <ThemeContext.Provider value={theme}>
       <Toolbar />
-      <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+      <button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
         Toggle Theme
       </button>
     </ThemeContext.Provider>
@@ -173,7 +175,8 @@ function useLocalStorage(key: string, initialValue: any) {
 
   const setValue = (value: any) => {
     try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      const valueToStore =
+        value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
@@ -186,14 +189,9 @@ function useLocalStorage(key: string, initialValue: any) {
 
 // 使用自定义 Hook
 function App() {
-  const [name, setName] = useLocalStorage('name', 'Bob');
+  const [name, setName] = useLocalStorage("name", "Bob");
 
-  return (
-    <input 
-      value={name}
-      onChange={(e) => setName(e.target.value)}
-    />
-  );
+  return <input value={name} onChange={(e) => setName(e.target.value)} />;
 }
 ```
 
@@ -207,4 +205,3 @@ function App() {
 ## 总结
 
 React Hooks 为函数组件带来了强大的能力，让代码更简洁、更易于理解和维护。掌握这些核心 Hooks 是现代 React 开发的基础。
-

@@ -18,7 +18,8 @@
     "start": "astro dev",
     "format": "oxfmt",
     "lint": "oxlint",
-    "check": "oxlint && oxfmt"
+    "check": "oxlint && oxfmt",
+    "download-logos": "node scripts/download-company-logos.js"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
