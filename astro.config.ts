@@ -3,6 +3,10 @@ import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
+import sitemap from "@astrojs/sitemap";
+
+import mdx from "@astrojs/mdx";
+
 const site = process.env.VERCEL
   ? process.env.VERCEL_ENV === "production"
     ? "https://astro-shadcn-ui-template.vercel.app"
@@ -14,7 +18,7 @@ const base = process.env.BASE || "/";
 export default defineConfig({
   site,
   base,
-  integrations: [react()],
+  integrations: [react(), sitemap(), mdx()],
   vite: {
     plugins: [tailwindcss()],
   },

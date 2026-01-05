@@ -1,9 +1,7 @@
 ---
-import { cn } from "@/lib/utils";
-
 import HeadSEO from "@/components/HeadSEO.astro";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
 
 const { title, description, ogImage } = Astro.props;
 ---
@@ -17,7 +15,7 @@ const { title, description, ogImage } = Astro.props;
         try {
           const stored = localStorage.getItem("theme");
           const prefersDark = window.matchMedia(
-            "(prefers-color-scheme: dark)",
+            "(prefers-color-scheme: dark)"
           ).matches;
           const dark = stored ? stored === "dark" : prefersDark;
           document.documentElement.classList.toggle("dark", dark);
@@ -25,16 +23,10 @@ const { title, description, ogImage } = Astro.props;
       })();
     </script>
   </head>
-  <body
-    class={cn(
-      "group/body overscroll-none antialiased [--footer-height:calc(var(--spacing)*14)] [--header-height:calc(var(--spacing)*14)] xl:[--footer-height:calc(var(--spacing)*24)]",
-    )}
-  >
-    <div class="bg-background relative z-10 flex min-h-svh flex-col">
-      <Header client:load />
-      <main class="flex flex-1 flex-col">
-        <slot />
-      </main>
+  <body>
+    <div class="flex min-h-screen flex-col bg-background text-foreground">
+      <Header />
+      <main class="flex-1 pt-16"><slot /></main>
       <Footer />
     </div>
   </body>

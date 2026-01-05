@@ -1,5 +1,6 @@
 ---
-import { ComponentExample } from "@/components/ComponentExample";
+import HeroSection from "@/components/home/hero-section.astro";
+import ExperienceSection from "@/components/home/experience-section";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 ---
 
@@ -7,5 +8,14 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
   title="Astro shadcn/ui template"
   description="This template helps you build apps with Astro, Tailwind CSS, and shadcn/ui."
 >
-  <ComponentExample client:load />
+  <div
+    class="mx-auto max-w-5xl min-h-[calc(100vh-128px)] border border-border border-t-0 border-b-0"
+  >
+    <div class="border-b border-b-border">
+      <HeroSection />
+    </div>
+    <div class="border-b border-b-border">
+      <ExperienceSection />
+    </div>
+  </div>
 </BaseLayout>

@@ -1,0 +1,66 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import BaseLayout from "./BaseLayout.astro";
+
+type Props = CollectionEntry<"blog">["data"];
+
+const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <div
+    class="mx-auto max-w-5xl min-h-[calc(100vh-128px)] border border-border border-t-0 border-b-0 px-4 py-12 sm:px-6 lg:px-8"
+  >
+    <article>
+      <!-- Hero Image -->
+      {
+        heroImage && (
+          <div class="mb-8">
+            <Image
+              width={1020}
+              height={510}
+              src={heroImage}
+              alt=""
+              class="w-full rounded-lg object-cover"
+            />
+          </div>
+        )
+      }
+
+      <!-- Article Header -->
+      <header class="mb-12 space-y-4">
+        <h1 class="text-3xl font-bold sm:text-4xl">{title}</h1>
+        <div class="flex items-center gap-2 text-sm text-muted-foreground">
+          <time datetime={pubDate.toISOString()}>
+            {pubDate.toLocaleDateString("zh-CN")}
+          </time>
+          {
+            updatedDate && (
+              <span class="italic">
+                (更新于 {updatedDate.toLocaleDateString("zh-CN")})
+              </span>
+            )
+          }
+        </div>
+      </header>
+
+      <!-- Article Content -->
+      <div
+        class="prose max-w-none prose-headings:font-bold prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-primary prose-blockquote:italic prose-code:text-primary prose-code:bg-muted prose-code:rounded prose-code:px-1 prose-code:py-0.5 prose-pre:bg-muted"
+      >
+        <slot />
+      </div>
+
+      <!-- Back Link -->
+      <div class="mt-12 pt-8 border-t border-border">
+        <a
+          href="/blog"
+          class="text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          &larr; 返回博客列表
+        </a>
+      </div>
+    </article>
+  </div>
+</BaseLayout>
