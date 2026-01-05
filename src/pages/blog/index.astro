@@ -302,13 +302,19 @@ const years = Array.from(new Set(BLOG_POSTS.map((post) => post.year))).sort(
       }
     });
 
-    // 初始化
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", () =>
-        filterAndPaginatePosts(true)
-      );
-    } else {
+    // 初始化函数
+    function init() {
       setTimeout(() => filterAndPaginatePosts(true), 100);
+    }
+
+    // 监听 Astro 的页面加载事件（支持客户端路由）
+    document.addEventListener("astro:page-load", init);
+
+    // 首次加载
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
     }
 
     // 监听年份筛选变化
