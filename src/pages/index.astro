@@ -1,21 +1,48 @@
 ---
 import HeroSection from "@/components/home/hero-section.astro";
 import ExperienceSection from "@/components/home/experience-section";
-import RecentPostsSection from "@/components/home/recent-posts-section";
+import ProductsSection from "@/components/home/products-section";
+import LatestArticlesSection from "@/components/home/latest-articles-section";
 import TechStackSection from "@/components/home/tech-stack-section";
+import ImageGallerySection from "@/components/home/image-gallery-section";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 
-// 获取最近的 3 篇博客文章
+// 获取所有博客文章并排序
 const allPosts = (await getCollection("blog")).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 
-const recentPosts = allPosts.slice(0, 3).map((post) => ({
+// 最新 3 篇文章
+const latestArticles = allPosts.slice(0, 3).map((post) => ({
   id: post.id.replace(/\.mdx?$/, ""),
   title: post.data.title,
   description: post.data.description,
-  coverImage: post.data.heroImage?.src,
+  coverImage: post.data.heroImage,
+}));
+
+// 按年份统计文章数量
+const postCountByYear = allPosts.reduce(
+  (acc, post) => {
+    const year = post.data.pubDate.getFullYear();
+    acc[year] = (acc[year] || 0) + 1;
+    return acc;
+  },
+  {} as Record<number, number>
+);
+
+// 获取所有产品并排序
+const allProducts = (await getCollection("products")).sort(
+  (a, b) => (a.data.order ?? 99) - (b.data.order ?? 99)
+);
+
+const productsData = allProducts.slice(0, 3).map((product) => ({
+  id: product.id,
+  title: product.data.title,
+  description: product.data.description,
+  coverImage: product.data.coverImage?.src,
+  link: product.data.link,
+  githubUrl: product.data.githubUrl,
 }));
 ---
 
@@ -30,10 +57,16 @@ const recentPosts = allPosts.slice(0, 3).map((post) => ({
       <HeroSection />
     </div>
     <div class="border-b border-b-border">
+      <ImageGallerySection client:only="react" />
+    </div>
+    <div class="border-b border-b-border">
+      <LatestArticlesSection posts={latestArticles} postCountByYear={postCountByYear} />
+    </div>
+    <div class="border-b border-b-border">
       <ExperienceSection />
     </div>
     <div class="border-b border-b-border">
-      <RecentPostsSection posts={recentPosts} />
+      <ProductsSection products={productsData} />
     </div>
     <div class="border-b border-b-border">
       <TechStackSection client:load />

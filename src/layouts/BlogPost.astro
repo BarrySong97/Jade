@@ -1,5 +1,4 @@
 ---
-import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import type { MarkdownHeading } from "astro";
 import BaseLayout from "./BaseLayout.astro";
@@ -17,7 +16,6 @@ const { title, description, pubDate, updatedDate, heroImage, headings } =
 // 作者信息（可以从配置文件或数据库获取）
 const author = {
   name: "Barry Song",
-  avatar: "/og-image.png", // 替换为实际的头像路径
   title: "什么都会点软件工程师",
 };
 
@@ -55,14 +53,8 @@ const socialQRCodes = [
       <!-- Hero Image -->
       {
         heroImage && (
-          <div class="mb-8">
-            <Image
-              width={1020}
-              height={510}
-              src={heroImage}
-              alt=""
-              class="w-full rounded-lg object-cover"
-            />
+          <div class="mb-8 aspect-video overflow-hidden rounded-lg">
+            <img src={heroImage} alt="" class="w-full h-full object-cover" />
           </div>
         )
       }
@@ -86,7 +78,7 @@ const socialQRCodes = [
 
       <!-- Article Content -->
       <div
-        class="prose max-w-none prose-headings:font-bold prose-headings:scroll-mt-20 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-primary prose-blockquote:italic prose-code:text-primary prose-code:bg-muted prose-code:rounded prose-code:px-1 prose-code:py-0.5"
+        class="prose max-w-none prose-headings:font-bold prose-headings:scroll-mt-20 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-primary prose-blockquote:italic prose-code:text-primary prose-code:bg-muted prose-code:rounded prose-code:px-1 prose-code:py-0.5 prose-strong:font-medium"
       >
         <slot />
       </div>

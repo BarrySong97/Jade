@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 const NAV_LINKS = [
   { href: "/", label: "关于" },
   { href: "/blog", label: "博客" },
+  { href: "/products", label: "作品" },
 ] as const;
 
 export interface NavMenuProps {

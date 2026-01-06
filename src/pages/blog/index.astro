@@ -13,91 +13,9 @@ const BLOG_POSTS = posts.map((post) => ({
   id: post.id.replace(/\.mdx?$/, ""),
   title: post.data.title,
   date: post.data.pubDate.toISOString().split("T")[0],
-  coverImage: post.data.heroImage?.src,
+  coverImage: post.data.heroImage,
   year: post.data.pubDate.getFullYear(),
 }));
-
-// ========== Mock 假数据生成函数（已注释，需要时可取消注释） ==========
-// function generateMockBlogPosts(count = 100) {
-//   const posts = [];
-//
-//   // 主题列表
-//   const topics = [
-//     "React Hooks 实战技巧",
-//     "TypeScript 类型编程",
-//     "Vue 3 组合式 API",
-//     "Next.js 服务端渲染",
-//     "Webpack 打包优化",
-//     "Vite 构建工具深入",
-//     "CSS Grid 布局指南",
-//     "Flexbox 完全教程",
-//     "JavaScript 异步编程",
-//     "Node.js 后端开发",
-//     "GraphQL API 设计",
-//     "MongoDB 数据库实践",
-//     "Redis 缓存策略",
-//     "Docker 容器化部署",
-//     "Kubernetes 集群管理",
-//     "CI/CD 持续集成",
-//     "Git 工作流最佳实践",
-//     "算法与数据结构",
-//     "设计模式实践",
-//     "性能优化技巧",
-//     "代码重构方法",
-//     "单元测试编写",
-//     "E2E 测试框架",
-//     "前端安全防护",
-//     "跨域问题解决",
-//     "WebSocket 实时通信",
-//     "PWA 渐进式应用",
-//     "Web Components 开发",
-//     "微前端架构设计",
-//     "服务端组件探索",
-//   ];
-//
-//   // 封面图片列表
-//   const coverImages = [
-//     "/blog-placeholder-1.jpg",
-//     "/blog-placeholder-2.jpg",
-//     "/blog-placeholder-3.jpg",
-//     "/blog-placeholder-4.jpg",
-//     "/blog-placeholder-5.jpg",
-//   ];
-//
-//   // 生成随机日期（2023-2025）
-//   function randomDate(start: Date, end: Date): Date {
-//     return new Date(
-//       start.getTime() + Math.random() * (end.getTime() - start.getTime())
-//     );
-//   }
-//
-//   const startDate = new Date("2023-01-01");
-//   const endDate = new Date("2025-12-31");
-//
-//   for (let i = 1; i <= count; i++) {
-//     const topic = topics[Math.floor(Math.random() * topics.length)];
-//     const date = randomDate(startDate, endDate);
-//     const coverImage =
-//       coverImages[Math.floor(Math.random() * coverImages.length)];
-//
-//     posts.push({
-//       id: `mock-blog-${i}`,
-//       title: `${topic} (${i})`,
-//       date: date.toISOString().split("T")[0],
-//       coverImage: coverImage,
-//       year: date.getFullYear(),
-//     });
-//   }
-//
-//   // 按日期排序（最新的在前面）
-//   return posts.sort(
-//     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-//   );
-// }
-//
-// // 生成 100 篇 mock 文章
-// const BLOG_POSTS = generateMockBlogPosts(100);
-// ========== Mock 假数据生成结束 ==========
 
 // 提取所有年份，从大到小排序
 const years = Array.from(new Set(BLOG_POSTS.map((post) => post.year))).sort(

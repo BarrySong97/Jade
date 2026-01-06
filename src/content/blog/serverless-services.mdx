@@ -1,0 +1,244 @@
+---
+title: "适合小团队使用各种serverless和开源服务"
+description: "远程工作两年多，我参与了两个微小的创业公司。在这期间，我的主要工作就是如何加速开发、快速实现需求，开发出demo来验证产品。在大量实践中，我运用到的服务一般有两个类别：一类是便捷的serverless服务，另一类是可以自己部署的开源云服务（他们也会提供云服务，其实和前面说的serverless是一种，一般为了安全考虑会自己部署，当然功能会被阉割）。这两者结合起来，极大地提升了开发效率。先说部署方面。我的后端还是传统架构，但部署方式完全不同了。我没有采用传统服务器搭建CI/CD部署，而是使用railway、zeabur这种部署平台（虽然它们底层也是跑在aws上，哈哈）。因为都是单体应用，不需要考虑扩容问题，这类部署平台极大地节约了部署时间，配置起来也很方便。"
+pubDate: "2025-11-21"
+heroImage: "https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/f28182c62c0db43e1ccfcedcbc717fe5fd7a6f2e79d0c3b4a3004b105f0e90e1.png"
+---
+
+远程工作两年多，我参与了两个微小的创业公司。在这期间，我的主要工作就是如何加速开发、快速实现需求，开发出demo来验证产品。
+
+在大量实践中，我运用到的服务一般有两个类别：一类是便捷的serverless服务，另一类是可以自己部署的开源云服务（他们也会提供云服务，其实和前面说的serverless是一种，一般为了安全考虑会自己部署，当然功能会被阉割）。这两者结合起来，极大地提升了开发效率。
+
+先说部署方面。我的后端还是传统架构，但部署方式完全不同了。我没有采用传统服务器搭建CI/CD部署，而是使用railway、zeabur这种部署平台（虽然它们底层也是跑在aws上，哈哈）。因为都是单体应用，不需要考虑扩容问题，这类部署平台极大地节约了部署时间，配置起来也很方便。
+
+另外一句部署的题外话，大部分知名的框架你只需要绑定github仓库就会自动识别部署，但如果你的文件结构变了，或者做一些调整，你就需要写dockerfile来自定义部署。
+
+至于其他功能，我基本都外包给了我上面所说的serverless的第三方云服务。比如云数据库、队列、workflow这些，直接用现成的服务就好。oss更是不用说了，现在还有很多更方便的选择，像vercel的blob、supabase的storage，它们都是在s3之上做了封装和抽象，让开发者用起来更加简单。
+
+不过serverless本体，edge functions我也会使用，一般会用在测试webhook，或者edge functions作为webhook的中转站。
+
+因为部署非常快，直接在部署网站写好就发布了，测试也方便。
+
+有点偏题了，回到正题来。
+
+接下来正式介绍各种服务，开源的我会在后面标记开源。
+
+> 一般开源服务都有免费额度，所以如果你是想做demo和mvp，不需要花一分钱。
+
+写在开头的最后，Cloudflare, Vercel和Netlify我就不做介绍了，他们已经是最出名的serverless部署服务了。
+
+## 云数据库
+
+### PlanetScale
+
+https://planetscale.com/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/208e515ab764a843729bd4e58fd85d63ee1ae09fe2b90c191ee2a86fecf2db22@large.webp)
+
+MySQL兼容的serverless数据库平台，提供数据库分支、无锁schema变更等特性。非常适合需要快速迭代的项目，支持横向扩展和自动备份。
+
+### Supabase DB（开源）
+
+https://supabase.com/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载.png)
+
+开源的Firebase替代品，基于PostgreSQL构建，提供认证、数据库、存储和实时订阅功能。支持自部署，完全掌控你的数据。
+
+### Neon
+
+https://neon.tech/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (1).png)
+
+serverless Postgres数据库，支持即时配置、自动扩缩容和数据库分支功能。按使用量计费，闲置时自动缩减到零，非常省钱。
+
+## 部署服务
+
+### Railway
+
+https://railway.com/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (2).png)
+
+零配置的部署平台，自动检测框架并部署，支持CI/CD集成。从GitHub推送代码后自动构建部署，非常适合快速上线项目。
+
+### Zeabur
+
+https://zeabur.com/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (3).png)
+
+AI驱动的部署平台，提供一键部署和自动扩展功能。支持多种语言和框架，特别适合AI时代的开发者使用。
+
+- **支持链接自己服务器部署**
+
+### Heroku
+
+https://heroku.com/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (4).png)
+
+老牌云平台，提供简单易用的应用部署体验。支持多种编程语言，拥有丰富的插件生态系统，通过Git推送即可完成部署。也支持连接自己的服务器进行部署。
+
+- **支持链接自己服务器部署**
+
+### Coolify（开源）
+
+https://coolify.io/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (5).png)
+
+开源的自托管部署平台，可以在自己的服务器上部署应用。支持Docker容器、静态网站、数据库等多种服务类型，提供简洁的Web界面管理。
+
+- **支持链接自己服务器部署**
+
+### Dokploy（开源）
+
+https://dokploy.com/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (17).png)
+
+开源的自托管PaaS平台，让你在自己的服务器上实现类似Heroku的部署体验。支持多种应用类型、数据库服务和自动SSL证书配置。
+
+- **支持链接自己服务器部署**
+
+### Cloudflare Workers
+
+https://workers.cloudflare.com/
+
+边缘计算平台，在全球数据中心运行serverless函数。毫秒级冷启动、无限扩展，特别适合API中间层、webhooks和边缘渲染场景。
+
+### Cloudflare Pages
+
+https://pages.cloudflare.com/
+
+静态网站和全栈应用部署平台，与GitHub/GitLab深度集成。支持前端框架、serverless函数，通过全球CDN提供极速访问体验。
+
+## 异步队列或workflow
+
+### Trigger.dev（开源）
+
+https://trigger.dev/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (6).png)
+
+开源的后台任务平台，用于构建可靠的工作流，支持自动重试且无超时限制。非常适合处理长时间运行的任务和AI工作流。
+
+### Temporal
+
+https://temporal.io/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (7).png)
+
+持久化执行平台，用于编排复杂的工作流并提供容错能力。支持状态管理、自动重试，特别适合微服务编排和复杂业务流程。
+
+### Upstash
+
+https://upstash.com/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (8).png)
+
+serverless数据平台，提供Redis、Kafka和QStash（消息队列）服务，按请求计费。特别适合serverless环境，支持自动扩展。
+
+## 鉴权服务
+
+### Logto（开源）
+
+https://logto.io/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (9).png)
+
+开源的身份验证和用户管理平台，提供现代化的登录体验和完整的用户管理功能。
+
+### Supabase Auth（开源）
+
+https://supabase.com/
+
+开源的Firebase替代方案，提供完整的后端服务，包括身份验证、数据库、存储和实时订阅功能。
+
+### Clerk
+
+https://clerk.com/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (10).png)
+
+现代化的用户认证和管理平台，提供开箱即用的登录组件、多因素认证和用户管理界面。
+
+### Better Auth（开源）
+
+https://better-auth.com/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (11).png)
+
+Node.js生态中目前开发体验最好的鉴权框架，提供类型安全的API和灵活的配置选项。支持多种认证策略和数据库，完全开源可自托管。官方云服务正在开发中。
+
+## 邮件发送服务
+
+### Resend
+
+https://resend.com/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (12).png)
+
+现代化的邮件API服务，专为开发者设计，提供简洁的API和优秀的送达率。支持React Email模板、Webhook事件追踪，轻松实现交易邮件和营销邮件发送。
+
+## 文件存储服务
+
+### MinIO（开源）
+
+https://min.io/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (13).png)
+
+开源的高性能对象存储系统，兼容Amazon S3 API。可以部署在任何基础设施上，提供企业级的数据保护和可扩展性，完全掌控你的存储数据。
+
+### Vercel Blob
+
+https://vercel.com/storage/blob
+
+Vercel提供的serverless文件存储服务，基于S3构建但使用更简单。与Vercel平台深度集成，支持边缘网络加速，按使用量计费。
+
+### Supabase Storage
+
+https://supabase.com/storage
+
+Supabase的对象存储服务，基于S3构建，提供简单的API和强大的访问控制。支持图片转换、自动备份，与Supabase其他服务无缝集成。
+
+### Cloudflare R2
+
+https://www.cloudflare.com/products/r2/
+
+S3兼容的对象存储服务，最大特点是零出站费用。与Cloudflare全球网络深度集成，提供快速访问和自动缓存，按存储容量计费。
+
+## CMS服务
+
+### Payload（开源）
+
+https://payloadcms.com/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (14).png)
+
+开源的无头CMS和应用框架，使用TypeScript构建。提供强大的管理界面、灵活的内容建模和完整的API，支持自托管，完全掌控你的内容数据。
+
+- 本人的博客就是使用的Payload
+- 完全nextjs native的应用，可以单独部署cms服务，也可以直接放在nextjs项目里面
+
+### Strapi（开源）
+
+https://strapi.io/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (15).png)
+
+开源的无头CMS，提供可定制的管理面板和RESTful/GraphQL API。支持插件系统、多种数据库，可以快速构建API驱动的应用。
+
+- 最老牌的cms项目
+- 插件多，如果给客户用，放心使用
+
+### Sanity
+
+https://sanity.io/
+
+![](https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/下载 (15).png)
+
+实时协作的无头CMS平台，提供结构化内容管理和强大的查询语言GROQ。支持自定义编辑器、实时预览，特别适合内容驱动的网站和应用。

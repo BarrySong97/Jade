@@ -1,0 +1,54 @@
+---
+import { type CollectionEntry, getCollection, render } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import BlankLayout from "@/layouts/BlankLayout.astro";
+
+export async function getStaticPaths() {
+  const products = await getCollection("products");
+  // 只为没有外链的产品生成详情页
+  return products
+    .filter((product) => !product.data.link)
+    .map((product) => ({
+      params: { slug: product.id.replace(/\.mdx?$/, "") },
+      props: product,
+    }));
+}
+
+type Props = CollectionEntry<"products">;
+
+const product = Astro.props;
+const { Content } = await render(product);
+const isBlank = product.data.displayMode === "blank";
+---
+
+{
+  isBlank ? (
+    <BlankLayout title={product.data.title}>
+      <Content />
+    </BlankLayout>
+  ) : (
+    <BaseLayout title={product.data.title} description={product.data.description}>
+      <div class="mx-auto max-w-5xl min-h-[calc(100vh-128px)] border border-border border-t-0 border-b-0">
+        <article class="px-10 py-16">
+          <header class="mb-8 space-y-4">
+            <h1 class="text-3xl font-bold">{product.data.title}</h1>
+            <p class="text-muted-foreground">{product.data.description}</p>
+            {product.data.githubUrl && (
+              <a
+                href={product.data.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 rounded-md bg-muted px-3 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                GitHub →
+              </a>
+            )}
+          </header>
+          <div class="prose prose-neutral dark:prose-invert max-w-none">
+            <Content />
+          </div>
+        </article>
+      </div>
+    </BaseLayout>
+  )
+}

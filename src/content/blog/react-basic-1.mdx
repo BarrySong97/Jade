@@ -1,0 +1,626 @@
+---
+title: "React 基础系列（1）：渲染流程与性能优化"
+description: "这是一篇关于 React 基础系列的内容，基础表示的是我们应该了解、所必须了解的必要知识。这和其他的基础系列文章不一样，我们不会去实际看源码，也不会去深究源码为什么要这么做，而是搞清楚 React 到底发生了什么。这样就足够用了。当你真正需要深入到源码的时候，那个时候你再凭借 AI 一边读一边根据你所了解的基础来进行研究。"
+pubDate: "2025-11-22"
+heroImage: "https://pub-6fcfe1e3fe954d73917791d34e36c699.r2.dev/9190752f1dc4da0f42b6725a6a942cfbe647be5e025ac043830829dc47ebb5b0.png"
+---
+
+## 前言
+
+这是一篇关于 React 基础系列的内容，基础表示的是我们应该了解、所必须了解的必要知识。
+
+这和其他的基础系列文章不一样，我们不会去实际看源码，也不会去深究源码为什么要这么做，而是搞清楚 React 到底发生了什么。
+
+这样就足够用了。当你真正需要深入到源码的时候，那个时候你再凭借 AI 一边读一边根据你所了解的基础来进行研究。
+
+## 正文
+
+所谓的**性能优化**到底是个什么东西？无非就是更先进的算法，让计算的速度变快。其次就是当我们没有更先进的算法的时候，我们使用空间换时间，也就是用更大的缓存去换取更快的响应速度。
+
+所以本质上我们在 React 上面做性能优化的时候，无非就是两种方式：一种是自己在写某些逻辑的时候用更快的算法，或者说我们用缓存。
+
+那提到缓存，你们肯定能想到3个关键词：memo 和 useMemo，以及 useCallback。
+
+不过在说缓存之前，我们先来聊聊 React 的渲染（Render）流程。
+
+## 我们再说渲染（Render ）的时候到底在说什么
+
+注意渲染的英文是 render，render 在前端几乎无处不在。
+
+在深入了解 React 的渲染流程之前，我们需要先区分两种不同类型的"渲染"：
+
+1. **页面 DOM 的真实渲染**：这是浏览器层面的渲染，指的是真实 DOM 元素的创建、更新和绘制到屏幕上的过程。
+2. **React 组件级别的渲染**：这是 React 内部的渲染，指的是组件函数的重新执行和虚拟 DOM 的重新生成。
+
+这两者并不是一回事。React 组件可能会频繁重新渲染（重新执行函数），但不一定会导致真实 DOM 的更新。React 通过 diff 算法来决定是否需要更新真实 DOM，这也是 React 性能优化的关键所在。
+
+### 从 Class Component 到 Function Component
+
+为什么要强调这两种渲染的区别？因为在 React 的演变过程中，"**render**"这个概念的体现方式发生了变化（本质一样，形式方式了变化。原来推崇继承，现在推崇组合）。
+
+**在 React 15 及之前（Class Component 时代）：**
+
+Class 组件有一个专门的 `render()` 方法，这个方法做两件事：
+
+1. 构建 React 组件结构（虚拟 DOM）
+2. 返回 JSX，后续会映射到真实 DOM
+
+```javascript
+class Counter extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { count: 0 };
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Count: {this.state.count}</h1>
+        <button onClick={() => this.setState({ count: this.state.count + 1 })}>
+          增加
+        </button>
+      </div>
+    );
+  }
+}
+```
+
+
+
+**在 React 16+ 之后（Function Component 时代）：**
+
+函数组件没有 `render()` 方法，但**整个函数组件本身就相当于以前的 render() 方法**：
+
+```javascript
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <h1>Count: {count}</h1>
+      <button onClick={() => setCount(count + 1)}>
+        增加
+      </button>
+    </div>
+  );
+}
+```
+
+
+
+
+
+## React 的渲染流程
+
+大家还记得React官网说的一个公式吗？
+
+**F(state）= UI**
+
+这个公式是理解 React 的核心。它告诉我们：
+
+F是函数，state的变量，UI是结果（页面）
+
+那么 React 的工作流程就很清晰了：
+
+1. **用户操作** → 触发事件（比如点击按钮）
+2. **state 改变** → 调用 `setState` 或 `setCount` 等方法
+3. **组件重新 render** → React 重新执行组件函数
+4. **生成新的 UI** → React 根据新的 state 计算出新的 JSX
+5. **更新真实 DOM** → React 通过 diff 算法，只更新变化的部分
+
+### State 和 Props 的关系
+
+这里要特别注意一点：**state 不仅会触发自己组件的 render，还会影响子组件**。
+
+怎么影响？通过 **props**。
+
+```javascript
+function Parent() {
+  const [count, setCount] = useState(0); // 父组件的 state
+  
+  return (
+    <div>
+      <Child count={count}/> {/* 父组件的 state 作为子组件的 props */}
+      <button onClick={() => setCount(count + 1)}>增加</button>
+    </div>
+  );
+}
+
+function Child({ count }) {
+  // 父组件的 state 变化 → 子组件的 props 变化 → 子组件重新 render
+  return <div>收到的 count: {count}</div>;
+}
+```
+
+
+
+看到了吗？
+
+- **父组件的 state** 改变 → 父组件 render
+- **父组件 render** → 传给子组件的 props 可能改变
+- **子组件的 props** 改变 → 子组件也 render
+
+这就形成了 React 的**数据流**：从父组件的 state，通过 props，流向子组件。
+
+所以我们可以说：**state 是数据的源头，props 是数据的传递方式，render 是响应数据变化的机制**。
+
+### 触发 Render 的情况
+
+明白了 state 和 props 的关系，我们就能理解为什么这些情况会触发组件 render。
+
+**首先，符合 F(state) = UI 核心逻辑的情况：**
+
+- **state 变化** - 组件自己的状态改变
+- **props 变化** - 本质是父组件的 state 变化，通过 props 传递下来
+- **父组件 render（连带子组件）** - 父组件 render 时，子组件默认也会 render
+
+这里要特别说明一下第三点：**为什么父组件 render 会导致子组件也 render？**
+
+原因很简单：**父组件 render 时会重新执行整个函数，而调用子组件的代码就在这个函数里**。
+
+看这个例子：
+
+```javascript
+function Parent() {
+  const [count, setCount] = useState(0);
+  
+  return (
+    <div>
+      <Child name="小明"/> {/* 每次父组件 render，这行代码都会重新执行 */}
+      <button onclick={() => setCount(count + 1)}>增加</button>
+    </div>
+  );
+}
+
+function Child({ name }) {
+  console.log('Child render');
+  return <div>我是 {name}</div>;
+}
+```
+
+
+
+当你点击"增加"按钮时：
+
+1. 父组件的 `count` state 变化
+2. `Parent` 函数重新执行
+3. `<Child name="小明" />` 这行代码重新执行
+4. React 看到了"新的" `<Child />` 调用，于是执行 `Child` 函数
+5. 控制台打印 'Child render'
+
+**关键点：即使 **`Child`** 的 props（**`name="小明"`**）根本没变，**`Child`** 组件也会重新 render！**
+
+为什么 React 要这样设计？因为 React 默认不会去检查 props 是否真的变了，它假设"父组件 render 了，子组件大概率也需要 render"。
+
+这个假设在大部分情况下是对的，而且避免了每次都做 props 对比的开销。
+
+但如果你想让 React 跳过 props 没变的子组件，那就需要用到 `React.memo`（我们后面会详细讲）。
+
+**那么问题来了：子组件 render 了，真实页面会更新吗？**
+
+答案是：**不一定！**
+
+这就是我们前面说的"两种渲染"的区别体现了：
+
+1. **子组件 render（React 组件级别）**：
+2. 
+  - `Child` 函数重新执行
+  - 生成新的虚拟 DOM
+3. **diff 算法对比**：
+4. 
+  - React 对比新旧虚拟 DOM
+  - 发现 `Child` 的 props 没变（`name="小明"`）
+  - 生成的虚拟 DOM 和之前**完全一样**
+5. **真实 DOM 不更新**：
+6. 
+  - React：哦，虚拟 DOM 没变化，那就不用更新真实 DOM 了
+  - 跳过 commit 阶段
+  - 页面上什么都不会变
+
+所以完整的流程是：
+
+```typescript
+父组件 state 变化
+  ↓
+父组件 render（函数执行）
+  ↓
+子组件 render（函数执行）← 这一步发生了！
+  ↓
+生成新的虚拟 DOM
+  ↓
+diff 算法对比 ← React 在这里发现没变化
+  ↓
+真实 DOM 不更新 ← 所以页面不会闪烁或重绘
+```
+
+
+
+这就是 React 的聪明之处：
+
+- **默认让子组件 render**（因为检查成本低）
+- **但通过 diff 算法避免不必要的 DOM 操作**（因为 DOM 操作成本高）
+
+React 组件 render ≠ 真实 DOM 更新！理解这一点非常重要。
+
+这三种情况都是 React 数据流的正常表现：state 改变 → UI 更新。
+
+**但还有一些"例外情况"，不在 F(state) = UI 的范围内：**
+
+- **context 变化** - 跨组件的全局状态管理，不通过 props 传递
+- **强制更新** - 手动调用 `forceUpdate()`（class 组件）强制 render
+- **外部 store 更新** - 第三方状态管理库（如 Jotai, Zustand, Redux）的状态变化
+
+为什么说这些是"例外"？
+
+因为它们不是通过"组件自己的 state + props"来驱动 UI 更新的。它们是 React 为了特定目的设计的额外机制：
+
+- **context** 是为了解决深层组件通信问题
+- **forceUpdate** 是为了极少数需要绕过 React 数据流的场景
+- **外部 store** 是为了集成第三方状态管理
+
+但本质上，React 的核心还是 **F(state) = UI**。理解了这个，你就理解了 React 渲染的 90% 情况。
+
+### 整体 Render 流程总结
+
+好，现在我们把前面讲的内容串起来，完整梳理一下 React 的渲染流程。
+
+**完整的 Render 流程分为 4 个阶段：**
+
+## 1. 触发阶段（Trigger）
+
+某个条件满足，告诉 React："该更新了！"
+
+常见触发条件：
+
+- state 变化（最常见）
+- props 变化
+- 父组件 render
+
+## 2. Render Phase（执行组件函数）
+
+React 做的事：
+
+- **重新执行组件函数**（class 组件是调用 `render()` 方法，函数组件是重新执行整个函数）
+- **生成新的虚拟 DOM（fiber 树）**
+
+⚠️ 关键点：**这个阶段一定会发生，无法跳过**（除非你用了 `React.memo`）
+
+⚠️ 注意：这里还没有碰真实 DOM！
+
+## 3. Diff Phase（虚拟 DOM 对比）
+
+React 对比新旧虚拟 DOM：
+
+- **一样** → 标记为"不需要更新"
+- **不一样** → 标记为"需要更新"，记录具体变化
+
+这就是 React 的核心算法：**diff 算法**。
+
+## 4. Commit Phase（更新真实 DOM）
+
+React 只更新标记为"需要更新"的部分：
+
+- 更新真实 DOM 元素
+
+⚠️ 关键点：**这个阶段可能被跳过**（如果 diff 发现没变化）
+
+**用流程图表示：**
+
+```typescript
+触发条件（state/props 变化）
+        ↓
+Render Phase（执行组件函数）← 一定发生
+        ↓
+   生成新的虚拟 DOM
+        ↓
+Diff Phase（对比新旧虚拟 DOM）
+        ↓
+  发现差异？
+    ↙     ↘
+  是        否
+  ↓         ↓
+Commit    跳过更新
+更新 DOM   页面不变
+```
+
+
+
+## 性能优化的两个方向
+
+现在你应该能看出来，React 的性能优化有两个层面：
+
+1. **减少不必要的 Render Phase（组件函数执行）**
+2. 
+  - 工具：`React.memo`、`useCallback`、`useMemo`
+  - 目标：让 props 没变的子组件跳过整个 render 流程
+  - 收益：节省函数执行开销
+3. **减少不必要的 Commit Phase（DOM 更新）**
+4. 
+  - 工具：React 的 diff 算法（自动）
+  - 目标：只更新真正变化的 DOM
+  - 收益：节省 DOM 操作开销
+  - 💡 好消息：**这个 React 已经自动帮你做了！**
+
+所以我们平时说的"性能优化"，主要是在优化**第一个层面**：减少不必要的组件函数执行。
+
+而 `memo`、`useCallback`、`useMemo` 这三个工具，就是为了这个目的而存在的。
+
+接下来，我们就来详细看看它们是怎么工作的。
+
+
+
+## 2. React.memo、useMemo、useCallback 详解
+
+### React.memo 的作用
+
+还记得前面说的吗？父组件 render 时，**所有子组件默认都会重新执行函数**，即使 props 没变。
+
+`React.memo` 就是用来改变这个默认行为的。
+
+**React.memo 的作用：如果 props 没变 → 跳过子组件整个 render 流程。**
+
+包括：
+
+- 不执行组件函数
+- 不生成虚拟 DOM
+- 不 diff
+- 不 commit
+
+**使用方法：**
+
+```javascript
+// 普通组件
+function Child({ name, age }) {
+  console.log('Child render');
+  return (
+    <div>
+      姓名：{name}，年龄：{age}
+    </div>
+  );
+}
+
+// 用 memo 包裹
+const MemoChild = React.memo(Child);
+
+// 或者直接在定义时包裹
+const Child = React.memo(function Child({ name, age }) {
+  console.log('Child render');
+  return (
+    <div>
+      姓名：{name}，年龄：{age}
+    </div>
+  );
+});
+```
+
+
+
+**效果对比：**
+
+```javascript
+function Parent() {
+  const [count, setCount] = useState(0);
+  
+  return (
+    <div>
+      <Child name="小明" age={18}/> {/* 每次 count 变化，都会 render */}
+      <Memochild name="小红" age={20}/> {/* count 变化，但 props 没变，不会 render */}
+      <button onclick={() => setCount(count + 1)}>计数：{count}</button>
+    </div>
+  );
+}
+```
+
+
+
+当你点击按钮时：
+
+- `Child` 会打印 'Child render'（每次都执行）
+- `MemoChild` 不会打印（props 没变，跳过执行）
+
+### useCallback 的作用
+
+好，现在我们知道 `memo` 能跳过子组件 render。但有个问题：**如果 props 是函数怎么办？**
+
+看这个例子：
+
+```javascript
+const MemoChild = React.memo(function Child({ onClick }) {
+  console.log('Child render');
+  return <button onclick="{onClick}">点我</button>;
+});
+
+function Parent() {
+  const [count, setCount] = useState(0);
+  
+  // 每次 Parent render，都会创建新的函数
+  const handleClick = () => {
+    console.log('clicked');
+  };
+  
+  return (
+    <div>
+      <Memochild onclick={handleClick}/> {/* memo 失效了！ */}
+      <button onclick={() => setCount(count + 1)}>计数：{count}</button>
+    </div>
+  );
+}
+```
+
+
+
+问题出在哪？
+
+- 每次 `Parent` render，`handleClick` 都是一个**新的函数对象**
+- 虽然函数内容一样，但引用地址不同
+- React.memo 对比 props 时：`旧 onClick !== 新 onClick`
+- memo 失效，`MemoChild` 还是会 render
+
+**useCallback 就是用来解决这个问题的：让函数引用保持稳定。**
+
+```javascript
+function Parent() {
+  const [count, setCount] = useState(0);
+  
+  // 用 useCallback 包裹，只要依赖不变，函数引用就不变
+  const handleClick = useCallback(() => {
+    console.log('clicked');
+  }, []); // 空数组表示永远不变
+  
+  return (
+    <div>
+      <Memochild onClick="{handleClick}"> {/* 现在 memo 生效了！ */}
+      <button onClick={() => setCount(count + 1)}>计数：{count}</button>
+    </div>
+  );
+}
+```
+
+
+
+**useCallback 的本质：**
+
+useCallback(fn, deps)   
+// 等价于  
+`useMemo(() => fn, deps)`
+
+它返回一个记忆化的函数，只有当依赖数组中的值变化时，才会返回新的函数。
+
+**重要误区：useCallback 没有 memo 基本没用！**
+
+如果子组件没用 `React.memo`，那父组件用不用 `useCallback` 都一样，子组件还是会 render。
+
+```javascript
+// 错误示例：没用 memo，useCallback 白写了
+function Child({ onClick }) { // 没有 memo 包裹
+  console.log('Child render'); // 每次父组件 render，这里都会执行
+  return <button onclick="{onClick}">点我</button>;
+}
+
+function Parent() {
+  const handleClick = useCallback(() => { // 这个 useCallback 没意义
+    console.log('clicked');
+  }, []);
+  
+  return <Child onClick="{handleClick}" />;
+}
+```
+
+
+
+## useMemo 的作用
+
+`useMemo` 有**两个主要用途**：
+
+### 用途 1：稳定对象/数组的引用（配合 memo 使用）
+
+和 `useCallback` 类似，但用于对象、数组等复杂值。
+
+```typescript
+const MemoChild = React.memo(function Child({ user }) {
+  console.log('Child render');
+  return <div>{user.name}</div>;
+});
+
+function Parent() {
+  const [count, setCount] = useState(0);
+  
+  // ❌ 错误：每次都创建新对象，memo 失效
+  const user = { name: '小明', age: 18 };
+  
+  // ✅ 正确：用 useMemo 缓存对象引用
+  const user = useMemo(() => {
+    return { name: '小明', age: 18 };
+  }, []); // 依赖为空，对象引用永远不变
+  
+  return (
+    <div>
+      <Memochild user={user}/> {/* 现在 memo 生效了 */}
+      <button onClick={() => setCount(count + 1)}>计数：{count}</button>
+    </div>
+  );
+}
+```
+
+
+
+### 用途 2：缓存昂贵的计算（可以单独使用）
+
+**这是 useMemo 和 useCallback 的重要区别：useMemo 即使没有 memo，也能独立发挥作用！**
+
+```javascript
+function ExpensiveComponent({ items }) {
+  // ❌ 没有缓存：每次 render 都要重新计算
+  const total = items.reduce((sum, item) => sum + item.price, 0);
+  
+  // ✅ 有缓存：只有 items 变化时才重新计算
+  const total = useMemo(() => {
+    console.log('计算 total...');
+    return items.reduce((sum, item) => sum + item.price, 0);
+  }, [items]);
+  
+  return <div>总价：{total}</div>;
+}
+```
+
+
+
+这个优化**不需要配合 memo**，因为：
+
+- 即使组件每次都 render
+- 但 `items` 没变，`useMemo` 就会返回缓存的 `total`
+- 避免了重复的昂贵计算
+
+## 常见误解和要避开的坑
+
+### 误解 1：所有组件都应该用 memo
+
+**错！** memo 本身也有成本：
+
+- 需要对比 props（浅比较）
+- 需要额外的内存存储上一次的 props
+- 如果 props 经常变化，memo 反而会降低性能
+
+**什么时候用 memo？**
+
+- 组件渲染成本高（复杂计算、大量 DOM）
+- props 相对稳定（不是每次都变）
+- 父组件频繁 render，但这个子组件的 props 经常不变
+
+**什么时候不用 memo？**
+
+- 组件很简单（几个 DOM 节点）
+- props 经常变化
+- 没有明显的性能问题
+
+### 误解 2：useCallback/useMemo 能优化任何性能问题
+
+**错！** 它们主要是为了配合 memo 使用。
+
+```typescript
+// ❌ 过度优化的反例
+function Parent() {
+  const [count, setCount] = useState(0);
+  
+  // 没有传给子组件，这个 useCallback 完全没必要
+  const handleClick = useCallback(() => {
+    setCount(count + 1);
+  }, [count]);
+  
+  // 没有传给子组件，这个 useMemo 也没必要
+  const doubled = useMemo(() => count * 2, [count]);
+  
+  return (
+    <div>
+      <div>{doubled}</div>
+      <button onClick={handleClick}>增加</button>
+    </div>
+  );
+}
+```
+
+
+
+
+
+

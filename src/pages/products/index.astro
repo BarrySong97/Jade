@@ -1,0 +1,63 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const allProducts = (await getCollection("products")).sort(
+  (a, b) => (a.data.order ?? 99) - (b.data.order ?? 99)
+);
+---
+
+<BaseLayout title="我的作品" description="我做的一些项目">
+  <div
+    class="mx-auto max-w-5xl min-h-[calc(100vh-128px)] border border-border border-t-0 border-b-0"
+  >
+    <section class="space-y-6 px-10 py-16">
+      <div class="space-y-2">
+        <h1 class="text-2xl font-bold">我的作品</h1>
+        <p class="text-muted-foreground">我做的一些项目</p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {
+          allProducts.map((product) => (
+            <a
+              href={product.data.link || `/products/${product.id.replace(/\.mdx?$/, "")}`}
+              target={product.data.link ? "_blank" : undefined}
+              rel={product.data.link ? "noopener noreferrer" : undefined}
+              class="group block overflow-hidden rounded-lg border border-border"
+            >
+              <div class="relative aspect-video w-full overflow-hidden bg-muted">
+                {product.data.coverImage ? (
+                  <img
+                    src={product.data.coverImage.src}
+                    alt={product.data.title}
+                    class="h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="flex h-full w-full items-center justify-center text-muted-foreground">
+                    <span class="text-sm">暂无封面</span>
+                  </div>
+                )}
+                {product.data.githubUrl && (
+                  <span class="absolute right-2 bottom-2 rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground">
+                    开源
+                  </span>
+                )}
+              </div>
+
+              <div class="space-y-2 p-4">
+                <h3 class="font-medium text-foreground transition-colors group-hover:text-primary">
+                  {product.data.title}
+                </h3>
+                <p class="line-clamp-2 text-sm text-muted-foreground">
+                  {product.data.description}
+                </p>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </div>
+</BaseLayout>
