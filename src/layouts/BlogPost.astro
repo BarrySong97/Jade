@@ -46,10 +46,10 @@ const socialQRCodes = [
 
 <BaseLayout title={title} description={description}>
   <div
-    class="mx-auto max-w-5xl min-h-[calc(100vh-128px)] border border-border border-t-0 border-b-0 px-4 py-12 sm:px-6 lg:px-8"
+    class="mx-auto 2xl:max-w-5xl max-w-3xl min-h-[calc(100vh-128px)] border border-border border-t-0 border-b-0 px-4 py-12 sm:px-6 lg:px-8"
   >
     {/* Article Content - 完全居中显示 */}
-    <article class="mx-auto max-w-4xl">
+    <article class="mx-auto">
       <!-- Hero Image -->
       {
         heroImage && (
@@ -103,9 +103,9 @@ const socialQRCodes = [
   {/* Table of Contents - Fixed 在右侧，独立于页面布局 */}
   {
     headings && headings.length > 0 && (
-      <aside class="hidden xl:block fixed top-24 right-[max(0px,calc(50%-49rem))] w-64">
+      <aside class="hidden xl:block fixed top-24 2xl:right-[max(0px,calc(50%-49rem))] right-[max(0px,calc(50%-42rem))] w-64">
         <AuthorCard client:load author={author} />
-        <div class="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
+        <div class="sticky top-24 min-h-[calc(100vh-8rem)] overflow-y-auto">
           <Toc client:load headings={headings} />
         </div>
       </aside>
