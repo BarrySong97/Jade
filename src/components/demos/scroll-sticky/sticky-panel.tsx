@@ -1,7 +1,6 @@
 "use client";
 
 import { motion, useTransform, MotionValue } from "motion/react";
-import React from "react"; // Import React
 
 interface PanelData {
   bgColor: string;

@@ -5,16 +5,10 @@ import {
   Github,
   Mail,
   MonitorPlay,
-  QrCode,
   Tv,
   Twitter,
 } from "lucide-react";
 import { buttonVariants } from "../ui/button";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "../ui/hover-card";
 import { cn } from "../../lib/utils";
 
 // EDIT HERE: Your social media links
