@@ -30,7 +30,7 @@ export function BlogListItem({ post }: BlogListItemProps) {
   return (
     <a
       ref={containerRef}
-      href={`/blog/${post.id}`}
+      href={`/blogs/${post.id}`}
       className="group block py-4 pb-2 transition-colors hover:text-foreground "
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

@@ -37,7 +37,7 @@ export default function LatestArticlesSection({
         {posts.map((post, index) => (
           <a
             key={index}
-            href={`/blog/${post.id}`}
+            href={`/blogs/${post.id}`}
             className="group block overflow-hidden rounded-lg border border-border"
           >
             {/* 封面图片 */}
@@ -71,7 +71,7 @@ export default function LatestArticlesSection({
 
       <div className="pt-2 text-center">
         <a
-          href="/blog"
+          href="/blogs"
           className="text-sm text-muted-foreground transition-colors hover:text-primary"
         >
           查看更多 →
