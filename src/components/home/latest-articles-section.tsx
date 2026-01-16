@@ -41,7 +41,7 @@ export default function LatestArticlesSection({
             className="group block overflow-hidden rounded-lg border border-border"
           >
             {/* 封面图片 */}
-            <div className="aspect-video w-full overflow-hidden bg-muted">
+            <div className="aspect-4/3  w-full overflow-hidden bg-muted">
               {post.coverImage ? (
                 <img
                   src={post.coverImage}

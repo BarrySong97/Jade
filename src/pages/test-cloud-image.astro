@@ -1,0 +1,45 @@
+---
+import BlankLayout from "@/layouts/BlankLayout.astro";
+import { CloudImage } from "@/components/common/cloud-image";
+---
+
+<BlankLayout title="CloudImage 测试">
+  <div class="container mx-auto max-w-4xl p-8">
+    <h1 class="mb-8 text-2xl font-bold">CloudImage 组件测试</h1>
+
+    <div class="space-y-8">
+      <section>
+        <h2 class="mb-4 text-lg font-semibold">基础用法</h2>
+        <CloudImage
+          disableBlurHash
+          client:load
+          src="https://assets.4real.ink/676shots_so_content_1200x900.webp"
+          alt="示例图片"
+          className="w-full rounded-lg"
+        />
+      </section>
+
+      <!-- <section>
+        <h2 class="mb-4 text-lg font-semibold">启用 Lightbox</h2>
+        <CloudImage
+          client:load
+          src="https://cdn.example.com/photo_card_800x600.webp"
+          alt="点击查看原图"
+          originalSrc="https://cdn.example.com/photo_original_2400x1600.webp"
+          className="w-full max-w-md rounded-lg"
+        />
+      </section>
+
+      <section>
+        <h2 class="mb-4 text-lg font-semibold">禁用 BlurHash</h2>
+        <CloudImage
+          client:load
+          src="https://cdn.example.com/photo_thumbnail_400x300.webp"
+          alt="缩略图"
+          disableBlurHash
+          className="w-64 rounded-lg"
+        />
+      </section> -->
+    </div>
+  </div>
+</BlankLayout>

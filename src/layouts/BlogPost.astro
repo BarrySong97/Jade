@@ -3,6 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import type { MarkdownHeading } from "astro";
 import BaseLayout from "./BaseLayout.astro";
 import { Toc } from "@/components/blogs/Toc";
+import MobileToc from "@/components/blogs/MobileToc";
 import { AuthorCard } from "@/components/blogs/author-card";
 import { SocialQRCodes } from "@/components/blogs/social-qrcodes";
 
@@ -78,7 +79,7 @@ const socialQRCodes = [
 
       <!-- Article Content -->
       <div
-        class="prose max-w-none prose-headings:font-bold prose-headings:scroll-mt-20 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-primary prose-blockquote:italic prose-code:text-primary prose-code:bg-muted prose-code:rounded prose-code:px-1 prose-code:py-0.5 prose-strong:font-medium"
+        class="prose wrap-break-word max-w-none prose-headings:font-bold prose-headings:scroll-mt-20 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-primary prose-blockquote:italic prose-code:text-primary prose-code:bg-muted prose-code:rounded prose-code:px-1 prose-code:py-0.5 prose-strong:font-medium"
       >
         <slot />
       </div>
@@ -109,6 +110,15 @@ const socialQRCodes = [
           <Toc client:load headings={headings} />
         </div>
       </aside>
+    )
+  }
+
+  {/* Mobile Table of Contents - 仅在移动端显示 */}
+  {
+    headings && headings.length > 0 && (
+      <div class="xl:hidden">
+        <MobileToc client:load headings={headings} author={author} />
+      </div>
     )
   }
 </BaseLayout>

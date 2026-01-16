@@ -60,7 +60,10 @@ const productsData = allProducts.slice(0, 3).map((product) => ({
       <ImageGallerySection client:only="react" />
     </div>
     <div class="border-b border-b-border">
-      <LatestArticlesSection posts={latestArticles} postCountByYear={postCountByYear} />
+      <LatestArticlesSection
+        posts={latestArticles}
+        postCountByYear={postCountByYear}
+      />
     </div>
     <div class="border-b border-b-border">
       <ExperienceSection />
@@ -68,7 +71,7 @@ const productsData = allProducts.slice(0, 3).map((product) => ({
     <div class="border-b border-b-border">
       <ProductsSection products={productsData} />
     </div>
-    <div class="border-b border-b-border">
+    <div>
       <TechStackSection client:load />
     </div>
   </div>
