@@ -8,12 +8,16 @@ interface Props {
   type?: "website" | "article";
 }
 
+const SITE_NAME = "Barry song's Blog";
+
 const {
-  title = "Default Site Title",
+  title,
   description = "Default description for your website.",
   ogImage,
   type = "website",
 } = Astro.props as Props;
+
+const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
 const ogImageURL = ogImage
@@ -33,18 +37,18 @@ const faviconURL = new URL("favicon.ico", canonicalURL).toString();
 <link rel="icon" href={faviconURL} type="image/svg+xml" />
 
 <!-- Title -->
-<title>{title}</title>
+<title>{fullTitle}</title>
 <meta name="description" content={description} />
 
 <!-- Open Graph -->
 <meta property="og:type" content={type} />
 <meta property="og:url" content={canonicalURL} />
-<meta property="og:title" content={title} />
+<meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={ogImageURL} />
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content={title} />
+<meta name="twitter:title" content={fullTitle} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImageURL} />

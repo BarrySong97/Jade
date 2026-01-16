@@ -21,10 +21,10 @@ import { cn } from "../../lib/utils";
 const SOCIAL_LINKS = {
   github: "https://github.com/BarrySong97",
   twitter: "https://x.com/BarrySong97",
-  bilibili: "https://space.bilibili.com/123456",
-  douyin: "https://www.douyin.com/user/123456",
-  rednote: "https://xiaohongshu.com/user/profile/123456",
-  email: "example@email.com",
+  bilibili: "https://space.bilibili.com/868586",
+  douyin: "https://www.douyin.com/user/self?from_tab_name=main",
+  rednote: "https://www.xiaohongshu.com/user/profile/648339340000000012036a56",
+  email: "524000659@qq.com",
 } as const;
 
 export function SocialLinksTabs() {
@@ -101,7 +101,18 @@ export function SocialLinksTabs() {
               <code className="truncate text-sm text-muted-foreground">
                 {SOCIAL_LINKS.bilibili}
               </code>
-              <HoverCard>
+              <a
+                href={SOCIAL_LINKS.bilibili}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "icon" }),
+                  "size-8"
+                )}
+              >
+                <ExternalLink className="size-4" />
+              </a>
+              {/* <HoverCard>
                 <HoverCardTrigger
                   delay={0}
                   onClick={() => window.open(SOCIAL_LINKS.bilibili, "_blank")}
@@ -121,7 +132,7 @@ export function SocialLinksTabs() {
                     className="size-24"
                   />
                 </HoverCardContent>
-              </HoverCard>
+              </HoverCard> */}
             </div>
           </TabsContent>
           <TabsContent value="douyin">
@@ -129,7 +140,18 @@ export function SocialLinksTabs() {
               <code className="truncate text-sm text-muted-foreground">
                 {SOCIAL_LINKS.douyin}
               </code>
-              <HoverCard>
+              <a
+                href={SOCIAL_LINKS.douyin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "icon" }),
+                  "size-8"
+                )}
+              >
+                <ExternalLink className="size-4" />
+              </a>
+              {/* <HoverCard>
                 <HoverCardTrigger
                   onClick={() => window.open(SOCIAL_LINKS.douyin, "_blank")}
                   className={cn(
@@ -148,7 +170,7 @@ export function SocialLinksTabs() {
                     className="size-24"
                   />
                 </HoverCardContent>
-              </HoverCard>
+              </HoverCard> */}
             </div>
           </TabsContent>
           <TabsContent value="rednote">
@@ -156,7 +178,18 @@ export function SocialLinksTabs() {
               <code className="truncate text-sm text-muted-foreground">
                 {SOCIAL_LINKS.rednote}
               </code>
-              <HoverCard>
+              <a
+                href={SOCIAL_LINKS.rednote}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "icon" }),
+                  "size-8"
+                )}
+              >
+                <ExternalLink className="size-4" />
+              </a>
+              {/* <HoverCard>
                 <HoverCardTrigger
                   onClick={() => window.open(SOCIAL_LINKS.rednote, "_blank")}
                   className={cn(
@@ -175,7 +208,7 @@ export function SocialLinksTabs() {
                     className="size-24"
                   />
                 </HoverCardContent>
-              </HoverCard>
+              </HoverCard> */}
             </div>
           </TabsContent>
           <TabsContent value="email">
