@@ -22,8 +22,7 @@ const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
 const ogImageURL = ogImage
   ? new URL(ogImage, Astro.site).toString()
-  : new URL("og-image.png", canonicalURL).toString();
-const faviconURL = new URL("favicon.ico", canonicalURL).toString();
+  : new URL("og.webp", Astro.site).toString();
 ---
 
 <!-- Basic -->
@@ -32,9 +31,12 @@ const faviconURL = new URL("favicon.ico", canonicalURL).toString();
 <meta name="generator" content={Astro.generator} />
 <meta name="robots" content="index, follow" />
 
+<!-- Favicon -->
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="icon" href="/favicon.ico" type="image/x-icon" />
+
 <!-- Canonical -->
 <link rel="canonical" href={canonicalURL} />
-<link rel="icon" href={faviconURL} type="image/svg+xml" />
 
 <!-- Title -->
 <title>{fullTitle}</title>
