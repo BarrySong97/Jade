@@ -11,7 +11,7 @@ import robotsTxt from "astro-robots-txt";
 
 const site = process.env.VERCEL
   ? process.env.VERCEL_ENV === "production"
-    ? "https://astro-shadcn-ui-template.vercel.app"
+    ? "https://4real.ltd"
     : `https://${process.env.VERCEL_URL}`
   : process.env.SITE ?? "http://localhost:4321";
 const base = process.env.BASE || "/";
