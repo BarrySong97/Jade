@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { parseCloudImageUrl, getBlurHashUrl } from "@/lib/cloud-image-utils";
+import { parseCloudImageKey, getBlurHashKey } from "@/lib/cloud-image-utils";
+import { CLOUD_IMAGE_DOMAIN } from "@/lib/cloud-image-config";
 import { WebGLImageViewer } from "@/components/webgl-viewer";
 
 interface CloudImageProps {
-  /** 图片 URL，需符合命名规则以解析尺寸 */
+  /** 图片 Key，需符合命名规则以解析尺寸（如：photo_cover_1920x1080.webp） */
   src: string;
   /** 图片描述 */
   alt: string;
   /** 自定义样式类 */
   className?: string;
-  /** 原图 URL，传入则启用 Lightbox 点击查看原图 */
+  /** 原图 Key，传入则启用 Lightbox 点击查看原图 */
   originalSrc?: string;
   /** 图片加载策略，默认 lazy */
   loading?: "lazy" | "eager";
@@ -31,8 +32,13 @@ export function CloudImage({
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  const parsed = parseCloudImageUrl(src);
-  const blurHashUrl = disableBlurHash ? null : getBlurHashUrl(src);
+  const parsed = parseCloudImageKey(src);
+  const blurHashKey = disableBlurHash ? null : getBlurHashKey(src);
+
+  // 拼接完整 URL
+  const imageUrl = `${CLOUD_IMAGE_DOMAIN}${src}`;
+  const blurHashUrl = blurHashKey ? `${CLOUD_IMAGE_DOMAIN}${blurHashKey}` : null;
+  const originalUrl = originalSrc ? `${CLOUD_IMAGE_DOMAIN}${originalSrc}` : undefined;
 
   const aspectRatio = parsed ? `${parsed.width}/${parsed.height}` : undefined;
   const enableLightbox = !!originalSrc;
@@ -66,9 +72,6 @@ export function CloudImage({
     const img = imgRef.current;
     if (!img) return;
 
-    setIsLoaded(false);
-    setHasError(false);
-
     const handleLoad = () => {
       setHasError(false);
       setIsLoaded(true);
@@ -78,21 +81,24 @@ export function CloudImage({
       setHasError(true);
     };
 
-    if (img.complete) {
-      if (img.naturalWidth > 0) {
-        handleLoad();
-      } else {
-        handleError();
-      }
+    // 如果图片已经加载完成（在水合之前）
+    if (img.complete && img.naturalWidth > 0) {
+      handleLoad();
+      return;
     }
+
+    // 图片尚未加载完成，重置状态并监听事件
+    setIsLoaded(false);
+    setHasError(false);
 
     img.addEventListener("load", handleLoad);
     img.addEventListener("error", handleError);
+
     return () => {
       img.removeEventListener("load", handleLoad);
       img.removeEventListener("error", handleError);
     };
-  }, [src]);
+  }, [imageUrl]);
 
   return (
     <>
@@ -105,11 +111,11 @@ export function CloudImage({
         onKeyDown={
           enableLightbox
             ? (e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  handleClick();
-                }
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleClick();
               }
+            }
             : undefined
         }
       >
@@ -143,7 +149,7 @@ export function CloudImage({
 
         {/* 主图 */}
         <img
-          src={src}
+          src={imageUrl}
           alt={alt}
           loading={loading}
           ref={imgRef}
@@ -192,7 +198,7 @@ export function CloudImage({
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
-          <WebGLImageViewer src={originalSrc} className="h-full w-full" />
+          <WebGLImageViewer src={originalUrl!} className="h-full w-full" />
         </div>
       )}
     </>

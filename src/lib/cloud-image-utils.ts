@@ -1,7 +1,7 @@
-/** 解析后的图片 URL 信息 */
-export interface ParsedCloudImageUrl {
-  /** 完整的基础路径（不含文件名） */
-  basePath: string;
+/** 解析后的图片 Key 信息 */
+export interface ParsedCloudImageKey {
+  /** 路径前缀（不含文件名） */
+  pathPrefix: string;
   /** 图片基础名称 */
   basename: string;
   /** 图片类型：cover, card, thumbnail, content, original, blurhash */
@@ -14,25 +14,25 @@ export interface ParsedCloudImageUrl {
   ext: string;
 }
 
-// 匹配: {basename}_{type}_{width}x{height}.{ext}
-const URL_PATTERN = /^(.+)_([a-z]+)_(\d+)x(\d+)\.(\w+)$/i;
+// 匹配文件名: {basename}_{type}_{width}x{height}.{ext}
+const FILENAME_PATTERN = /^(.+)_([a-z]+)_(\d+)x(\d+)\.(\w+)$/i;
 
 /**
- * 解析云图片 URL
- * @param url 图片 URL
+ * 解析云图片 Key
+ * @param key 图片 Key（可包含路径）
  * @returns 解析结果，无法解析时返回 null
  *
  * @example
- * parseCloudImageUrl('https://cdn.example.com/photos/photo_cover_1920x1080.webp')
- * // => { basePath: 'https://cdn.example.com/photos', basename: 'photo', type: 'cover', width: 1920, height: 1080, ext: 'webp' }
+ * parseCloudImageKey('/blogs/2025/photo_cover_1920x1080.webp')
+ * // => { pathPrefix: '/blogs/2025', basename: 'photo', type: 'cover', width: 1920, height: 1080, ext: 'webp' }
  */
-export function parseCloudImageUrl(url: string): ParsedCloudImageUrl | null {
+export function parseCloudImageKey(key: string): ParsedCloudImageKey | null {
   // 分离路径和文件名
-  const lastSlashIndex = url.lastIndexOf('/');
-  const basePath = lastSlashIndex >= 0 ? url.substring(0, lastSlashIndex) : '';
-  const filename = lastSlashIndex >= 0 ? url.substring(lastSlashIndex + 1) : url;
+  const lastSlashIndex = key.lastIndexOf('/');
+  const pathPrefix = lastSlashIndex >= 0 ? key.substring(0, lastSlashIndex) : '';
+  const filename = lastSlashIndex >= 0 ? key.substring(lastSlashIndex + 1) : key;
 
-  const match = filename.match(URL_PATTERN);
+  const match = filename.match(FILENAME_PATTERN);
   if (!match) {
     return null;
   }
@@ -40,7 +40,7 @@ export function parseCloudImageUrl(url: string): ParsedCloudImageUrl | null {
   const [, basename, type, widthStr, heightStr, ext] = match;
 
   return {
-    basePath,
+    pathPrefix,
     basename,
     type,
     width: parseInt(widthStr, 10),
@@ -50,21 +50,22 @@ export function parseCloudImageUrl(url: string): ParsedCloudImageUrl | null {
 }
 
 /**
- * 获取 BlurHash 占位图 URL
- * @param url 任意变体的图片 URL
- * @returns BlurHash 图片 URL
+ * 根据图片 Key 生成 BlurHash Key
+ * 格式：{pathPrefix}/{basename}_blurhash.{ext}
+ * @param key 图片 Key
+ * @returns BlurHash 图片 Key
  *
  * @example
- * getBlurHashUrl('https://cdn.example.com/photos/photo_cover_1920x1080.webp')
- * // => 'https://cdn.example.com/photos/photo_blurhash.webp'
+ * getBlurHashKey('/blogs/2025/photo_cover_1920x1080.webp')
+ * // => '/blogs/2025/photo_blurhash.webp'
  */
-export function getBlurHashUrl(url: string): string {
-  const parsed = parseCloudImageUrl(url);
+export function getBlurHashKey(key: string): string | null {
+  const parsed = parseCloudImageKey(key);
   if (!parsed) {
-    // 无法解析时，尝试简单替换
-    return url.replace(/_[a-z]+_\d+x\d+\./i, '_blurhash.');
+    return null;
   }
 
-  const { basePath, basename, ext } = parsed;
-  return basePath ? `${basePath}/${basename}_blurhash.${ext}` : `${basename}_blurhash.${ext}`;
+  const { pathPrefix, basename, ext } = parsed;
+  const blurHashFilename = `${basename}_blurhash.${ext}`;
+  return pathPrefix ? `${pathPrefix}/${blurHashFilename}` : blurHashFilename;
 }

@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { CloudImage } from "@/components/common/cloud-image";
 
 export interface BlogPost {
   id: string;
@@ -50,10 +51,10 @@ export function BlogListItem({ post }: BlogListItemProps) {
           className="pointer-events-none fixed left-0 z-50"
           style={getImagePosition()}
         >
-          <img
+          <CloudImage
             src={post.coverImage}
             alt={post.title}
-            className="h-48 w-64 rounded-lg object-cover shadow-xl"
+            className="h-48 w-64 rounded-lg shadow-xl"
           />
         </div>
       )}

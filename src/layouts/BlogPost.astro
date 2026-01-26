@@ -6,6 +6,7 @@ import { Toc } from "@/components/blogs/Toc";
 import MobileToc from "@/components/blogs/MobileToc";
 import { AuthorCard } from "@/components/blogs/author-card";
 import { SocialQRCodes } from "@/components/blogs/social-qrcodes";
+import { CloudImage } from "@/components/common/cloud-image";
 
 type Props = CollectionEntry<"blog">["data"] & {
   headings?: MarkdownHeading[];
@@ -47,15 +48,20 @@ const author = {
 
 <BaseLayout title={title} description={description} ogImage={heroImage}>
   <div
-    class="mx-auto 2xl:max-w-5xl max-w-3xl min-h-[calc(100vh-128px)] border border-border border-t-0 border-b-0 px-4 py-12 sm:px-6 lg:px-8"
+    class="mx-auto max-w-5xl min-h-[calc(100vh-128px)] border border-border border-t-0 border-b-0 px-4 py-12 sm:px-6 lg:px-8"
   >
     {/* Article Content - 完全居中显示 */}
     <article class="mx-auto">
       <!-- Hero Image -->
       {
         heroImage && (
-          <div class="mb-8 aspect-video overflow-hidden rounded-lg">
-            <img src={heroImage} alt="" class="w-full h-full object-cover" />
+          <div class="mb-8 overflow-hidden rounded-lg">
+            <CloudImage
+              client:load
+              src={heroImage}
+              alt={title}
+              className="w-full"
+            />
           </div>
         )
       }

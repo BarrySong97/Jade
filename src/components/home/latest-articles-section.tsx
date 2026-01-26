@@ -1,3 +1,5 @@
+import { CloudImage } from "@/components/common/cloud-image";
+
 export interface LatestArticlesSectionProps {
   posts: Array<{
     id: string;
@@ -41,12 +43,12 @@ export default function LatestArticlesSection({
             className="group block overflow-hidden rounded-lg border border-border"
           >
             {/* 封面图片 */}
-            <div className="aspect-4/3  w-full overflow-hidden bg-muted">
+            <div className="aspect-4/3 w-full overflow-hidden bg-muted">
               {post.coverImage ? (
-                <img
+                <CloudImage
                   src={post.coverImage}
                   alt={post.title}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full"
                   loading="lazy"
                 />
               ) : (

@@ -4,9 +4,10 @@ import { BlogListItem } from "@/components/blogs/blog-list-item";
 import { YearFilter } from "@/components/blogs/year-filter";
 import { LoadMoreButton } from "@/components/blogs/load-more-button";
 import { getCollection } from "astro:content";
+import { CLOUD_IMAGE_DOMAIN } from "@/lib/cloud-image-config";
 
 const posts = (await getCollection("blog")).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 
 const BLOG_POSTS = posts.map((post) => ({
@@ -19,7 +20,7 @@ const BLOG_POSTS = posts.map((post) => ({
 
 // 提取所有年份，从大到小排序
 const years = Array.from(new Set(BLOG_POSTS.map((post) => post.year))).sort(
-  (a, b) => b - a
+  (a, b) => b - a,
 );
 ---
 
@@ -61,11 +62,21 @@ const years = Array.from(new Set(BLOG_POSTS.map((post) => post.year))).sort(
     </div>
   </aside>
 
-  <script define:vars={{ BLOG_POSTS }}>
+  <script define:vars={{ BLOG_POSTS, CLOUD_IMAGE_DOMAIN }}>
     // 根据屏幕大小设置每页显示数量
     function getPageSize() {
       // 768px 是常见的移动端断点
       return window.innerWidth < 768 ? 10 : 20;
+    }
+
+    // 预加载图片
+    function preloadImages(posts) {
+      posts.forEach((post) => {
+        if (post.coverImage) {
+          const img = new Image();
+          img.src = `${CLOUD_IMAGE_DOMAIN}${post.coverImage}`;
+        }
+      });
     }
 
     // 全局状态
@@ -134,6 +145,13 @@ const years = Array.from(new Set(BLOG_POSTS.map((post) => post.year))).sort(
       } else {
         showingInfo.textContent = "";
       }
+
+      // 预加载当前显示文章的封面图片
+      const currentYearPosts = BLOG_POSTS.filter(
+        (post) => post.year === parseInt(yearParam),
+      );
+      const postsToPreload = currentYearPosts.slice(0, showingCount);
+      preloadImages(postsToPreload);
 
       // 更新 Load More 按钮
       updateLoadMoreButton();
@@ -237,7 +255,7 @@ const years = Array.from(new Set(BLOG_POSTS.map((post) => post.year))).sort(
 
     // 监听年份筛选变化
     window.addEventListener("yearfilterchange", () =>
-      filterAndPaginatePosts(true)
+      filterAndPaginatePosts(true),
     );
 
     // 监听浏览器前进后退

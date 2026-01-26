@@ -50,7 +50,7 @@ export default function TechStackSection() {
         <p className="text-muted-foreground">{SECTION_DATA.description}</p>
       </div>
 
-      <Accordion className="w-full border-none">
+      <Accordion className="w-full border-none" defaultValue={["item-0"]}>
         {TECH_STACK.map((stack, index) => (
           <AccordionItem key={index} value={`item-${index}`}>
             <AccordionTrigger className="text-base ">
