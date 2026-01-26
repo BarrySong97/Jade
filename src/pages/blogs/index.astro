@@ -14,7 +14,7 @@ const BLOG_POSTS = posts.map((post) => ({
   id: post.id.replace(/\.mdx?$/, ""),
   title: post.data.title,
   date: post.data.pubDate.toISOString().split("T")[0],
-  coverImage: post.data.heroImage,
+  coverImage: post.data.coverImage,
   year: post.data.pubDate.getFullYear(),
 }));
 
