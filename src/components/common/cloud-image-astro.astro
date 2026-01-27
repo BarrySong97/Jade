@@ -1,0 +1,97 @@
+---
+import { CLOUD_IMAGE_DOMAIN } from "@/lib/cloud-image-config";
+import { parseCloudImageKey, getBlurHashKey } from "@/lib/cloud-image-utils";
+
+interface Props {
+  /** 图片 Key，需符合命名规则以解析尺寸（如：photo_cover_1920x1080.webp） */
+  src: string;
+  /** 图片描述 */
+  alt: string;
+  /** 自定义样式类 */
+  class?: string;
+  /** 原图 Key，传入则启用 Lightbox 点击查看原图 */
+  originalSrc?: string;
+  /** 图片加载策略，默认 lazy */
+  loading?: "lazy" | "eager";
+  /** 是否禁用 BlurHash 占位 */
+  disableBlurHash?: boolean;
+}
+
+const {
+  src,
+  alt,
+  class: className,
+  originalSrc,
+  loading = "lazy",
+  disableBlurHash = false,
+} = Astro.props as Props;
+
+const parsed = parseCloudImageKey(src);
+const blurHashKey = disableBlurHash ? null : getBlurHashKey(src);
+const aspectRatio = parsed ? `${parsed.width}/${parsed.height}` : undefined;
+
+const imageUrl = `${CLOUD_IMAGE_DOMAIN}${src}`;
+const blurHashUrl = blurHashKey ? `${CLOUD_IMAGE_DOMAIN}${blurHashKey}` : null;
+const originalUrl = originalSrc ? `${CLOUD_IMAGE_DOMAIN}${originalSrc}` : null;
+
+const enableLightbox = !!originalSrc;
+const dialogId = enableLightbox
+  ? `lightbox-${src.replace(/[^a-z0-9]/gi, "")}`
+  : null;
+---
+
+<div
+  class={`relative  ${className || ""} ${
+    enableLightbox ? "cursor-zoom-in" : ""
+  }`}
+  style={aspectRatio ? { aspectRatio } : undefined}
+  role={enableLightbox ? "button" : undefined}
+  tabindex={enableLightbox ? 0 : undefined}
+  onclick={enableLightbox && dialogId
+    ? `document.getElementById('${dialogId}')?.showModal()`
+    : undefined}
+  onkeydown={enableLightbox && dialogId
+    ? `if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('${dialogId}')?.showModal();}`
+    : undefined}
+>
+  {/* BlurHash 占位（使用背景图，避免额外 img 标签） */}
+  {
+    blurHashUrl && (
+      <div
+        data-blur
+        aria-hidden="true"
+        class="absolute inset-0 h-full w-full bg-cover bg-center  blur-[20px] transition-opacity duration-300"
+        style={{ backgroundImage: `url(${blurHashUrl})` }}
+      />
+    )
+  }
+  {/* 无 BlurHash 时的灰色模糊占位 */}
+  {
+    !blurHashUrl && (
+      <div
+        data-blur
+        aria-hidden="true"
+        class="absolute inset-0 h-full w-full bg-muted blur-md transition-opacity duration-300"
+      />
+    )
+  }
+
+  {/* 主图 */}
+  <img
+    src={imageUrl}
+    alt={alt}
+    loading={loading}
+    class="h-full w-full !my-0 object-contain transition-opacity duration-300 ease-in-out opacity-0 rounded-lg"
+    onload="this.classList.remove('opacity-0'); const blurEl=this.parentElement?.querySelector('[data-blur]'); if(blurEl){ blurEl.classList.add('opacity-0'); blurEl.style.display='none'; }"
+    onerror="const blurEl2=this.parentElement?.querySelector('[data-blur]'); if(blurEl2){ blurEl2.classList.add('opacity-0'); blurEl2.style.display='none'; } const error=this.parentElement?.querySelector('[data-error]'); if(error){ error.style.display='flex'; }"
+  />
+
+  {/* 错误状态 */}
+  <div
+    data-error
+    class="absolute inset-0 bg-muted text-muted-foreground items-center justify-center"
+    style="display: none;"
+  >
+    <span class="text-sm">图片加载失败</span>
+  </div>
+</div>

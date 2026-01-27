@@ -119,20 +119,22 @@ export function CloudImage({
             : undefined
         }
       >
-        {/* BlurHash 占位图 */}
+        {/* BlurHash 占位（使用背景图，避免额外 img 标签） */}
+
         {blurHashUrl && !hasError && (
-          <img
-            src={blurHashUrl}
-            alt=""
+          <div
             aria-hidden="true"
             className={cn(
-              "absolute inset-0 h-full w-full object-cover",
+              "absolute h-full w-full  ",
+              "bg-cover bg-center",
               "scale-110 blur-[20px]",
               "transition-opacity duration-300",
               isLoaded && "opacity-0"
             )}
+            style={{ backgroundImage: `url(${blurHashUrl})` }}
           />
         )}
+
         {/* 无 BlurHash 时的灰色模糊占位 */}
         {!blurHashUrl && !hasError && (
           <div

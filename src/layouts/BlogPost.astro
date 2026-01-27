@@ -6,7 +6,7 @@ import { Toc } from "@/components/blogs/Toc";
 import MobileToc from "@/components/blogs/MobileToc";
 import { AuthorCard } from "@/components/blogs/author-card";
 import { SocialQRCodes } from "@/components/blogs/social-qrcodes";
-import { CloudImage } from "@/components/common/cloud-image";
+import CloudImage from "@/components/common/cloud-image-astro.astro";
 
 type Props = CollectionEntry<"blog">["data"] & {
   headings?: MarkdownHeading[];
@@ -56,12 +56,7 @@ const author = {
       {
         heroImage && (
           <div class="mb-8 overflow-hidden rounded-lg">
-            <CloudImage
-              client:load
-              src={heroImage}
-              alt={title}
-              className="w-full"
-            />
+            <CloudImage src={heroImage} alt={title} class="w-full" />
           </div>
         )
       }

@@ -1,6 +1,5 @@
 ---
-import { CloudImage } from "@/components/common/cloud-image";
-import { CLOUD_IMAGE_DOMAIN } from "@/lib/cloud-image-config";
+import CloudImage from "@/components/common/cloud-image-astro.astro";
 
 interface Props {
   src?: string;
@@ -13,20 +12,11 @@ const { src, alt = "", title, class: className } = Astro.props;
 
 // 判断是否为云图片（以 / 开头且不是完整 URL）
 const isCloudImage = src && src.startsWith("/") && !src.startsWith("//");
-
-// 判断是否为外部图片（完整 URL）
-const isExternalImage =
-  src && (src.startsWith("http://") || src.startsWith("https://"));
 ---
 
 {
   isCloudImage ? (
-    <CloudImage
-      client:load
-      src={src}
-      alt={alt}
-      className={`rounded-lg ${className || ""}`}
-    />
+    <CloudImage src={src} alt={alt} class={`${className || ""}`} />
   ) : (
     <img
       src={src}
