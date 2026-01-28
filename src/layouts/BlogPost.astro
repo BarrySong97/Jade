@@ -105,7 +105,7 @@ const author = {
   {/* Table of Contents - Fixed 在右侧，独立于页面布局 */}
   {
     headings && headings.length > 0 && (
-      <aside class="hidden xl:block fixed top-24 2xl:right-[max(0px,calc(50%-49rem))] right-[max(0px,calc(50%-42rem))] w-64">
+      <aside class="hidden 2xl:block fixed top-24 2xl:right-[max(0px,calc(50%-49rem))] right-[max(0px,calc(50%-42rem))] w-64">
         <AuthorCard client:load author={author} />
         <div class="sticky top-24 min-h-[calc(100vh-8rem)] overflow-y-auto">
           <Toc client:load headings={headings} />
@@ -117,7 +117,7 @@ const author = {
   {/* Mobile Table of Contents - 仅在移动端显示 */}
   {
     headings && headings.length > 0 && (
-      <div class="xl:hidden">
+      <div class="2xl:hidden">
         <MobileToc client:load headings={headings} author={author} />
       </div>
     )

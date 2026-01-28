@@ -46,9 +46,10 @@ export function BlogListItem({ post }: BlogListItemProps) {
       </div>
 
       {/* Hover Cover Image */}
-      {isHovered && post.coverImage && (
+      {post.coverImage && (
         <div
-          className="pointer-events-none fixed left-0 z-50"
+          className={`pointer-events-none fixed left-0 z-50 transition-opacity duration-150 ${isHovered ? "opacity-100" : "opacity-0"
+            }`}
           style={getImagePosition()}
         >
           <CloudImage

@@ -21,6 +21,9 @@ export default defineConfig({
   site,
   base,
   integrations: [react(), sitemap(), mdx(), robotsTxt()],
+  server: {
+    host: "0.0.0.0",
+  },
   markdown: {
     shikiConfig: {
       theme: "catppuccin-latte",

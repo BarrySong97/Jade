@@ -82,7 +82,7 @@ export const YearFilter = ({ years, className }: YearFilterProps) => {
   if (!years?.length) return null;
 
   return (
-    <div className={cn("w-64 hidden xl:block", className)}>
+    <div className={cn("w-64 hidden md:block", className)}>
       <div className="relative pl-3">
         {/* 移动的指示器 */}
         <div
