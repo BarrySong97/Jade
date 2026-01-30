@@ -31,9 +31,8 @@ const blurHashKey = disableBlurHash ? null : getBlurHashKey(src);
 const aspectRatio = parsed ? `${parsed.width}/${parsed.height}` : undefined;
 
 const imageUrl = `${CLOUD_IMAGE_DOMAIN}${src}`;
-const blurHashUrl = blurHashKey ? `${CLOUD_IMAGE_DOMAIN}${blurHashKey}` : null;
-const originalUrl = originalSrc ? `${CLOUD_IMAGE_DOMAIN}${originalSrc}` : null;
-
+const blurHashUrl = blurHashKey ? `${CLOUD_IMAGE_DOMAIN}/${blurHashKey}` : null;
+console.log(blurHashUrl);
 const enableLightbox = !!originalSrc;
 const dialogId = enableLightbox
   ? `lightbox-${src.replace(/[^a-z0-9]/gi, "")}`

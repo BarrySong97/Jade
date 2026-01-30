@@ -28,8 +28,8 @@ const FILENAME_PATTERN = /^(.+)_([a-z]+)_(\d+)x(\d+)\.(\w+)$/i;
  */
 export function parseCloudImageKey(key: string): ParsedCloudImageKey | null {
   // 分离路径和文件名
-  const lastSlashIndex = key.lastIndexOf('/');
-  const pathPrefix = lastSlashIndex >= 0 ? key.substring(0, lastSlashIndex) : '';
+  const lastSlashIndex = key.lastIndexOf("/");
+  const pathPrefix = lastSlashIndex >= 0 ? key.substring(0, lastSlashIndex) : "";
   const filename = lastSlashIndex >= 0 ? key.substring(lastSlashIndex + 1) : key;
 
   const match = filename.match(FILENAME_PATTERN);
@@ -67,5 +67,5 @@ export function getBlurHashKey(key: string): string | null {
 
   const { pathPrefix, basename, ext } = parsed;
   const blurHashFilename = `${basename}_blurhash.${ext}`;
-  return pathPrefix ? `${pathPrefix}/${blurHashFilename}` : blurHashFilename;
+  return pathPrefix ? `${pathPrefix.replace("/", "")}/${blurHashFilename}` : blurHashFilename;
 }
