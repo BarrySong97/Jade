@@ -1,5 +1,6 @@
 ---
 import "@/styles/global.css";
+import { CLOUD_IMAGE_DOMAIN } from "@/lib/cloud-image-config";
 
 interface Props {
   title?: string;
@@ -20,9 +21,20 @@ const {
 const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
+const getOgImageURL = (image?: string) => {
+  if (!image) {
+    return new URL("og.webp", Astro.site).toString();
+  }
+
+  if (image.startsWith("http://") || image.startsWith("https://")) {
+    return image;
+  }
+
+  return `${CLOUD_IMAGE_DOMAIN}${image.startsWith("/") ? image : `/${image}`}`;
+};
 const ogImageURL = ogImage
-  ? new URL(ogImage, Astro.site).toString()
-  : new URL("og.webp", Astro.site).toString();
+  ? getOgImageURL(ogImage)
+  : getOgImageURL();
 ---
 
 <!-- Basic -->
