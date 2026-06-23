@@ -1,7 +1,4 @@
-import { NavMenu } from "./nav-menu";
-
-// EDIT HERE: Blog name
-const BLOG_NAME = "4REAL";
+import { PROFILE } from "@/lib/site";
 
 export interface HeaderProps {
   className?: string;
@@ -9,14 +6,18 @@ export interface HeaderProps {
 
 export default async function Header() {
   return (
-    <header className="fixed top-0 z-50 w-full bg-background/95 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-5xl items-center justify-between border border-border  border-t-0  px-4 py-4 sm:px-6 lg:px-8">
-        <h1 className="text-xl font-bold sm:text-2xl">
-          <a href="/" className="transition-opacity hover:opacity-80">
-            {BLOG_NAME}
-          </a>
-        </h1>
-        <NavMenu />
+    <header className="sticky top-0 z-50 w-full bg-[var(--bg)]/80 backdrop-blur-md backdrop-saturate-150">
+      <div className="mx-auto flex h-[60px] max-w-[720px] items-center px-6">
+        <a
+          href="/"
+          className="flex items-center gap-[9px] text-[15.5px]"
+          aria-label="返回首页"
+        >
+          <span className="h-[9px] w-[9px] shrink-0 rounded-full bg-[var(--accent)]" />
+          <span className="font-mono text-[14px] text-[var(--ink-4)]">
+            /{PROFILE.handle}
+          </span>
+        </a>
       </div>
     </header>
   );

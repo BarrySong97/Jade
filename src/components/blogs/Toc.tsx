@@ -27,11 +27,9 @@ export const Toc = ({ headings, className }: TocProps) => {
   useEffect(() => {
     const handleScroll = () => {
       const windowHeight = window.innerHeight;
-      const documentHeight =
-        document.documentElement.scrollHeight - windowHeight;
+      const documentHeight = document.documentElement.scrollHeight - windowHeight;
       const scrollTop = window.scrollY;
-      const progress =
-        documentHeight > 0 ? Math.round((scrollTop / documentHeight) * 100) : 0;
+      const progress = documentHeight > 0 ? Math.round((scrollTop / documentHeight) * 100) : 0;
       setScrollProgress(progress);
     };
 
@@ -50,22 +48,18 @@ export const Toc = ({ headings, className }: TocProps) => {
         if (clickedId) return;
 
         // 找出所有正在 intersecting 的标题
-        const intersectingEntries = entries.filter(
-          (entry) => entry.isIntersecting
-        );
+        const intersectingEntries = entries.filter((entry) => entry.isIntersecting);
 
         if (intersectingEntries.length > 0) {
           // 选择位置最靠下的标题（boundingClientRect.top 最大的）
           const bottomEntry = intersectingEntries.reduce((prev, current) => {
-            return current.boundingClientRect.top > prev.boundingClientRect.top
-              ? current
-              : prev;
+            return current.boundingClientRect.top > prev.boundingClientRect.top ? current : prev;
           });
 
           setActiveId(bottomEntry.target.id);
         }
       },
-      { rootMargin: "-100px 0px -66% 0px" }
+      { rootMargin: "-100px 0px -66% 0px" },
     );
 
     // Observe all headings
@@ -138,23 +132,21 @@ export const Toc = ({ headings, className }: TocProps) => {
   if (!headings?.length) return null;
 
   return (
-    <div className={cn("w-64 ", className)}>
-      {/* 移除了用户信息部分，因为那些数据源可能不存在，专注于 TOC 功能 */}
-
-      <div className="text-sm font-medium mb-4 relative">
-        <div className="font-semibold">目录</div>
+    <div className={cn("w-[200px]", className)}>
+      <div className="font-mono text-[11.5px] uppercase tracking-[0.16em] text-[var(--ink-3)]">
+        目录
       </div>
-      <div className="relative pl-3">
-        {/* Single indicator that will move */}
+      <div className="relative mt-4">
+        {/* 跟随激活项移动的指示条 */}
         <div
           ref={indicatorRef}
-          className="absolute left-0 top-0 w-[3px] bg-primary rounded-full opacity-0 transition-all duration-300"
+          className="absolute left-0 top-0 z-10 w-[2px] bg-[var(--accent)] opacity-0 transition-all duration-300"
           style={{
             opacity: currentId ? 1 : 0,
-            height: "16px", // 默认高度，会被JS动态更新
+            height: "16px",
           }}
         />
-        <nav ref={navRef} className="relative border-l border-muted">
+        <nav ref={navRef} className="relative flex flex-col border-l border-[var(--line)]">
           {headings?.length ? (
             headings.map((heading, index) => {
               const isActive = heading.slug === currentId;
@@ -171,14 +163,14 @@ export const Toc = ({ headings, className }: TocProps) => {
                     setHoveredId("");
                   }}
                   className={cn(
-                    "block text-sm transition-colors duration-200 relative py-1.5 pr-4",
+                    "toc-item block py-1.5 pr-2 text-[13px] leading-[1.45] transition-colors duration-200",
                     {
-                      "pl-4": heading.depth === 2,
-                      "pl-8": heading.depth === 3,
-                      "pl-12": heading.depth === 4,
-                      "text-foreground font-medium": isActive,
-                      "text-muted-foreground hover:text-foreground": !isActive,
-                    }
+                      "pl-[14px]": heading.depth <= 2,
+                      "pl-[26px]": heading.depth === 3,
+                      "pl-[38px]": heading.depth >= 4,
+                      "text-[var(--accent-ink)] font-medium": isActive,
+                      "text-[var(--ink-3)]": !isActive,
+                    },
                   )}
                 >
                   {heading.text}
@@ -186,37 +178,19 @@ export const Toc = ({ headings, className }: TocProps) => {
               );
             })
           ) : (
-            <div className="block text-muted-foreground text-sm transition-colors duration-200 relative py-1">
-              暂无目录
-            </div>
+            <div className="py-1 pl-[14px] text-[13px] text-[var(--ink-3)]">暂无目录</div>
           )}
         </nav>
       </div>
 
-      <div className="h-px bg-border my-4" />
+      <div className="my-4 h-px bg-[var(--line)]" />
 
       {/* 阅读进度和回到顶部 */}
-      <div className=" flex items-center text-sm text-muted-foreground">
-        <div className="flex items-center gap-1">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="w-4 h-4"
-          >
-            <path d="m18 15-6-6-6 6" />
-          </svg>
-          <span>{scrollProgress}%</span>
-        </div>
+      <div className="flex items-center font-mono text-[11.5px] text-[var(--ink-3)]">
+        <span>{scrollProgress}%</span>
         <button
           onClick={scrollToTop}
-          className="ml-auto hover:text-foreground transition-colors duration-200"
+          className="ml-auto transition-colors duration-200 hover:text-[var(--accent-ink)]"
         >
           回到顶部
         </button>

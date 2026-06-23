@@ -1,18 +1,17 @@
-import { NavMenu } from "./nav-menu";
+import { PROFILE } from "@/lib/site";
 
 export interface FooterProps {
-  placeholderText?: string;
   className?: string;
 }
 
-export default async function Footer({
-  placeholderText = "探索宇宙永葆青春",
-}: FooterProps) {
+export default async function Footer() {
   return (
-    <footer className="bg-background ">
-      <div className="mx-auto flex max-w-5xl border border-border border-b-0 items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
-        <p className="text-sm text-muted-foreground">{placeholderText}</p>
-        <NavMenu />
+    <footer className="mt-[104px]">
+      <div className="mx-auto flex max-w-[720px] flex-col gap-1 px-6 pb-8 pt-6 sm:flex-row sm:justify-between">
+        <span className="font-mono text-[11.5px] text-[var(--ink-4)]">
+          © 2026 {PROFILE.name} · {PROFILE.title} · {PROFILE.location}
+        </span>
+        <span className="font-mono text-[11.5px] text-[var(--ink-4)]">用克制构建</span>
       </div>
     </footer>
   );

@@ -4,120 +4,145 @@ import type { MarkdownHeading } from "astro";
 import BaseLayout from "./BaseLayout.astro";
 import { Toc } from "@/components/blogs/Toc";
 import MobileToc from "@/components/blogs/MobileToc";
-import { AuthorCard } from "@/components/blogs/author-card";
-import { SocialQRCodes } from "@/components/blogs/social-qrcodes";
 import CloudImage from "@/components/common/cloud-image-astro.astro";
+
+type NavLink = { slug: string; title: string };
 
 type Props = CollectionEntry<"blog">["data"] & {
   headings?: MarkdownHeading[];
+  readMin?: number;
+  prev?: NavLink;
+  next?: NavLink;
 };
 
-const { title, description, pubDate, updatedDate, heroImage, headings } =
+const { title, description, pubDate, updatedDate, heroImage, headings, readMin, prev, next } =
   Astro.props;
 
-// 作者信息（可以从配置文件或数据库获取）
 const author = {
   name: "Barry Song",
   title: "什么都会点软件工程师",
 };
 
-// 社交媒体二维码（替换为实际的二维码图片）
-// const socialQRCodes = [
-//   {
-//     platform: "哔哩哔哩",
-//     label: "B站",
-//     qrCodeUrl: "/og-image.png", // 替换为实际的二维码
-//   },
-//   {
-//     platform: "小红书",
-//     label: "小红书",
-//     qrCodeUrl: "/og-image.png", // 替换为实际的二维码
-//   },
-//   {
-//     platform: "抖音",
-//     label: "抖音",
-//     qrCodeUrl: "/og-image.png", // 替换为实际的二维码
-//   },
-//   {
-//     platform: "微信",
-//     label: "微信公众号",
-//     qrCodeUrl: "/og-image.png", // 替换为实际的二维码
-//   },
-// ];
+const fmtDate = (d: Date) =>
+  `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(
+    d.getDate(),
+  ).padStart(2, "0")}`;
+
+const hasToc = (headings?.length ?? 0) >= 2;
 ---
 
 <BaseLayout title={title} description={description} ogImage={heroImage}>
-  <div
-    class="mx-auto max-w-5xl min-h-[calc(100vh-128px)] border border-border border-t-0 border-b-0 px-4 py-12 sm:px-6 lg:px-8"
-  >
-    {/* Article Content - 完全居中显示 */}
-    <article class="mx-auto">
-      <!-- Hero Image -->
+  <article class="mx-auto max-w-[720px] px-6 pt-[72px]">
+    <a
+      href="/"
+      class="back-link inline-flex items-center gap-1.5 font-mono text-[12.5px] tracking-[0.04em] text-[var(--ink-3)] transition-colors"
+    >
+      <svg
+        viewBox="0 0 16 16"
+        fill="none"
+        class="h-[13px] w-[13px] rotate-180"
+        aria-hidden="true"
+      >
+        <path
+          d="M4 12L12 4M12 4H6M12 4V10"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path>
+      </svg>
+       返回
+    </a>
+
+    <header class="mt-6">
+      <h1
+        class="m-0 text-[clamp(24px,4vw,34px)] font-bold leading-[1.2] tracking-[-0.025em] text-[var(--ink)]"
+      >
+        {title}
+      </h1>
+      <div class="mt-4 flex items-center gap-2.5 text-[13px] text-[var(--ink-3)]">
+        <time datetime={pubDate.toISOString()} class="whitespace-nowrap font-mono">
+          {fmtDate(pubDate)}
+        </time>
+        {
+          readMin && (
+            <>
+              <span class="text-[var(--ink-4)]">·</span>
+              <span class="whitespace-nowrap font-mono">{readMin} 分钟阅读</span>
+            </>
+          )
+        }
+        {
+          updatedDate && (
+            <>
+              <span class="text-[var(--ink-4)]">·</span>
+              <span class="whitespace-nowrap font-mono">
+                更新于 {fmtDate(updatedDate)}
+              </span>
+            </>
+          )
+        }
+      </div>
+    </header>
+
+    {
+      heroImage && (
+        <div class="mt-8 overflow-hidden rounded-[2px]">
+          <CloudImage src={heroImage} alt={title} class="w-full" />
+        </div>
+      )
+    }
+
+    <div
+      class="prose mt-8 wrap-break-word max-w-none prose-headings:scroll-mt-[84px]"
+    >
+      <slot />
+    </div>
+
+    <nav class="mt-[72px] grid grid-cols-2 gap-6 border-t border-[var(--line)] pt-8">
       {
-        heroImage && (
-          <div class="mb-8 overflow-hidden rounded-lg">
-            <CloudImage src={heroImage} alt={title} class="w-full" />
-          </div>
+        prev ? (
+          <a href={`/blogs/${prev.slug}`} class="pn-btn flex flex-col items-start gap-2 text-left">
+            <span class="font-mono text-[11.5px] tracking-[0.06em] text-[var(--ink-3)]">
+              ← 上一篇
+            </span>
+            <span class="text-[13.5px] font-medium leading-[1.4] text-[var(--ink)] transition-colors">
+              {prev.title}
+            </span>
+          </a>
+        ) : (
+          <span />
         )
       }
+      {
+        next ? (
+          <a href={`/blogs/${next.slug}`} class="pn-btn flex flex-col items-end gap-2 text-right">
+            <span class="font-mono text-[11.5px] tracking-[0.06em] text-[var(--ink-3)]">
+              下一篇 →
+            </span>
+            <span class="text-[13.5px] font-medium leading-[1.4] text-[var(--ink)] transition-colors">
+              {next.title}
+            </span>
+          </a>
+        ) : (
+          <span />
+        )
+      }
+    </nav>
+  </article>
 
-      <!-- Article Header -->
-      <header class="mb-12 space-y-4">
-        <h1 class="text-3xl font-bold sm:text-4xl">{title}</h1>
-        <div class="flex items-center gap-2 text-sm text-muted-foreground">
-          <time datetime={pubDate.toISOString()}>
-            {pubDate.toLocaleDateString("zh-CN")}
-          </time>
-          {
-            updatedDate && (
-              <span class="italic">
-                (更新于 {updatedDate.toLocaleDateString("zh-CN")})
-              </span>
-            )
-          }
-        </div>
-      </header>
-
-      <!-- Article Content -->
-      <div
-        class="prose wrap-break-word max-w-none prose-headings:font-bold prose-headings:scroll-mt-20 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-primary prose-blockquote:italic prose-code:text-primary prose-code:bg-muted prose-code:rounded prose-code:px-1 prose-code:py-0.5 prose-strong:font-medium prose-img:mx-auto prose-img:w-full"
-      >
-        <slot />
-      </div>
-
-      <!-- 社交媒体二维码 -->
-      <!-- <div class="mt-16">
-        <SocialQRCodes client:load qrCodes={socialQRCodes} />
-      </div> -->
-
-      <!-- Back Link -->
-      <div class="mt-12 pt-8 border-t border-border">
-        <a
-          href="/blogs"
-          class="text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          &larr; 返回博客列表
-        </a>
-      </div>
-    </article>
-  </div>
-
-  {/* Table of Contents - Fixed 在右侧，独立于页面布局 */}
+  {/* 桌面端目录 — 固定在右侧留白 */}
   {
-    headings && headings.length > 0 && (
-      <aside class="hidden 2xl:block fixed top-24 2xl:right-[max(0px,calc(50%-49rem))] right-[max(0px,calc(50%-42rem))] w-64">
-        <AuthorCard client:load author={author} />
-        <div class="sticky top-24 min-h-[calc(100vh-8rem)] overflow-y-auto">
-          <Toc client:load headings={headings} />
-        </div>
+    hasToc && (
+      <aside class="fixed top-[150px] z-[5] hidden w-[200px] [left:calc(50%+392px)] min-[1181px]:block">
+        <Toc client:load headings={headings} />
       </aside>
     )
   }
 
-  {/* Mobile Table of Contents - 仅在移动端显示 */}
+  {/* 移动端目录 */}
   {
-    headings && headings.length > 0 && (
-      <div class="2xl:hidden">
+    hasToc && (
+      <div class="min-[1181px]:hidden">
         <MobileToc client:load headings={headings} author={author} />
       </div>
     )
