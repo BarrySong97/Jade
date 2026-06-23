@@ -8,6 +8,5 @@ export const PROFILE = {
   social: [
     { label: "GitHub", url: "https://github.com/BarrySong97" },
     { label: "Twitter", url: "https://x.com/BarrySong97" },
-    { label: "Bilibili", url: "https://space.bilibili.com/868586" },
   ],
 } as const;

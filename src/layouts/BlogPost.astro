@@ -53,6 +53,14 @@ const hasToc = (headings?.length ?? 0) >= 2;
        返回
     </a>
 
+    {
+      heroImage && (
+        <div class="mt-6 overflow-hidden rounded-[2px]">
+          <CloudImage src={heroImage} alt={title} class="w-full" />
+        </div>
+      )
+    }
+
     <header class="mt-6">
       <h1
         class="m-0 text-[clamp(24px,4vw,34px)] font-bold leading-[1.2] tracking-[-0.025em] text-[var(--ink)]"
@@ -83,14 +91,6 @@ const hasToc = (headings?.length ?? 0) >= 2;
         }
       </div>
     </header>
-
-    {
-      heroImage && (
-        <div class="mt-8 overflow-hidden rounded-[2px]">
-          <CloudImage src={heroImage} alt={title} class="w-full" />
-        </div>
-      )
-    }
 
     <div
       class="prose mt-8 wrap-break-word max-w-none prose-headings:scroll-mt-[84px]"
