@@ -5,6 +5,7 @@ import BaseLayout from "./BaseLayout.astro";
 import { Toc } from "@/components/blogs/Toc";
 import MobileToc from "@/components/blogs/MobileToc";
 import CloudImage from "@/components/common/cloud-image-astro.astro";
+import BlogImage from "@/components/blogs/blog-image";
 
 type NavLink = { slug: string; title: string };
 
@@ -15,8 +16,20 @@ type Props = CollectionEntry<"blog">["data"] & {
   next?: NavLink;
 };
 
-const { title, description, pubDate, updatedDate, heroImage, headings, readMin, prev, next } =
-  Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  heroImage,
+  heroWidth,
+  heroHeight,
+  heroThumbhash,
+  headings,
+  readMin,
+  prev,
+  next,
+} = Astro.props;
 
 const author = {
   name: "Barry Song",
@@ -54,11 +67,22 @@ const hasToc = (headings?.length ?? 0) >= 2;
     </a>
 
     {
-      heroImage && (
+      heroImage && heroWidth && heroHeight ? (
+        <BlogImage
+          client:load
+          src={heroImage}
+          alt={title}
+          width={heroWidth}
+          height={heroHeight}
+          thumbhash={heroThumbhash}
+          zoomable={false}
+          className="mt-6 rounded-[2px]"
+        />
+      ) : heroImage ? (
         <div class="mt-6 overflow-hidden rounded-[2px]">
           <CloudImage src={heroImage} alt={title} class="w-full" />
         </div>
-      )
+      ) : null
     }
 
     <header class="mt-6">
@@ -133,7 +157,7 @@ const hasToc = (headings?.length ?? 0) >= 2;
   {/* 桌面端目录 — 固定在右侧留白 */}
   {
     hasToc && (
-      <aside class="fixed top-[150px] z-[5] hidden w-[200px] [left:calc(50%+392px)] min-[1181px]:block">
+      <aside class="fixed top-[150px] z-[5] hidden max-h-[calc(100vh-174px)] w-[200px] flex-col [left:calc(50%+392px)] min-[1181px]:flex">
         <Toc client:load headings={headings} />
       </aside>
     )

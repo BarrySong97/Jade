@@ -281,6 +281,13 @@
   border-radius: var(--radius);
   margin: 1.6em auto;
 }
+/* BlogImage 这类 figure 包裹的图:间距交给 figure,内部 img 充满不留边(否则顶部露出占位色块) */
+.prose figure {
+  margin: 1.6em 0;
+}
+.prose figure img {
+  margin: 0;
+}
 .prose hr {
   border: none;
   border-top: 1px solid var(--line);

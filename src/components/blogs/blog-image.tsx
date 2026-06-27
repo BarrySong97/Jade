@@ -1,11 +1,11 @@
 /**
- * @purpose 博客正文图片组件:thumbhash 解码成模糊占位(SSR 即渲染、零额外请求),真图懒加载淡入,点击放大走 WebGL viewer。
+ * @purpose 博客正文图片组件:blur-up 渐进加载——thumbhash 平均色(瞬时)+ 模糊图打底,真图加载完 opacity 淡入盖上;点击放大走 WebGL viewer。
  * @role    MDX 中由 scripts/img.mjs 改写生成的 <BlogImage/>;blog 专用,替代老 cloud-image 占位机制。
- * @deps    react;thumbhash(thumbHashToDataURL);@/components/webgl-viewer 做 lightbox;@/lib/utils(cn)
- * @gotcha  width/height 撑出 aspect-ratio 占位防跳动;thumbhash 是脚本生成的 base64 串;atob/btoa 在 Node SSR 与浏览器均可用。详见 docs/topics/blog-images.md
+ * @deps    react;thumbhash(thumbHashToDataURL / thumbHashToAverageRGBA);@/components/webgl-viewer;@/lib/utils(cn)
+ * @gotcha  平均色作 background-color 首帧即绘(免解码白屏)是 blur-up 不白的关键;真图淡入期间背后始终是模糊图。详见 docs/topics/blog-images.md
  */
 import { useEffect, useMemo, useRef, useState } from "react";
-import { thumbHashToDataURL } from "thumbhash";
+import { thumbHashToDataURL, thumbHashToAverageRGBA } from "thumbhash";
 import { cn } from "@/lib/utils";
 import { WebGLImageViewer } from "@/components/webgl-viewer";
 
@@ -38,21 +38,24 @@ export default function BlogImage({
   className,
   zoomable = true,
 }: BlogImageProps) {
-  const [loaded, setLoaded] = useState(false);
   const [open, setOpen] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // thumbhash → 模糊 dataURL(SSR 与客户端都能算,首屏即有占位)
+  // thumbhash → { 平均色(瞬时绘制,免白屏), 模糊图 dataURL }。SSR 与客户端都算,首帧即有占位。
   const placeholder = useMemo(() => {
     if (!thumbhash) return null;
     try {
-      return thumbHashToDataURL(base64ToBytes(thumbhash));
+      const bytes = base64ToBytes(thumbhash);
+      const { r, g, b, a } = thumbHashToAverageRGBA(bytes);
+      const avg = `rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${a})`;
+      return { avg, url: thumbHashToDataURL(bytes) };
     } catch {
       return null;
     }
   }, [thumbhash]);
 
-  // 真图加载完成(含水合前已缓存命中的情况)
+  // 真图加载完成(含水合前已缓存命中的情况)→ 触发淡入
   useEffect(() => {
     const img = imgRef.current;
     if (!img) return;
@@ -78,14 +81,17 @@ export default function BlogImage({
   return (
     <>
       <figure
-        className={cn("relative m-0 overflow-hidden rounded-md", className)}
+        className={cn("relative overflow-hidden rounded-md", className)}
         style={{
           aspectRatio: `${width}/${height}`,
-          backgroundImage: placeholder ? `url(${placeholder})` : undefined,
+          // 平均色瞬时绘制(无需解码,杜绝首帧白屏),模糊图随后盖上
+          backgroundColor: placeholder?.avg,
+          backgroundImage: placeholder ? `url(${placeholder.url})` : undefined,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
+        {/* 真图加载完 opacity 0→1 淡入,盖在模糊图上(blur-up);淡入期间背后始终是平均色+模糊图,绝不白 */}
         <img
           ref={imgRef}
           src={src}
@@ -96,7 +102,7 @@ export default function BlogImage({
           decoding="async"
           onClick={zoomable ? () => setOpen(true) : undefined}
           className={cn(
-            "h-full w-full object-cover transition-opacity duration-500 ease-out",
+            "h-full w-full object-cover transition-opacity duration-700 ease-out",
             loaded ? "opacity-100" : "opacity-0",
             zoomable && "cursor-zoom-in",
           )}

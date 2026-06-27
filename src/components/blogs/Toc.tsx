@@ -139,11 +139,12 @@ export const Toc = ({ headings, className }: TocProps) => {
   if (!headings?.length) return null;
 
   return (
-    <div className={cn("w-[200px]", className)}>
-      <div className="font-mono text-[11.5px] uppercase tracking-[0.16em] text-[var(--ink-3)]">
+    <div className={cn("flex min-h-0 w-[200px] flex-1 flex-col", className)}>
+      <div className="shrink-0 font-mono text-[11.5px] uppercase tracking-[0.16em] text-[var(--ink-3)]">
         目录
       </div>
-      <div className="relative mt-4">
+      {/* 中间列表区:仅这里滚动(指示条也在内,随之对齐);隐藏滚动条 */}
+      <div className="relative mt-4 min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {/* 跟随激活项移动的指示条 */}
         <div
           ref={indicatorRef}
@@ -190,10 +191,10 @@ export const Toc = ({ headings, className }: TocProps) => {
         </nav>
       </div>
 
-      <div className="my-4 h-px bg-[var(--line)]" />
+      <div className="my-4 h-px shrink-0 bg-[var(--line)]" />
 
-      {/* 阅读进度和回到顶部 */}
-      <div className="flex items-center font-mono text-[11.5px] text-[var(--ink-3)]">
+      {/* 阅读进度和回到顶部(固定在底部) */}
+      <div className="flex shrink-0 items-center font-mono text-[11.5px] text-[var(--ink-3)]">
         <span>{scrollProgress}%</span>
         <button
           onClick={scrollToTop}

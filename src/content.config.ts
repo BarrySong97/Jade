@@ -20,6 +20,10 @@ const blog = defineCollection({
       pubDate: z.coerce.date(),
       updatedDate: z.coerce.date().optional(),
       heroImage: z.string().optional(),
+      // 由 scripts/img.mjs 处理封面后写入,供 BlogImage 做 blur-up 占位
+      heroWidth: z.number().optional(),
+      heroHeight: z.number().optional(),
+      heroThumbhash: z.string().optional(),
       coverImage: z.string().optional(),
     }),
 });

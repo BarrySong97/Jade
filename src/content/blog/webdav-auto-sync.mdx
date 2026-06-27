@@ -3,8 +3,13 @@ title: "使用WebDAV全量同步你的小应用"
 description: "我的记账软件，我想做成全平台的应用。最开始我是使用 Electron 写的桌面软件，使用 SQLite 文件，当时我没有想好做 iOS、Android，就是试试水。我的想法是大模型对账单分析，自动分类归档。 但是有一个问题，大部分人消费每天可能就是那点。如果使用快捷记账 + 大模型分类的方式效率要高一点。最重要的一点是，当时就知道这是什么消费，可以及时的矫正放入正确的数据，这样回溯起来有意义。 所以我又在 Flutter 上开发了一个全新数据结构的应用（原本的数据结构就是一坨）。我就开始思考全平台同步数据的问题。"
 pubDate: "2025-08-08"
 coverImage: "/cover/webdav-auto-sync_cover_1053x790.webp"
-heroImage: "/cover/webdav-auto-sync_Hero_1068x601.webp"
+heroImage: "https://blogassets.4real.ink/blog/48004a1486834c738d3324eb70bc6ea2.webp"
+heroWidth: 1068
+heroHeight: 601
+heroThumbhash: "EbcJDIJGaGd1eIhgiYtQmZ26+Q=="
 ---
+
+import BlogImage from "@/components/blogs/blog-image";
 
 # 前言
 
@@ -115,7 +120,7 @@ heroImage: "/cover/webdav-auto-sync_Hero_1068x601.webp"
 
 当我们同步的时候，将上一次的 Hash 和现在的文件的 Hash 比较，上一次文件的 ETag 和现在 ETag 的比较，把它们**排列组合**：
 
-![](/微信图片_2025-10-12_163015_593.png)
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/aab7b6677f850888eb024a1dacd52b19.webp" alt="" width={772} height={201} thumbhash="/fcBAoBqUdA3iHiEWwq5imA=" />
 
 **判断依据的优先级**：
 
