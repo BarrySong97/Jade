@@ -1,0 +1,9 @@
+---
+import ProductsLayout from "@/layouts/ProductsLayout.astro";
+import Works from "@/components/showcase/works";
+import "@/styles/showcase.css";
+---
+
+<ProductsLayout title="作品集">
+  <Works client:load />
+</ProductsLayout>

@@ -1,99 +1,13 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
 import { PROFILE } from "@/lib/site";
-
-const posts = (await getCollection("blog")).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
-
-type Item = {
-  id: string;
-  title: string;
-  year: number;
-  md: string; // "MM / DD"
-};
-
-const items: Item[] = posts.map((post) => {
-  const date = post.data.pubDate;
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const dd = String(date.getDate()).padStart(2, "0");
-  return {
-    id: post.id.replace(/\.mdx?$/, ""),
-    title: post.data.title,
-    year: date.getFullYear(),
-    md: `${mm} / ${dd}`,
-  };
-});
-
-// 按年份分组，年份从新到旧
-const groups: [number, Item[]][] = [];
-for (const item of items) {
-  const last = groups[groups.length - 1];
-  if (last && last[0] === item.year) {
-    last[1].push(item);
-  } else {
-    groups.push([item.year, [item]]);
-  }
-}
+import ProfileIntro from "@/components/home/profile-intro.astro";
+import PostArchive from "@/components/home/post-archive.astro";
 ---
 
 <BaseLayout title={PROFILE.name} description={PROFILE.bio}>
   <div class="mx-auto max-w-[720px] px-6">
-    <section class="pb-8 pt-[104px]">
-      <h1
-        class="m-0 text-[clamp(26px,3.6vw,36px)] font-semibold leading-[1.1] tracking-[-0.02em]"
-      >
-        {PROFILE.name}
-      </h1>
-      <p class="mt-4 max-w-[52ch] text-[15px] leading-[1.7] text-[var(--ink-2)]">
-        {PROFILE.bio} 在 {
-          PROFILE.social.map((s, i) => (
-            <>
-              <a
-                href={s.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="ulink whitespace-nowrap text-[var(--accent-ink)]"
-              >
-                {s.label}
-              </a>
-              {i < PROFILE.social.length - 1 && (
-                <span class="text-[var(--ink-4)]"> · </span>
-              )}
-            </>
-          ))
-        } 找到我。
-      </p>
-    </section>
-
-    <section class="flex flex-col gap-8 pb-[104px]">
-      {
-        groups.map(([year, posts]) => (
-          <div class="grid grid-cols-[56px_1fr] items-start gap-4">
-            <div class="sticky top-[76px] pt-[9px] font-mono text-[12px] tracking-[0.02em] text-[var(--ink-4)]">
-              {year}
-            </div>
-            <ul class="m-0 list-none p-0">
-              {posts.map((p) => (
-                <li>
-                  <a
-                    href={`/blogs/${p.id}`}
-                    class="group flex w-full items-baseline gap-4 py-[7px] text-left"
-                  >
-                    <span class="w-14 shrink-0 font-mono text-[12px] tracking-[0.01em] text-[var(--ink-4)] transition-colors group-hover:text-[var(--accent)]">
-                      {p.md}
-                    </span>
-                    <span class="min-w-0 flex-1 text-[14px] font-[450] leading-[1.45] tracking-[-0.005em] text-[var(--ink)] transition-colors group-hover:text-[var(--accent-ink)]">
-                      {p.title}
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-      }
-    </section>
+    <ProfileIntro />
+    <PostArchive />
   </div>
 </BaseLayout>

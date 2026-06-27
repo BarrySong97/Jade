@@ -13,7 +13,7 @@ const site = process.env.VERCEL
   ? process.env.VERCEL_ENV === "production"
     ? "https://4real.ltd"
     : `https://${process.env.VERCEL_URL}`
-  : process.env.SITE ?? "http://localhost:4321";
+  : (process.env.SITE ?? "http://localhost:4321");
 const base = process.env.BASE || "/";
 
 // https://astro.build/config

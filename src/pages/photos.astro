@@ -1,0 +1,11 @@
+---
+import ProductsLayout from "@/layouts/ProductsLayout.astro";
+import Photography from "@/components/showcase/photography";
+import "@/styles/showcase.css";
+---
+
+<ProductsLayout title="摄影">
+  <div class="photo-page h-screen overflow-hidden bg-[var(--bg)] text-[var(--fg)]">
+    <Photography client:load />
+  </div>
+</ProductsLayout>

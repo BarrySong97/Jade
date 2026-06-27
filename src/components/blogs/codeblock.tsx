@@ -1,3 +1,10 @@
+/**
+ * @purpose 代码块 UI 基础组件:文件名标题、复制按钮、超高时自动折叠/展开与渐变遮罩
+ * @role    底层展示组件,导出 CodeBlock 与 Pre,被 code-wrapper-client 和 dynamic-codeblock 复用
+ * @deps    lucide-react/@tabler 图标、motion/react、@/components/ui(scroll-area、button)、@/lib/use-copy-button
+ * @gotcha  内容 scrollHeight>500px 才出现折叠按钮;复制时剔除 .nd-copy-ignore;详见 docs/modules/components/README.md
+ */
+
 "use client";
 
 import { Check, Copy } from "lucide-react";
@@ -52,31 +59,17 @@ export type CodeBlockProps = HTMLAttributes<HTMLElement> & {
 export const Pre = forwardRef<HTMLPreElement, HTMLAttributes<HTMLPreElement>>(
   ({ className, ...props }, ref) => {
     return (
-      <pre
-        ref={ref}
-        className={cn("p-4 focus-visible:outline-none", className)}
-        {...props}
-      >
+      <pre ref={ref} className={cn("p-4 focus-visible:outline-none", className)} {...props}>
         {props.children}
       </pre>
     );
-  }
+  },
 );
 
 Pre.displayName = "Pre";
 
 export const CodeBlock = forwardRef<HTMLElement, CodeBlockProps>(
-  (
-    {
-      title,
-      allowCopy = true,
-      keepBackground = false,
-      icon,
-      children,
-      ...props
-    },
-    ref
-  ) => {
+  ({ title, allowCopy = true, keepBackground = false, icon, children, ...props }, ref) => {
     const areaRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLPreElement>(null);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -108,10 +101,9 @@ export const CodeBlock = forwardRef<HTMLElement, CodeBlockProps>(
 
     const childWithRef = Children.map(children, (child) => {
       if (isValidElement(child)) {
-        return cloneElement(
-          child as React.ReactElement<{ ref: React.Ref<HTMLPreElement> }>,
-          { ref: contentRef }
-        );
+        return cloneElement(child as React.ReactElement<{ ref: React.Ref<HTMLPreElement> }>, {
+          ref: contentRef,
+        });
       }
       return child;
     });
@@ -123,7 +115,7 @@ export const CodeBlock = forwardRef<HTMLElement, CodeBlockProps>(
         className={cn(
           "not-prose group p-2 bg-muted border-[#9e9e9e33] outline-none relative my-6 overflow-hidden border text-sm rounded-lg",
           keepBackground && "bg-(--shiki-light-bg) dark:bg-(--shiki-dark-bg)",
-          props.className
+          props.className,
         )}
       >
         {title ? (
@@ -134,19 +126,13 @@ export const CodeBlock = forwardRef<HTMLElement, CodeBlockProps>(
             <div className="flex flex-row items-center gap-1">
               <CopyButton className="-me-1" onCopy={onCopy} />
               {shouldCollapse && (
-                <ExpandButton
-                  isExpanded={isExpanded}
-                  toggleExpanded={toggleExpanded}
-                />
+                <ExpandButton isExpanded={isExpanded} toggleExpanded={toggleExpanded} />
               )}
             </div>
           </div>
         ) : (
           allowCopy && (
-            <CopyButton
-              className="absolute right-2 top-2 z-2 backdrop-blur-md"
-              onCopy={onCopy}
-            />
+            <CopyButton className="absolute right-2 top-2 z-2 backdrop-blur-md" onCopy={onCopy} />
           )
         )}
         <motion.div
@@ -154,10 +140,7 @@ export const CodeBlock = forwardRef<HTMLElement, CodeBlockProps>(
           className="overflow-hidden bg-[#EDEDED] border rounded-lg "
           initial={false}
           animate={{
-            height:
-              shouldCollapse && !isExpanded
-                ? 300
-                : contentRef.current?.scrollHeight,
+            height: shouldCollapse && !isExpanded ? 300 : contentRef.current?.scrollHeight,
           }}
           transition={{
             duration: 0.3,
@@ -173,7 +156,7 @@ export const CodeBlock = forwardRef<HTMLElement, CodeBlockProps>(
           <div
             className={cn(
               "absolute bottom-0 z-10 left-0 right-0 flex justify-center p-1 pt-8",
-              !isExpanded && "pointer-events-none"
+              !isExpanded && "pointer-events-none",
             )}
           >
             {/* 渐变遮罩层 */}
@@ -181,7 +164,7 @@ export const CodeBlock = forwardRef<HTMLElement, CodeBlockProps>(
               className={cn(
                 "absolute inset-0 bg-linear-to-t h-[100px] from-[#EDEDED] via-[#EDEDED]/80 to-transparent",
                 "transition-opacity duration-300",
-                isExpanded ? "opacity-0" : "opacity-100"
+                isExpanded ? "opacity-0" : "opacity-100",
               )}
             />
             <button
@@ -189,7 +172,7 @@ export const CodeBlock = forwardRef<HTMLElement, CodeBlockProps>(
               className={cn(
                 buttonVariants({ variant: "ghost", size: "sm" }),
                 "w-fit relative mb-3 z-10 pointer-events-auto cursor-pointer backdrop-blur-sm px-2 py-1 gap-1",
-                !isExpanded && "bg-white/60 hover:bg-white/80"
+                !isExpanded && "bg-white/60 hover:bg-white/80",
               )}
             >
               {isExpanded ? (
@@ -203,7 +186,7 @@ export const CodeBlock = forwardRef<HTMLElement, CodeBlockProps>(
         )}
       </figure>
     );
-  }
+  },
 );
 
 CodeBlock.displayName = "CodeBlock";
@@ -226,16 +209,14 @@ function CopyButton({
           size: "icon-sm",
         }),
         "transition-opacity group-hover:opacity-100 [&_svg]:size-3.5 cursor-pointer",
-        className
+        className,
       )}
       aria-label={checked ? "Copied Text" : "Copy Text"}
       onClick={onClick}
       {...props}
     >
       <Check className={cn("transition-transform", !checked && "scale-0")} />
-      <Copy
-        className={cn("absolute transition-transform", checked && "scale-0")}
-      />
+      <Copy className={cn("absolute transition-transform", checked && "scale-0")} />
     </button>
   );
 }
@@ -252,15 +233,11 @@ function ExpandButton({
       onClick={toggleExpanded}
       className={cn(
         buttonVariants({ variant: "ghost", size: "icon-sm" }),
-        "transition-opacity cursor-pointer"
+        "transition-opacity cursor-pointer",
       )}
       aria-label={isExpanded ? "Collapse code block" : "Expand code block"}
     >
-      {isExpanded ? (
-        <IconChevronUp className="w-4 h-4" />
-      ) : (
-        <IconChevronDown className="w-4 h-4" />
-      )}
+      {isExpanded ? <IconChevronUp className="w-4 h-4" /> : <IconChevronDown className="w-4 h-4" />}
     </button>
   );
 }

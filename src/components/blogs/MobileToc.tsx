@@ -1,3 +1,10 @@
+/**
+ * @purpose 移动端悬浮目录(TOC):右下角圆形按钮显示阅读进度,点击弹出抽屉式目录与作者卡片
+ * @role    博客文章页移动端的目录组件,由文章布局以 React island 形式挂载;内部复用 AuthorCard
+ * @deps    react hooks、lucide-react 图标、motion/react 动画、./author-card、@/lib/utils
+ * @gotcha  打开时锁定 body 滚动;clickedId 期间暂停 IntersectionObserver 高亮;详见 docs/modules/components/README.md
+ */
+
 "use client";
 import { cn } from "@/lib/utils";
 import { useEffect, useState, useRef } from "react";
@@ -34,17 +41,13 @@ const MobileToc = ({ headings, author, className }: MobileTocProps) => {
   useEffect(() => {
     const handleScroll = () => {
       const windowHeight = window.innerHeight;
-      const documentHeight =
-        document.documentElement.scrollHeight - windowHeight;
+      const documentHeight = document.documentElement.scrollHeight - windowHeight;
       const scrollTop = window.scrollY;
 
       // Handle edge cases - ensure progress is 0 when at the top and 100 when at the bottom
       let progress = 0;
       if (documentHeight > 0) {
-        progress = Math.min(
-          Math.max(Math.round((scrollTop / documentHeight) * 100), 0),
-          100
-        );
+        progress = Math.min(Math.max(Math.round((scrollTop / documentHeight) * 100), 0), 100);
       }
 
       // If we're very close to the bottom, set to 100%
@@ -96,7 +99,7 @@ const MobileToc = ({ headings, author, className }: MobileTocProps) => {
           }
         });
       },
-      { rootMargin: "-80px 0px -80% 0px" }
+      { rootMargin: "-80px 0px -80% 0px" },
     );
 
     // Observe all headings
@@ -126,11 +129,7 @@ const MobileToc = ({ headings, author, className }: MobileTocProps) => {
   // Close drawer when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        drawerRef.current &&
-        !drawerRef.current.contains(event.target as Node) &&
-        isOpen
-      ) {
+      if (drawerRef.current && !drawerRef.current.contains(event.target as Node) && isOpen) {
         setIsOpen(false);
       }
     };
@@ -218,7 +217,7 @@ const MobileToc = ({ headings, author, className }: MobileTocProps) => {
           "fixed bottom-6 right-6 z-50 flex items-center justify-center",
           "w-12 h-12 rounded-full bg-white shadow-lg",
           "text-gray-700 hover:bg-gray-50 transition-all duration-200",
-          "focus:outline-none focus:ring-2 focus:ring-gray-300"
+          "focus:outline-none focus:ring-2 focus:ring-gray-300",
         )}
         aria-label="Toggle table of contents"
       >
@@ -248,9 +247,7 @@ const MobileToc = ({ headings, author, className }: MobileTocProps) => {
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={
-              scrollProgress === 0
-                ? 0
-                : circumference - (scrollProgress / 100) * circumference
+              scrollProgress === 0 ? 0 : circumference - (scrollProgress / 100) * circumference
             }
             className="transition-all duration-300 ease-in-out"
             style={{ opacity: scrollProgress === 0 ? 0 : 1 }}
@@ -289,7 +286,7 @@ const MobileToc = ({ headings, author, className }: MobileTocProps) => {
             className={cn(
               "fixed top-0 right-0 bottom-0 z-50",
               "w-[80%] max-w-[320px] bg-white shadow-xl",
-              "flex flex-col"
+              "flex flex-col",
             )}
           >
             {/* Drawer header */}
@@ -349,7 +346,7 @@ const MobileToc = ({ headings, author, className }: MobileTocProps) => {
                               "pl-8": heading.depth === 3,
                               "text-gray-900 font-medium": isActive,
                               "text-gray-500": !isActive,
-                            }
+                            },
                           )}
                         >
                           {heading.text}

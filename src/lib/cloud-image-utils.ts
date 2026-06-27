@@ -1,3 +1,10 @@
+/**
+ * @purpose 云图片 Key 解析工具：拆解文件名元信息、推导对应 BlurHash 占位图 Key
+ * @role    被 cloud-image 组件调用以获取尺寸/类型并加载模糊占位图
+ * @deps    无外部依赖；与 cloud-image-config.ts 配套
+ * @gotcha  依赖文件名约定 {basename}_{type}_{width}x{height}.{ext}，不匹配返回 null；详见 docs/cloud-image-component.md、docs/cloud-image-upload-spec.md
+ */
+
 /** 解析后的图片 Key 信息 */
 export interface ParsedCloudImageKey {
   /** 路径前缀（不含文件名） */

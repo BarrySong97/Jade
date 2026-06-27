@@ -1,0 +1,35 @@
+---
+import { PROFILE } from "@/lib/site";
+---
+
+<section class="pb-8 pt-[104px]">
+  <h1 class="m-0 text-[clamp(26px,3.6vw,36px)] font-semibold leading-[1.1] tracking-[-0.02em]">
+    {PROFILE.name}
+  </h1>
+  <p class="mt-4 max-w-[52ch] text-[15px] leading-[1.7] text-[var(--ink-2)]">
+    {PROFILE.bio}
+  </p>
+  <p class="mt-2 max-w-[52ch] text-[15px] leading-[1.7] text-[var(--ink-2)]">
+    在 {
+      PROFILE.social.map((s, i) => (
+        <>
+          <a
+            href={s.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="ulink whitespace-nowrap text-[var(--accent-ink)]"
+          >
+            {s.label}
+          </a>
+          {i < PROFILE.social.length - 1 && <span class="text-[var(--ink-4)]"> · </span>}
+        </>
+      ))
+    } 找到我。
+  </p>
+  <p class="mt-2 max-w-[52ch] text-[15px] leading-[1.7] text-[var(--ink-2)]">
+    这是我的 <a href="/products" class="ulink text-[var(--accent-ink)]">作品</a> 和 <a
+      href="/photos"
+      class="ulink text-[var(--accent-ink)]">图片</a
+    >。
+  </p>
+</section>

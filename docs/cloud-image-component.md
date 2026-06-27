@@ -3,6 +3,7 @@
 ## 概述
 
 创建一个 React 组件，用于显示云端图片。组件能够：
+
 1. 自动从 URL 解析图片尺寸
 2. 根据尺寸设置 `aspect-ratio`，防止布局偏移 (CLS)
 3. 显示 BlurHash 占位图，主图加载完成后淡入
@@ -20,14 +21,14 @@
 
 ### 示例
 
-| 变体 | URL |
-|------|-----|
-| 封面 | `photo_cover_1920x1080.webp` |
-| 卡片 | `photo_card_800x600.webp` |
-| 缩略图 | `photo_thumbnail_400x300.webp` |
-| 正文配图 | `photo_content_1200x800.webp` |
-| 原图 | `photo_original_2400x1600.webp` |
-| BlurHash | `photo_blurhash.webp` |
+| 变体     | URL                             |
+| -------- | ------------------------------- |
+| 封面     | `photo_cover_1920x1080.webp`    |
+| 卡片     | `photo_card_800x600.webp`       |
+| 缩略图   | `photo_thumbnail_400x300.webp`  |
+| 正文配图 | `photo_content_1200x800.webp`   |
+| 原图     | `photo_original_2400x1600.webp` |
+| BlurHash | `photo_blurhash.webp`           |
 
 ### BlurHash URL 生成规则
 

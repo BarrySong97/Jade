@@ -66,8 +66,6 @@ class Counter extends React.Component {
 }
 ```
 
-
-
 **在 React 16+ 之后（Function Component 时代）：**
 
 函数组件没有 `render()` 方法，但**整个函数组件本身就相当于以前的 render() 方法**：
@@ -86,10 +84,6 @@ function Counter() {
   );
 }
 ```
-
-
-
-
 
 ## React 的渲染流程
 
@@ -118,7 +112,7 @@ F是函数，state的变量，UI是结果（页面）
 ```javascript
 function Parent() {
   const [count, setCount] = useState(0); // 父组件的 state
-  
+
   return (
     <div>
       <Child count={count}/> {/* 父组件的 state 作为子组件的 props */}
@@ -132,8 +126,6 @@ function Child({ count }) {
   return <div>收到的 count: {count}</div>;
 }
 ```
-
-
 
 看到了吗？
 
@@ -164,7 +156,7 @@ function Child({ count }) {
 ```javascript
 function Parent() {
   const [count, setCount] = useState(0);
-  
+
   return (
     <div>
       <Child name="小明"/> {/* 每次父组件 render，这行代码都会重新执行 */}
@@ -178,8 +170,6 @@ function Child({ name }) {
   return <div>我是 {name}</div>;
 }
 ```
-
-
 
 当你点击"增加"按钮时：
 
@@ -204,19 +194,24 @@ function Child({ name }) {
 这就是我们前面说的"两种渲染"的区别体现了：
 
 1. **子组件 render（React 组件级别）**：
-2. 
-  - `Child` 函数重新执行
-  - 生成新的虚拟 DOM
+2.
+
+- `Child` 函数重新执行
+- 生成新的虚拟 DOM
+
 3. **diff 算法对比**：
-4. 
-  - React 对比新旧虚拟 DOM
-  - 发现 `Child` 的 props 没变（`name="小明"`）
-  - 生成的虚拟 DOM 和之前**完全一样**
+4.
+
+- React 对比新旧虚拟 DOM
+- 发现 `Child` 的 props 没变（`name="小明"`）
+- 生成的虚拟 DOM 和之前**完全一样**
+
 5. **真实 DOM 不更新**：
-6. 
-  - React：哦，虚拟 DOM 没变化，那就不用更新真实 DOM 了
-  - 跳过 commit 阶段
-  - 页面上什么都不会变
+6.
+
+- React：哦，虚拟 DOM 没变化，那就不用更新真实 DOM 了
+- 跳过 commit 阶段
+- 页面上什么都不会变
 
 所以完整的流程是：
 
@@ -233,8 +228,6 @@ diff 算法对比 ← React 在这里发现没变化
   ↓
 真实 DOM 不更新 ← 所以页面不会闪烁或重绘
 ```
-
-
 
 这就是 React 的聪明之处：
 
@@ -324,31 +317,30 @@ Commit    跳过更新
 更新 DOM   页面不变
 ```
 
-
-
 ## 性能优化的两个方向
 
 现在你应该能看出来，React 的性能优化有两个层面：
 
 1. **减少不必要的 Render Phase（组件函数执行）**
-2. 
-  - 工具：`React.memo`、`useCallback`、`useMemo`
-  - 目标：让 props 没变的子组件跳过整个 render 流程
-  - 收益：节省函数执行开销
+2.
+
+- 工具：`React.memo`、`useCallback`、`useMemo`
+- 目标：让 props 没变的子组件跳过整个 render 流程
+- 收益：节省函数执行开销
+
 3. **减少不必要的 Commit Phase（DOM 更新）**
-4. 
-  - 工具：React 的 diff 算法（自动）
-  - 目标：只更新真正变化的 DOM
-  - 收益：节省 DOM 操作开销
-  - 💡 好消息：**这个 React 已经自动帮你做了！**
+4.
+
+- 工具：React 的 diff 算法（自动）
+- 目标：只更新真正变化的 DOM
+- 收益：节省 DOM 操作开销
+- 💡 好消息：**这个 React 已经自动帮你做了！**
 
 所以我们平时说的"性能优化"，主要是在优化**第一个层面**：减少不必要的组件函数执行。
 
 而 `memo`、`useCallback`、`useMemo` 这三个工具，就是为了这个目的而存在的。
 
 接下来，我们就来详细看看它们是怎么工作的。
-
-
 
 ## 2. React.memo、useMemo、useCallback 详解
 
@@ -394,14 +386,12 @@ const Child = React.memo(function Child({ name, age }) {
 });
 ```
 
-
-
 **效果对比：**
 
 ```javascript
 function Parent() {
   const [count, setCount] = useState(0);
-  
+
   return (
     <div>
       <Child name="小明" age={18}/> {/* 每次 count 变化，都会 render */}
@@ -411,8 +401,6 @@ function Parent() {
   );
 }
 ```
-
-
 
 当你点击按钮时：
 
@@ -433,12 +421,12 @@ const MemoChild = React.memo(function Child({ onClick }) {
 
 function Parent() {
   const [count, setCount] = useState(0);
-  
+
   // 每次 Parent render，都会创建新的函数
   const handleClick = () => {
     console.log('clicked');
   };
-  
+
   return (
     <div>
       <Memochild onclick={handleClick}/> {/* memo 失效了！ */}
@@ -447,8 +435,6 @@ function Parent() {
   );
 }
 ```
-
-
 
 问题出在哪？
 
@@ -462,12 +448,12 @@ function Parent() {
 ```javascript
 function Parent() {
   const [count, setCount] = useState(0);
-  
+
   // 用 useCallback 包裹，只要依赖不变，函数引用就不变
   const handleClick = useCallback(() => {
     console.log('clicked');
   }, []); // 空数组表示永远不变
-  
+
   return (
     <div>
       <Memochild onClick="{handleClick}"> {/* 现在 memo 生效了！ */}
@@ -477,11 +463,9 @@ function Parent() {
 }
 ```
 
-
-
 **useCallback 的本质：**
 
-useCallback(fn, deps)   
+useCallback(fn, deps)  
 // 等价于  
 `useMemo(() => fn, deps)`
 
@@ -502,12 +486,10 @@ function Parent() {
   const handleClick = useCallback(() => { // 这个 useCallback 没意义
     console.log('clicked');
   }, []);
-  
+
   return <Child onClick="{handleClick}" />;
 }
 ```
-
-
 
 ## useMemo 的作用
 
@@ -525,15 +507,15 @@ const MemoChild = React.memo(function Child({ user }) {
 
 function Parent() {
   const [count, setCount] = useState(0);
-  
+
   // ❌ 错误：每次都创建新对象，memo 失效
   const user = { name: '小明', age: 18 };
-  
+
   // ✅ 正确：用 useMemo 缓存对象引用
   const user = useMemo(() => {
     return { name: '小明', age: 18 };
   }, []); // 依赖为空，对象引用永远不变
-  
+
   return (
     <div>
       <Memochild user={user}/> {/* 现在 memo 生效了 */}
@@ -543,8 +525,6 @@ function Parent() {
 }
 ```
 
-
-
 ### 用途 2：缓存昂贵的计算（可以单独使用）
 
 **这是 useMemo 和 useCallback 的重要区别：useMemo 即使没有 memo，也能独立发挥作用！**
@@ -553,18 +533,16 @@ function Parent() {
 function ExpensiveComponent({ items }) {
   // ❌ 没有缓存：每次 render 都要重新计算
   const total = items.reduce((sum, item) => sum + item.price, 0);
-  
+
   // ✅ 有缓存：只有 items 变化时才重新计算
   const total = useMemo(() => {
     console.log('计算 total...');
     return items.reduce((sum, item) => sum + item.price, 0);
   }, [items]);
-  
+
   return <div>总价：{total}</div>;
 }
 ```
-
-
 
 这个优化**不需要配合 memo**，因为：
 
@@ -602,15 +580,15 @@ function ExpensiveComponent({ items }) {
 // ❌ 过度优化的反例
 function Parent() {
   const [count, setCount] = useState(0);
-  
+
   // 没有传给子组件，这个 useCallback 完全没必要
   const handleClick = useCallback(() => {
     setCount(count + 1);
   }, [count]);
-  
+
   // 没有传给子组件，这个 useMemo 也没必要
   const doubled = useMemo(() => count * 2, [count]);
-  
+
   return (
     <div>
       <div>{doubled}</div>
@@ -619,9 +597,3 @@ function Parent() {
   );
 }
 ```
-
-
-
-
-
-

@@ -1,3 +1,10 @@
+/**
+ * @purpose 桌面端侧边栏目录(TOC):带激活指示条、阅读进度百分比和回到顶部
+ * @role    博客文章页桌面侧栏的目录组件,由文章布局以 React island 挂载,接收 Astro 提取的 headings
+ * @deps    react hooks、IntersectionObserver、@/lib/utils;依赖页面标题元素的 id 与 slug 对应
+ * @gotcha  无标题时返回 null;点击后 1s 内暂停 observer 防止高亮抖动;详见 docs/modules/components/README.md
+ */
+
 "use client";
 import { cn } from "@/lib/utils";
 import { useEffect, useState, useRef } from "react";

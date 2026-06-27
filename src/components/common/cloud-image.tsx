@@ -1,3 +1,10 @@
+/**
+ * @purpose 云存储图片组件，按 Key 拼接 CDN URL，带 BlurHash 占位、加载/错误态及点击查看原图 Lightbox
+ * @role    内容/博客中的图片展示岛，渲染主图并按需挂载 WebGL 原图查看器；被 MDX、相册等调用
+ * @deps    React hooks；@/lib/cloud-image-utils 解析 Key/BlurHash、cloud-image-config 域名；@/components/webgl-viewer
+ * @gotcha  src 必须符合 photo_xxx_1920x1080.webp 命名规则才能解析宽高/占位；详见 docs/cloud-image-component.md
+ */
+
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { parseCloudImageKey, getBlurHashKey } from "@/lib/cloud-image-utils";
@@ -111,11 +118,11 @@ export function CloudImage({
         onKeyDown={
           enableLightbox
             ? (e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                handleClick();
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleClick();
+                }
               }
-            }
             : undefined
         }
       >
@@ -129,7 +136,7 @@ export function CloudImage({
               "bg-cover bg-center",
               "scale-110 blur-[20px]",
               "transition-opacity duration-300",
-              isLoaded && "opacity-0"
+              isLoaded && "opacity-0",
             )}
             style={{ backgroundImage: `url(${blurHashUrl})` }}
           />
@@ -144,7 +151,7 @@ export function CloudImage({
               "bg-muted",
               "blur-md",
               "transition-opacity duration-300",
-              isLoaded && "opacity-0"
+              isLoaded && "opacity-0",
             )}
           />
         )}
@@ -159,7 +166,7 @@ export function CloudImage({
             "h-full w-full object-cover",
             "transition-opacity duration-300 ease-in-out",
             !isLoaded && !hasError ? "opacity-0" : "opacity-100",
-            enableLightbox && "cursor-zoom-in"
+            enableLightbox && "cursor-zoom-in",
           )}
         />
 

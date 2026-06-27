@@ -1,3 +1,10 @@
+/**
+ * @purpose 定义 Astro `blog` 内容集合：加载 src/content/blog 下 md/mdx 并用 zod 校验 frontmatter
+ * @role    内容层 schema 入口，Astro 构建时读取，getCollection("blog") 据此提供类型化文章数据
+ * @deps    astro:content（defineCollection/z）、astro/loaders（glob）
+ * @gotcha  frontmatter 字段（title/description/pubDate 等）须符合此 schema，否则构建报错；pubDate/updatedDate 由字符串 coerce 为 Date
+ */
+
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 

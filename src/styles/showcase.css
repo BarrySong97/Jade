@@ -1,0 +1,46 @@
+/* 作品集 / 摄影 —— 仅保留设计令牌与字体；其余样式全部用 Tailwind 实现 */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@400;500;600&display=swap");
+
+/* —— 作品集（三主题，挂在根节点 data-theme 上）—— */
+.works-page {
+  --serif: "Newsreader", "Songti SC", Georgia, serif;
+  --sans: "Inter", "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  font-family: var(--sans);
+}
+.works-page[data-theme="dark"] {
+  --bg: #0c0c0e;
+  --fg: #f4f1ec;
+  --fg-2: #a8a39b;
+  --fg-3: #6f6a63;
+  --line: rgba(255, 255, 255, 0.1);
+  --cap: #8f8a82;
+}
+.works-page[data-theme="light"] {
+  --bg: #fbfbfa;
+  --fg: #16151a;
+  --fg-2: #5c5a63;
+  --fg-3: #94919b;
+  --line: rgba(0, 0, 0, 0.1);
+  --cap: #8a8790;
+}
+.works-page[data-theme="paper"] {
+  --bg: #ece5d8;
+  --fg: #2c2620;
+  --fg-2: #6e6456;
+  --fg-3: #9a8f7d;
+  --line: rgba(60, 45, 25, 0.16);
+  --cap: #82765f;
+}
+
+/* —— 摄影（单一浅色调）—— */
+.photo-page {
+  --bg: #f3f2ef;
+  --fg: #1a1a1c;
+  --fg-2: #6d6c70;
+  --fg-3: #a7a6aa;
+  --line: rgba(0, 0, 0, 0.16);
+  --sans: "Inter", "PingFang SC", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  font-family: var(--sans);
+}

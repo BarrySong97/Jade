@@ -1,3 +1,10 @@
+/**
+ * @purpose 客户端水合包装器:把 Shiki 高亮后的原始 <pre> 渐进增强为带复制/折叠功能的 CodeBlock
+ * @role    博客代码块的 React island 入口,挂载后用 ./codeblock 的 CodeBlock 渲染,语言名作为标题
+ * @deps    react hooks、./codeblock
+ * @gotcha  mounted 前直接回显原始 <pre> 避免 SSR 闪烁/不匹配;详见 docs/modules/components/README.md
+ */
+
 "use client";
 import { CodeBlock as CodeBlockComponent } from "./codeblock";
 import { useEffect, useRef, useState } from "react";
@@ -9,12 +16,7 @@ interface CodeBlockWrapperProps {
   language?: string;
 }
 
-export function CodeBlockWrapper({
-  children,
-  className,
-  style,
-  language,
-}: CodeBlockWrapperProps) {
+export function CodeBlockWrapper({ children, className, style, language }: CodeBlockWrapperProps) {
   const [mounted, setMounted] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
