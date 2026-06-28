@@ -1,13 +1,13 @@
 /**
- * @purpose 博客正文图片组件:blur-up 渐进加载——thumbhash 平均色(瞬时)+ 模糊图打底,真图加载完 opacity 淡入盖上;点击放大走 WebGL viewer。
+ * @purpose 博客正文图片组件:blur-up 渐进加载——thumbhash 平均色(瞬时)+ 模糊图打底,真图加载完 opacity 淡入盖上;点击放大走 <img> 灯箱,缩略图经 Motion React 的 layoutId 共享布局「原地放大」morph 进灯箱。
  * @role    MDX 中由 scripts/img.mjs 改写生成的 <BlogImage/>;blog 专用,替代老 cloud-image 占位机制。
- * @deps    react;thumbhash(thumbHashToDataURL / thumbHashToAverageRGBA);@/components/webgl-viewer;@/lib/utils(cn)
- * @gotcha  平均色作 background-color 首帧即绘(免解码白屏)是 blur-up 不白的关键;真图淡入期间背后始终是模糊图。详见 docs/topics/blog-images.md
+ * @deps    react;motion/react(motion / AnimatePresence,layoutId 共享布局动画);thumbhash(thumbHashToDataURL / thumbHashToAverageRGBA);@/lib/utils(cn)
+ * @gotcha  灯箱用普通 <img>(不走 WebGL:WebGL 取纹理需 CORS,R2 不发 CORS 头会黑屏)。放大转场用 layoutId(缩略图与灯箱图同一 React 树、共享 useId() 生成的 layoutId)→ 全浏览器可用,无需 View Transitions。灯箱当前显示限宽 WebP(无原图);接原图见 docs/topics/blog-images.md TODO。
  */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { thumbHashToDataURL, thumbHashToAverageRGBA } from "thumbhash";
 import { cn } from "@/lib/utils";
-import { WebGLImageViewer } from "@/components/webgl-viewer";
 
 interface BlogImageProps {
   src: string;
@@ -20,6 +20,9 @@ interface BlogImageProps {
   /** 是否可点击放大查看原图,默认 true */
   zoomable?: boolean;
 }
+
+// 「原地放大 / 缩回」的共享布局过渡
+const MORPH = { duration: 0.36, ease: [0.22, 1, 0.36, 1] as const };
 
 function base64ToBytes(b64: string): Uint8Array {
   const bin =
@@ -38,9 +41,10 @@ export default function BlogImage({
   className,
   zoomable = true,
 }: BlogImageProps) {
-  const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [open, setOpen] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
+  const layoutId = useId(); // 缩略图 ↔ 灯箱图共享,唯一标识本实例
 
   // thumbhash → { 平均色(瞬时绘制,免白屏), 模糊图 dataURL }。SSR 与客户端都算,首帧即有占位。
   const placeholder = useMemo(() => {
@@ -68,14 +72,19 @@ export default function BlogImage({
     return () => img.removeEventListener("load", onLoad);
   }, [src]);
 
-  // Esc 关闭 lightbox
+  // Esc 关闭 + 锁页面滚动
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
     };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
   }, [open]);
 
   return (
@@ -91,9 +100,10 @@ export default function BlogImage({
           backgroundPosition: "center",
         }}
       >
-        {/* 真图加载完 opacity 0→1 淡入,盖在模糊图上(blur-up);淡入期间背后始终是平均色+模糊图,绝不白 */}
-        <img
+        {/* 真图加载完 opacity 0→1 淡入,盖在模糊图上(blur-up);灯箱打开时隐藏自身,morph 的是灯箱里的同 layoutId 图 */}
+        <motion.img
           ref={imgRef}
+          layoutId={layoutId}
           src={src}
           alt={alt}
           width={width}
@@ -103,43 +113,63 @@ export default function BlogImage({
           onClick={zoomable ? () => setOpen(true) : undefined}
           className={cn(
             "h-full w-full object-cover transition-opacity duration-700 ease-out",
-            loaded ? "opacity-100" : "opacity-0",
+            // 灯箱打开时隐藏缩略图(morph 的是灯箱里同 layoutId 的图,避免原位重影)
+            open ? "opacity-0" : loaded ? "opacity-100" : "opacity-0",
             zoomable && "cursor-zoom-in",
           )}
         />
       </figure>
 
-      {open && (
-        <div
-          className="fixed inset-0 z-50 bg-black"
-          role="dialog"
-          aria-modal="true"
-          aria-label="图片查看器"
-        >
-          <button
-            type="button"
-            aria-label="关闭"
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            key="backdrop"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label="图片查看器"
             onClick={() => setOpen(false)}
-            className="absolute top-4 right-4 z-10 rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+            <button
+              type="button"
+              aria-label="关闭"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpen(false);
+              }}
+              className="absolute top-4 right-4 z-10 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
             >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-          <WebGLImageViewer src={src} className="h-full w-full" />
-        </div>
-      )}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+
+            <motion.img
+              layoutId={layoutId}
+              src={src}
+              alt={alt}
+              onClick={(e) => e.stopPropagation()}
+              transition={MORPH}
+              className="max-h-full max-w-full cursor-zoom-out rounded-sm object-contain shadow-2xl"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

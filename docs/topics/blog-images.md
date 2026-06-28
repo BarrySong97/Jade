@@ -18,11 +18,13 @@
 
 ## 运行时表现
 - `<BlogImage>` 在 **SSR 时**就把 thumbhash 解码成模糊 PNG dataURL 作背景(零额外请求、无布局跳动,靠 `width/height` 撑 aspect-ratio)。
-- 真图 `loading="lazy"` 加载完淡入;点击经现有 [webgl-viewer](../modules/components/webgl-viewer.md) 放大看原图。
+- 真图 `loading="lazy"` 加载完淡入;点击放大走简单 `<img>` 灯箱(**不走 WebGL**:WebGL 取纹理需 CORS,而 R2 不发 CORS 头会黑屏),并用 **Motion React 的 `layoutId` 共享布局动画**让缩略图「原地放大」morph 进灯箱(缩略图与灯箱图同一 React 树,全浏览器可用)。
+- 灯箱目前显示的仍是限宽 WebP(非原图);若要看原图,需在上传时**额外存一份原图**并让灯箱指向它(TODO,见注意事项)。
 
 ## 注意事项
 - **幂等**:已改写成 `<BlogImage>` 的不会被再次处理;只认本地路径,远程 `http(s)://` 图片跳过。
 - **内容寻址**:同图内容→同 hash→同 key,自动去重;改图自动换名,可对 R2 配 `immutable` 强缓存(上传已带该头)。
 - blake2b 只用于**文件名**,thumbhash 只用于**占位**——别把两者混为一谈。
 - 老 `cloud-image-*`(hero 封面用)暂留,新图一律走本管线;迁移完再删。
+- **TODO(原图)**:灯箱应看原图,但当前只存了限宽 WebP。后续在 `scripts/img.mjs` 增一档「原图变体」(原尺寸、低压缩或无损),`<BlogImage>` 加 `fullSrc` 让灯箱优先用它、缺省回退到 `src`。
 - 摄影页(`/photos`)图片是另一套,后续单独重做,不走本管线。
