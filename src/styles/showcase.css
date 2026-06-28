@@ -15,6 +15,44 @@
   font-family: var(--sans);
 }
 
+/* —— 作品集瀑布流持续流动:奇数列向下、偶数列向上,内容复制一份做无缝循环 —— */
+@keyframes works-flow-down {
+  from {
+    transform: translateY(-50%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes works-flow-up {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+.works-flow-down {
+  animation: works-flow-down 50s linear infinite;
+  will-change: transform;
+}
+.works-flow-up {
+  animation: works-flow-up 50s linear infinite;
+  will-change: transform;
+}
+/* hover 整个瀑布流(.group)时暂停所有列。写成无层规则 + 高优先级,
+   否则会被无层的 .works-flow-* 简写(含 play-state:running)压住。 */
+.group:hover .works-flow-down,
+.group:hover .works-flow-up {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .works-flow-down,
+  .works-flow-up {
+    animation: none;
+  }
+}
+
 /* —— 摄影（单一浅色调）—— */
 .photo-page {
   --bg: #f3f2ef;

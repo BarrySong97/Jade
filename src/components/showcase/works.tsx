@@ -1,13 +1,19 @@
 /**
- * @purpose /products 作品集页的根组件（浅色单主题），渲染左侧固定简介 + 右侧瀑布流作品网格
+ * @purpose /products 作品集页的根组件（浅色单主题），渲染左侧固定简介 + 右侧持续流动的瀑布流
  * @role    products.astro 直接挂载;纯展示,无状态
  * @deps    本目录 works-data(WORKS)、works-intro、work-card
- * @gotcha  .works-page 作用域提供浅色令牌/字体(src/styles/showcase.css);整页 min-h-screen、body 滚动;首页↔本页的立方体转场见 cube-transition.astro / global.css。详见 docs/modules/components/README.md
+ * @gotcha  瀑布流每列内容复制一份做无缝循环(translateY -50%↔0);奇数列向下、偶数列向上;hover 整列容器(group)暂停;令牌见 src/styles/showcase.css。详见 docs/modules/components/README.md
  */
 
 import { WORKS } from "./works-data";
 import WorksIntro from "./works-intro";
 import WorkCard from "./work-card";
+
+const COLS = 3;
+// 轮转分配到各列,保留原始序号(用于角标)
+const COLUMNS = Array.from({ length: COLS }, (_, c) =>
+  WORKS.map((w, i) => ({ w, i })).filter((_, i) => i % COLS === c),
+);
 
 export default function Works() {
   return (
@@ -16,10 +22,17 @@ export default function Works() {
         <WorksIntro />
       </aside>
 
-      <main className="p-[clamp(24px,3vw,44px)]">
-        <div className="columns-2 [column-gap:12px] lg:columns-3">
-          {WORKS.map((w, i) => (
-            <WorkCard key={i} work={w} index={i} />
+      <main className="h-screen overflow-hidden p-[clamp(24px,3vw,44px)]">
+        {/* group:hover 整个瀑布流时暂停所有列 */}
+        <div className="group flex h-full gap-3">
+          {COLUMNS.map((col, ci) => (
+            <div key={ci} className="min-w-0 flex-1">
+              <div className={ci % 2 === 0 ? "works-flow-down" : "works-flow-up"}>
+                {[...col, ...col].map((it, i) => (
+                  <WorkCard key={i} work={it.w} index={it.i} />
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </main>
