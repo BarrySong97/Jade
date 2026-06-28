@@ -1,0 +1,28 @@
+---
+// 首页 ↔ 作品/摄影 的立方体转场触发器:导航时给 <html> 打 data-vt 标记,
+// 供 global.css 里的 ::view-transition 规则选中(只对这两组导航生效)。
+---
+
+<script is:inline>
+  if (!window.__cubeVT) {
+    window.__cubeVT = true;
+    const norm = (p) => (p !== "/" ? p.replace(/\/+$/, "") : "/");
+    let pending = "";
+    const apply = () => {
+      document.documentElement.dataset.vt = pending;
+    };
+    document.addEventListener("astro:before-preparation", (e) => {
+      const from = norm(e.from.pathname);
+      const to = norm(e.to.pathname);
+      // 作品=从上往下(down)、图片=从下往上(up);返回各自反向
+      if (from === "/" && to === "/products") pending = "down";
+      else if (from === "/products" && to === "/") pending = "up";
+      else if (from === "/" && to === "/photos") pending = "up";
+      else if (from === "/photos" && to === "/") pending = "down";
+      else pending = "";
+      apply(); // 旧快照阶段
+    });
+    // ClientRouter 用新文档的 html 属性覆盖会擦掉 data-vt;交换后再补一次,动画阶段才选得中
+    document.addEventListener("astro:after-swap", apply);
+  }
+</script>

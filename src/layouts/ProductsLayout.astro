@@ -1,5 +1,7 @@
 ---
 // 独立的 products 布局 —— 完全空白，不复用站点 Header/Footer/BaseLayout
+import { ClientRouter } from "astro:transitions";
+import CubeTransition from "@/components/showcase/cube-transition.astro";
 import "@/styles/global.css";
 
 const { title = "Products" } = Astro.props;
@@ -11,6 +13,8 @@ const { title = "Products" } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <ClientRouter />
+    <CubeTransition />
   </head>
   <body>
     <slot />

@@ -323,3 +323,59 @@
     animation: none !important;
   }
 }
+
+/* ===== 首页 ↔ 作品/摄影:把两页当作立方体相邻两面,绕 X 轴(纵向)转动 =====
+   data-vt 由 cube-transition.astro 设置:作品=从上往下(down)、图片=从下往上(up),返回各自反向。
+   仅 Chromium 系有 VT,其余回退为默认淡入。配方:cube translateZ(-50vh) rotateX(θ)、面 translateZ(50vh),
+   当前面落到 z=0 正好满屏;两面不透明,像实心立方体转角。 */
+:root[data-vt="down"]::view-transition-old(root) {
+  animation: cube-down-old 0.85s cubic-bezier(0.72, 0, 0.24, 1) both;
+  backface-visibility: hidden;
+}
+:root[data-vt="down"]::view-transition-new(root) {
+  animation: cube-down-new 0.85s cubic-bezier(0.72, 0, 0.24, 1) both;
+  backface-visibility: hidden;
+}
+:root[data-vt="up"]::view-transition-old(root) {
+  animation: cube-up-old 0.85s cubic-bezier(0.72, 0, 0.24, 1) both;
+  backface-visibility: hidden;
+}
+:root[data-vt="up"]::view-transition-new(root) {
+  animation: cube-up-new 0.85s cubic-bezier(0.72, 0, 0.24, 1) both;
+  backface-visibility: hidden;
+}
+
+/* 从上往下:old 向下翻出、new 从上方翻入 */
+@keyframes cube-down-old {
+  from {
+    transform: perspective(1600px) translateZ(-50vh) rotateX(0deg) translateZ(50vh);
+  }
+  to {
+    transform: perspective(1600px) translateZ(-50vh) rotateX(-90deg) translateZ(50vh);
+  }
+}
+@keyframes cube-down-new {
+  from {
+    transform: perspective(1600px) translateZ(-50vh) rotateX(90deg) translateZ(50vh);
+  }
+  to {
+    transform: perspective(1600px) translateZ(-50vh) rotateX(0deg) translateZ(50vh);
+  }
+}
+/* 从下往上:old 向上翻出、new 从下方翻入 */
+@keyframes cube-up-old {
+  from {
+    transform: perspective(1600px) translateZ(-50vh) rotateX(0deg) translateZ(50vh);
+  }
+  to {
+    transform: perspective(1600px) translateZ(-50vh) rotateX(90deg) translateZ(50vh);
+  }
+}
+@keyframes cube-up-new {
+  from {
+    transform: perspective(1600px) translateZ(-50vh) rotateX(-90deg) translateZ(50vh);
+  }
+  to {
+    transform: perspective(1600px) translateZ(-50vh) rotateX(0deg) translateZ(50vh);
+  }
+}

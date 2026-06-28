@@ -6,15 +6,17 @@
 
 ## 涉及文件
 
-- 页面入口:[src/pages/products.astro](../../../src/pages/products.astro) · [src/pages/photos.astro](../../../src/pages/photos.astro) — 以 `client:load` 挂载岛。
-- 作品集岛:`works.tsx`(根,持有 theme 状态)→ `works-intro.tsx`(左栏)/ `work-card.tsx`(瀑布流卡)/ `theme-switch.tsx`(右下角三主题)。
-- 摄影岛:`photography.tsx`(单文件,横向照片流 + 拨盘时间轴)。
+- 页面入口:[src/pages/products.astro](../../../src/pages/products.astro)(作品集)· [src/pages/photos.astro](../../../src/pages/photos.astro)(摄影)— 各自独立,以 `client:load` 挂载对应组件(`ProductsLayout` 带 `ClientRouter` 参与视图转场)。
+- 作品集:`works.tsx`(浅色单主题,无状态)→ `works-intro.tsx`(左栏)/ `work-card.tsx`(瀑布流卡)。
+- 摄影:`photography.tsx`(单文件,横向照片流 + 拨盘时间轴)。
 - 数据:`works-data.ts` / `photography-data.ts`(类型 + 列表 + 占位)。
-- 令牌/字体:[src/styles/showcase.css](../../../src/styles/showcase.css),作用域 `.works-page`(三主题)/ `.photo-page`(单浅色)。
+- 令牌/字体:[src/styles/showcase.css](../../../src/styles/showcase.css),作用域 `.works-page`(浅色)/ `.photo-page`(浅色)。
+- 立方体转场:`cube-transition.astro`(打 `data-vt` 标记)+ [global.css](../../../src/styles/global.css) 的 `::view-transition` 立方体动画。
 
 ## 关键设计
 
-- **主题切换**(作品集):根节点 `data-theme="dark|light|paper"`,颜色全走 CSS 变量;切换只改属性,不重渲数据。
+- **首页 ↔ 作品/摄影 的立方体转场**:用 Astro View Transitions(两边 `ClientRouter`),把首页与展示页当作立方体相邻两面,**绕 X 轴(纵向)转 90°**——作品=从上往下(`data-vt="down"`)、图片=从下往上(`up`),返回各自反向(配方 `perspective(1600px) translateZ(-50vh) rotateX(θ) translateZ(50vh)`,当前面落到 z=0 满屏,见 [global.css](../../../src/styles/global.css))。`cube-transition.astro` 在 `astro:before-preparation` + `astro:after-swap` 给 `<html>` 打 `data-vt`(**ClientRouter 交换会用新文档 html 属性擦掉它,所以必须在 after-swap 补一次**,否则动画阶段选不中、退回默认淡入);CSS 据此只对「首页↔展示页」生效,其余导航走默认淡入。为让整页作为一个面整体转动,[BaseLayout](../../../src/layouts/BaseLayout.astro) 去掉了 header/footer 的 `transition:persist` 与 main 的 fade。**两页之间不互相切换**——转场只在「首页 ↔ 作品/摄影」发生。
+- **作品集**:仅浅色单主题(已移除原暗房/留白/纸感三主题切换与 theme-switch 组件)。
 - **拨盘联动**(摄影):照片流横向滚动 ↔ 底部刻度时间轴,靠 `photography.tsx` 里一个命令式 `useEffect` 直接改多个 ref 的 `style`(绕过 React 渲染),含滚轮纵转横、松手吸附。**这是个内聚交互控件,不宜拆散**(拆开要把一堆 ref 当 props 传,更难读)。
 
 ## 注意事项

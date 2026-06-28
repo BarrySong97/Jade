@@ -1,6 +1,6 @@
 /**
  * @purpose 作品集页的静态数据与类型：Theme/Work/Contact 类型、INTRO 简介、WORKS 列表、PALETTES 占位调色板及 placeholderBg 取色函数
- * @role    被 works.tsx / works-intro / work-card / theme-switch 共同引用的数据与类型单一来源
+ * @role    被 works.tsx / works-intro / work-card 引用的数据与类型单一来源
  * @deps    无运行时依赖（纯常量与工具函数）
  * @gotcha  Work.p 是调色板索引、ar 是宽高比；PALETTES 每主题各 6 色，placeholderBg 按 idx 取模循环，接真实图后这些占位可删
  */
