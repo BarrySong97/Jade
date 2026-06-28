@@ -1,28 +1,56 @@
 ---
-// 首页 ↔ 作品/摄影 的立方体转场触发器:导航时给 <html> 打 data-vt 标记,
-// 供 global.css 里的 ::view-transition 规则选中(只对这两组导航生效)。
+// 展示页转场协调器(随 ProductsLayout / BaseLayout 注入):
+//  1) 首页 ↔ 作品/摄影:给 <html> 打 data-vt,触发 global.css 的立方体 ::view-transition 规则。
+//  2) 摄影列表 ↔ 图集详情(/photos ↔ /photos/<slug>):瞬时给封面元素设共享 view-transition-name,
+//     让封面"原地不动 → 居中"。名字只在该导航期间挂,避免污染立方体转场。
 ---
 
 <script is:inline>
   if (!window.__cubeVT) {
     window.__cubeVT = true;
     const norm = (p) => (p !== "/" ? p.replace(/\/+$/, "") : "/");
-    let pending = "";
-    const apply = () => {
+    const NAME = "photo-cover";
+    let pending = ""; // 立方体方向
+    let coverSlug = ""; // 共享封面的图集 slug
+
+    const applyVt = () => {
       document.documentElement.dataset.vt = pending;
     };
+    const nameCover = () => {
+      // 先清掉上一次残留的命名
+      document.querySelectorAll('[data-cover]').forEach((el) => {
+        if (el.style.viewTransitionName === NAME) el.style.viewTransitionName = "";
+      });
+      if (!coverSlug) return;
+      const el = document.querySelector('[data-cover="' + coverSlug + '"]');
+      if (el) el.style.viewTransitionName = NAME;
+    };
+
     document.addEventListener("astro:before-preparation", (e) => {
       const from = norm(e.from.pathname);
       const to = norm(e.to.pathname);
-      // 作品=从上往下(down)、图片=从下往上(up);返回各自反向
+
+      // 立方体:首页 ↔ 作品/摄影(作品=down、图片=up,返回反向)
       if (from === "/" && to === "/products") pending = "down";
       else if (from === "/products" && to === "/") pending = "up";
       else if (from === "/" && to === "/photos") pending = "up";
       else if (from === "/photos" && to === "/") pending = "down";
       else pending = "";
-      apply(); // 旧快照阶段
+      applyVt();
+
+      // 共享封面:列表 ↔ 详情
+      const toDetail = to.match(/^\/photos\/([^/]+)$/);
+      const fromDetail = from.match(/^\/photos\/([^/]+)$/);
+      if (from === "/photos" && toDetail) coverSlug = toDetail[1];
+      else if (fromDetail && to === "/photos") coverSlug = fromDetail[1];
+      else coverSlug = "";
+      nameCover(); // 旧页:命名被点封面 / 详情首图(进快照前)
     });
-    // ClientRouter 用新文档的 html 属性覆盖会擦掉 data-vt;交换后再补一次,动画阶段才选得中
-    document.addEventListener("astro:after-swap", apply);
+
+    // ClientRouter 交换会用新文档属性擦掉 data-vt、且新页元素需重新命名 → 交换后各补一次
+    document.addEventListener("astro:after-swap", () => {
+      applyVt();
+      nameCover();
+    });
   }
 </script>

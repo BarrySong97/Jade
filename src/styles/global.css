@@ -324,6 +324,14 @@
   }
 }
 
+/* ===== 摄影列表 ↔ 图集详情:封面共享元素 morph(view-transition-name: photo-cover) ===== */
+::view-transition-group(photo-cover) {
+  animation-duration: 0.55s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 博客图片灯箱「原地放大」改用 Motion React 的 layoutId 共享布局动画(见 blog-image.tsx),不再走 View Transitions。 */
+
 /* ===== 首页 ↔ 作品/摄影:把两页当作立方体相邻两面,绕 X 轴(纵向)转动 =====
    data-vt 由 cube-transition.astro 设置:作品=从上往下(down)、图片=从下往上(up),返回各自反向。
    仅 Chromium 系有 VT,其余回退为默认淡入。配方:cube translateZ(-50vh) rotateX(θ)、面 translateZ(50vh),

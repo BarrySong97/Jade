@@ -1,11 +1,28 @@
 ---
 import ProductsLayout from "@/layouts/ProductsLayout.astro";
-import Photography from "@/components/showcase/photography";
+import PhotoStream from "@/components/showcase/photo-stream";
+import { COVERS } from "@/components/showcase/photography-data";
 import "@/styles/showcase.css";
+
+const items = COVERS.map((c) => ({
+  ar: c.ar,
+  duo: c.duo,
+  title: c.title,
+  date: c.date,
+  href: `/photos/${c.slug}`,
+  coverSlug: c.slug,
+}));
 ---
 
 <ProductsLayout title="摄影">
   <div class="photo-page h-screen overflow-hidden bg-[var(--bg)] text-[var(--fg)]">
-    <Photography client:load />
+    <PhotoStream
+      client:load
+      items={items}
+      dialMode="date"
+      title="PHOTOGRAPHS"
+      backHref="/"
+      backLabel="← 回到博客"
+    />
   </div>
 </ProductsLayout>

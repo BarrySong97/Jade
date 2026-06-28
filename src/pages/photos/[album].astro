@@ -1,0 +1,30 @@
+---
+import ProductsLayout from "@/layouts/ProductsLayout.astro";
+import PhotoStream from "@/components/showcase/photo-stream";
+import { ALBUMS } from "@/components/showcase/photography-data";
+import "@/styles/showcase.css";
+
+export function getStaticPaths() {
+  return ALBUMS.map((a) => ({ params: { album: a.slug }, props: { album: a } }));
+}
+
+const { album } = Astro.props;
+const items = album.photos.map((p, i) => ({
+  ar: p.ar,
+  duo: p.duo,
+  coverSlug: i === 0 ? album.slug : undefined,
+}));
+---
+
+<ProductsLayout title={album.title}>
+  <div class="photo-page h-screen overflow-hidden bg-[var(--bg)] text-[var(--fg)]">
+    <PhotoStream
+      client:load
+      items={items}
+      dialMode="index"
+      title={album.title}
+      backHref="/photos"
+      backLabel="← 返回"
+    />
+  </div>
+</ProductsLayout>
