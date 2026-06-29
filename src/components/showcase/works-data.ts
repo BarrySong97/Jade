@@ -15,6 +15,8 @@ export interface Work {
   ar: number; // 宽高比
   p: number; // 调色板序号（占位用）
   img?: string; // 真实图路径（public/ 下，设置后渲染 <img> 取代占位色块）
+  label?: string; // 有图时右上角黑底白字应用标识的应用名（类 Twitter 卡片域名标）
+  desc?: string; // 标识里应用名下方的一句说明
 }
 
 export interface Contact {
@@ -36,13 +38,46 @@ export const INTRO = {
 };
 
 export const WORKS: Work[] = [
-  { t: "FLOWM 记账", y: "2026", cat: "Product", ar: 1.9, p: 1, img: "/works/flowm.png" },
-  { t: "Immersed 沉浸阅读", y: "2026", cat: "Product", ar: 1.9, p: 0, img: "/works/immersed.png" },
-  // 以下为占位色块(尚无真图);保留少量以便看出瀑布流的无限循环,接真图后再增删
-  { t: "Halcyon 品牌系统", y: "2026", cat: "Branding", ar: 0.74, p: 0 },
-  { t: "潮汐 · 阅读器", y: "2026", cat: "Product", ar: 1.34, p: 1 },
-  { t: "山海经 · 插画集", y: "2025", cat: "Illustration", ar: 0.78, p: 2 },
-  { t: "Monospace 字体实验", y: "2025", cat: "Type", ar: 1.0, p: 3 },
+  {
+    t: "FLOWM",
+    y: "2026",
+    cat: "Product",
+    ar: 1.9,
+    p: 1,
+    img: "/works/flowm.png",
+    label: "FLOWM",
+    desc: "非对账记账软件",
+  },
+  {
+    t: "Immersed",
+    y: "2026",
+    cat: "Product",
+    ar: 1.9,
+    p: 0,
+    img: "/works/immersed.png",
+    label: "Immersed",
+    desc: "AI 辅助阅读英文原著 App",
+  },
+  {
+    t: "FLOWM 流记",
+    y: "2026",
+    cat: "Product",
+    ar: 1.59,
+    p: 2,
+    img: "/works/ledger.png",
+    label: "FLOWM 流记",
+    desc: "轻量级复式记账 App",
+  },
+  {
+    t: "grove",
+    y: "2026",
+    cat: "Product",
+    ar: 0.56,
+    p: 3,
+    img: "/works/grove.png",
+    label: "grove",
+    desc: "manage your worktree in menu bar",
+  },
 ];
 
 /* 占位色块调色板（每个主题一组，低饱和、成体系）。替换为真实图后可删除。 */
