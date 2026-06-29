@@ -13,7 +13,8 @@ export interface Work {
   y: string; // 年份
   cat: string; // 分类
   ar: number; // 宽高比
-  p: number; // 调色板序号
+  p: number; // 调色板序号（占位用）
+  img?: string; // 真实图路径（public/ 下，设置后渲染 <img> 取代占位色块）
 }
 
 export interface Contact {
@@ -35,18 +36,13 @@ export const INTRO = {
 };
 
 export const WORKS: Work[] = [
+  { t: "FLOWM 记账", y: "2026", cat: "Product", ar: 1.9, p: 1, img: "/works/flowm.png" },
+  { t: "Immersed 沉浸阅读", y: "2026", cat: "Product", ar: 1.9, p: 0, img: "/works/immersed.png" },
+  // 以下为占位色块(尚无真图);保留少量以便看出瀑布流的无限循环,接真图后再增删
   { t: "Halcyon 品牌系统", y: "2026", cat: "Branding", ar: 0.74, p: 0 },
   { t: "潮汐 · 阅读器", y: "2026", cat: "Product", ar: 1.34, p: 1 },
   { t: "山海经 · 插画集", y: "2025", cat: "Illustration", ar: 0.78, p: 2 },
   { t: "Monospace 字体实验", y: "2025", cat: "Type", ar: 1.0, p: 3 },
-  { t: "晚风电台 视觉", y: "2025", cat: "Branding", ar: 1.5, p: 4 },
-  { t: "Orbit 仪表盘", y: "2024", cat: "Product", ar: 0.82, p: 5 },
-  { t: "纸鸢 海报系列", y: "2024", cat: "Poster", ar: 0.7, p: 1 },
-  { t: "深林 摄影", y: "2024", cat: "Photo", ar: 1.26, p: 0 },
-  { t: "Pulse 动效语言", y: "2023", cat: "Motion", ar: 1.0, p: 2 },
-  { t: "城市切片", y: "2023", cat: "Photo", ar: 0.8, p: 5 },
-  { t: "Ember 配色工具", y: "2022", cat: "Product", ar: 1.4, p: 3 },
-  { t: "无题 · 拼贴", y: "2019", cat: "Experiment", ar: 0.76, p: 4 },
 ];
 
 /* 占位色块调色板（每个主题一组，低饱和、成体系）。替换为真实图后可删除。 */

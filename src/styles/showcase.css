@@ -40,12 +40,7 @@
   animation: works-flow-up 50s linear infinite;
   will-change: transform;
 }
-/* hover 整个瀑布流(.group)时暂停所有列。写成无层规则 + 高优先级,
-   否则会被无层的 .works-flow-* 简写(含 play-state:running)压住。 */
-.group:hover .works-flow-down,
-.group:hover .works-flow-up {
-  animation-play-state: paused;
-}
+/* hover 暂停改由 works.tsx 用 JS 实现「就地冻结 + 可滚动」(margin-top 冻结当前位移),不再用纯 CSS 的 play-state。 */
 @media (prefers-reduced-motion: reduce) {
   .works-flow-down,
   .works-flow-up {
