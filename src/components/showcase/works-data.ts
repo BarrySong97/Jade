@@ -1,24 +1,23 @@
 /**
- * @purpose 作品集页的静态数据与类型：Theme/Work/Contact 类型、INTRO 简介、WORKS 列表、PALETTES 占位调色板及 placeholderBg 取色函数
+ * @purpose 作品集页的静态数据与类型：Work/Contact 类型、INTRO 简介、WORKS 列表(真实产品图,托管在 R2)
  * @role    被 works.tsx / works-intro / work-card 引用的数据与类型单一来源
  * @deps    @/lib/site(TWITTER/TWITTER_HANDLE,联系方式复用首页社交链接)
- * @gotcha  Work.p 是调色板索引、ar 是宽高比；PALETTES 每主题各 6 色，placeholderBg 按 idx 取模循环，接真实图后这些占位可删。CONTACT 只展示 Twitter,链接取自 PROFILE(与首页一致)
+ * @gotcha  图片走 R2(WebP,宽 2400/q88,经 scripts/upload-asset.mjs 上传);width/height/thumbhash 供 BlogImage blur-up。CONTACT 只展示 Twitter(与首页同源)。换图:upload-asset 产出新 url/尺寸/thumbhash 后改这里。
  */
 
 import { TWITTER, TWITTER_HANDLE } from "@/lib/site";
 
-/* 作品集数据 */
-export type Theme = "dark" | "light" | "paper";
-
+/* 作品(均为真实产品图,托管 R2) */
 export interface Work {
-  t: string; // 标题
+  t: string; // 标题(alt 用)
   y: string; // 年份
   cat: string; // 分类
-  ar: number; // 宽高比
-  p: number; // 调色板序号（占位用）
-  img?: string; // 真实图路径（public/ 下，设置后渲染 <img> 取代占位色块）
-  label?: string; // 有图时右上角黑底白字应用标识的应用名（类 Twitter 卡片域名标）
-  desc?: string; // 标识里应用名下方的一句说明
+  img: string; // R2 WebP 地址
+  width: number;
+  height: number;
+  thumbhash: string; // blur-up 占位
+  label: string; // 左下/左上角应用名标识
+  desc?: string; // 标识里的一句说明
 }
 
 export interface Contact {
@@ -35,14 +34,17 @@ export const INTRO = {
   contact: [{ label: "Twitter", value: TWITTER_HANDLE, url: TWITTER.url }] as Contact[],
 };
 
+const R2 = "https://blogassets.4real.ink/works";
+
 export const WORKS: Work[] = [
   {
     t: "FLOWM",
     y: "2026",
     cat: "Product",
-    ar: 1.9,
-    p: 1,
-    img: "/works/flowm.png",
+    img: `${R2}/a91c90f16bbfedfb41a5000b9c603429.webp`,
+    width: 1200,
+    height: 630,
+    thumbhash: "PPgBBIBBuntQiImId5qYf4sFpg==",
     label: "FLOWM",
     desc: "非对账记账软件",
   },
@@ -50,9 +52,10 @@ export const WORKS: Work[] = [
     t: "Immersed",
     y: "2026",
     cat: "Product",
-    ar: 1.9,
-    p: 0,
-    img: "/works/immersed.png",
+    img: `${R2}/4f9d15c37fa585ee052f3d4eb33ed834.webp`,
+    width: 1200,
+    height: 630,
+    thumbhash: "n/cRFIQHaWiIdnhyeXffd/FtNw==",
     label: "Immersed",
     desc: "AI 辅助阅读英文原著 App",
   },
@@ -60,9 +63,10 @@ export const WORKS: Work[] = [
     t: "FLOWM 流记",
     y: "2026",
     cat: "Product",
-    ar: 1.59,
-    p: 2,
-    img: "/works/ledger.png",
+    img: `${R2}/10a74f8b89dbbb72f4cec350c28c6f93.webp`,
+    width: 2400,
+    height: 1507,
+    thumbhash: "9veBA4QP2XUstI/JurCvaJdzlWifx4c=",
     label: "FLOWM 流记",
     desc: "轻量级复式记账 App",
   },
@@ -70,9 +74,10 @@ export const WORKS: Work[] = [
     t: "grove",
     y: "2026",
     cat: "Product",
-    ar: 0.56,
-    p: 3,
-    img: "/works/grove.png",
+    img: `${R2}/7470173f4bf9a33d5f88196d65017218.webp`,
+    width: 1080,
+    height: 1920,
+    thumbhash: "O/gBBADDnrg22Htp+bhVgDBuCQ==",
     label: "grove",
     desc: "manage your worktree in menu bar",
   },
@@ -80,39 +85,30 @@ export const WORKS: Work[] = [
     t: "Journal TODO",
     y: "2026",
     cat: "Product",
-    ar: 1.33,
-    p: 4,
-    img: "/works/journaltodo.png",
+    img: `${R2}/d102b28694d71ac461f742ed92e54428.webp`,
+    width: 1920,
+    height: 1440,
+    thumbhash: "HvYRFYRwT3p2d4eUaIiIl0JuAFnH",
     label: "Journal TODO",
   },
   {
     t: "Supply Smart Official",
     y: "2026",
     cat: "Web",
-    ar: 1.78,
-    p: 5,
-    img: "/works/supplysmart.png",
+    img: `${R2}/49e24727873abd303c73406ed4b07396.webp`,
+    width: 1920,
+    height: 1080,
+    thumbhash: "uOcFDIIGNzaTiomTZ2UGpHNgag==",
     label: "Supply Smart Official",
   },
   {
     t: "Limitless 320",
     y: "2026",
     cat: "Web",
-    ar: 1.78,
-    p: 0,
-    img: "/works/limitless320.png",
+    img: `${R2}/6f13af35004c995287c7dd646d4ff130.webp`,
+    width: 1920,
+    height: 1080,
+    thumbhash: "n/cJJIL45bpvdYd9lZMKaGaASg==",
     label: "Limitless 320",
   },
 ];
-
-/* 占位色块调色板（每个主题一组，低饱和、成体系）。替换为真实图后可删除。 */
-export const PALETTES: Record<Theme, string[]> = {
-  dark: ["#3a4a5a", "#5a3a3f", "#4a4636", "#36504a", "#4a3a55", "#574030"],
-  light: ["#c9d2da", "#dcc9c6", "#d6d2c2", "#c6d4ce", "#d2c9d8", "#ddd0c2"],
-  paper: ["#c4b9a3", "#bba38f", "#b6ad8e", "#a9b39c", "#b3a3ad", "#c1a98a"],
-};
-
-export function placeholderBg(theme: Theme, idx: number): string {
-  const arr = PALETTES[theme] || PALETTES.dark;
-  return arr[idx % arr.length];
-}

@@ -7,9 +7,10 @@
 ## 涉及文件
 
 - 页面入口:[src/pages/products.astro](../../../src/pages/products.astro)(作品集)· [src/pages/photos.astro](../../../src/pages/photos.astro)(摄影列表)· [src/pages/photos/[album].astro](../../../src/pages/photos/[album].astro)(图集详情,`getStaticPaths` 一图集一页)— 都用 `ProductsLayout`(带 `ClientRouter` 参与视图转场)。
-- 作品集:`works.tsx`(浅色单主题,无状态)→ `works-intro.tsx`(左栏)/ `work-card.tsx`(瀑布流卡)。
+- 作品集:`works.tsx`(浅色单主题,hover 暂停滚动)→ `works-intro.tsx`(左栏)/ `work-card.tsx`(瀑布流卡,复用 `BlogImage` 渲染 R2 产品图 + 叠应用标识)。
 - 摄影:`photo-stream.tsx`(可复用横向流 + 拨盘,列表与详情共用,`dialMode` 切日期/序号)。
-- 数据:`works-data.ts` / `photography-data.ts`(`ALBUMS` 图集 + 派生 `COVERS` + 占位)。
+- 数据:`works-data.ts`(WORKS 真实产品图,托管 R2,带 width/height/thumbhash)/ `photography-data.ts`(`ALBUMS` 图集 + 派生 `COVERS` + 占位)。
+- 作品图上传:[scripts/upload-asset.mjs](../../../scripts/upload-asset.mjs)(非 MDX 通用资源:压 WebP 宽 2400/q88 → 传 R2,产出 url/尺寸/thumbhash 手动填进 works-data)。
 - 令牌/字体:[src/styles/showcase.css](../../../src/styles/showcase.css),作用域 `.works-page`(浅色)/ `.photo-page`(浅色)。
 - 转场:`cube-transition.astro`(给 `<html>` 打 `data-vt` 立方体方向 + 给封面瞬时设 `view-transition-name` 共享元素)+ [global.css](../../../src/styles/global.css) 的 `::view-transition` 动画。
 
@@ -24,7 +25,7 @@
 ## 注意事项
 
 - Tailwind 4 字体族任意值必须 `font-[family-name:var(--serif)]`(漏 `family-name:` 字体不生效——一次真实失败)。
-- 占位图(色块 / 渐变)是临时的:`work-card` / `photo-stream` 把占位 `<div>` 换成 `<img>`,并在对应 `*-data.ts` 加 `src` 字段即可接真实图。
+- 摄影(`photo-stream`)仍用渐变色块占位,接真实图时换 `<img>`;作品集已全部接真实图(R2),无占位。
 - 顶栏返回:作品集 / 摄影列表是「← 回到博客」(`/`);图集详情是「← 返回」(`/photos`)。
 - 联系方式只展示 **Twitter**,链接/句柄取自 `@/lib/site` 的 `TWITTER`/`TWITTER_HANDLE`(与首页同源):作品集在左栏 CONTACT、摄影页在左下角。
-- 作品卡(`work-card`):有 `work.img` 时铺真实图并在角落叠半透明黑底圆角「应用名 — 说明」徽标(`label`/`desc`);**竖图(`ar<1`)放左上角、横图放左下角**(底部易被裁)。占位色块已全部移除,仅保留真实产品图。
+- 作品卡(`work-card`):复用 `BlogImage` 渲染 R2 产品图(blur-up,`zoomable=false` 不开灯箱),角落叠半透明黑底圆角「应用名 — 说明」徽标(`label`/`desc`);**竖图(`height>width`)放左上角、横图放左下角**(底部易被裁)。
