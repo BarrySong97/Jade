@@ -26,3 +26,5 @@
 - Tailwind 4 字体族任意值必须 `font-[family-name:var(--serif)]`(漏 `family-name:` 字体不生效——一次真实失败)。
 - 占位图(色块 / 渐变)是临时的:`work-card` / `photo-stream` 把占位 `<div>` 换成 `<img>`,并在对应 `*-data.ts` 加 `src` 字段即可接真实图。
 - 顶栏返回:作品集 / 摄影列表是「← 回到博客」(`/`);图集详情是「← 返回」(`/photos`)。
+- 联系方式只展示 **Twitter**,链接/句柄取自 `@/lib/site` 的 `TWITTER`/`TWITTER_HANDLE`(与首页同源):作品集在左栏 CONTACT、摄影页在左下角。
+- 作品卡(`work-card`):有 `work.img` 时铺真实图并在角落叠半透明黑底圆角「应用名 — 说明」徽标(`label`/`desc`);**竖图(`ar<1`)放左上角、横图放左下角**(底部易被裁)。占位色块已全部移除,仅保留真实产品图。

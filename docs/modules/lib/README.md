@@ -7,7 +7,7 @@
 ## 文件清单与关系
 
 - `utils.ts` — `cn()`:合并并去重 Tailwind class(clsx + tailwind-merge)。几乎所有组件都用。
-- `site.ts` — `PROFILE` 常量:站点作者身份(姓名、handle、简介、社交链接)。首页与展示页引用。
+- `site.ts` — `PROFILE` 常量:站点作者身份(姓名、handle、简介、社交链接);另导出 `TWITTER` / `TWITTER_HANDLE`(从 social 派生),供展示页(作品/摄影)联系方式复用,与首页一致。首页与展示页引用。
 - `use-copy-button.ts` — React Hook:复制按钮「已复制」态,1.5s 自动复位。代码块复制用。
 - `cloud-image-config.ts` — 云图片 CDN 域名常量 + 「Key → 完整 URL」拼接。
 - `cloud-image-utils.ts` — 云图片 Key 解析:拆文件名元信息、推导对应 BlurHash 占位图 Key。

@@ -17,3 +17,7 @@ export const PROFILE = {
     { label: "Twitter", url: "https://x.com/BarrySong97" },
   ],
 } as const;
+
+/* Twitter 链接 + 句柄(展示页联系方式复用,保持与首页一致) */
+export const TWITTER = PROFILE.social.find((s) => s.label === "Twitter")!;
+export const TWITTER_HANDLE = `@${TWITTER.url.replace(/\/+$/, "").split("/").pop()}`;

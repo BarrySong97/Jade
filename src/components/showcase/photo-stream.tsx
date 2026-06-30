@@ -1,10 +1,11 @@
 /**
  * @purpose 摄影展示的复用横向流：照片横向流 + 居中 + 拖拽/滚轮转横向/吸附 + 底部拨盘；列表与详情共用
  * @role    被 photos.astro(列表，dialMode=date) 与 photos/[album].astro(详情，dialMode=index) 以 client island 挂载
- * @deps    react useEffect/useRef；本目录 photography-data(fmtDate、拨盘常量)；令牌在 showcase.css 的 .photo-page 作用域
+ * @deps    react useEffect/useRef；本目录 photography-data(fmtDate、拨盘常量)；@/lib/site(TWITTER 联系方式)；令牌在 showcase.css 的 .photo-page 作用域
  * @gotcha  左右 spacer 按首/末项宽度算，使首项在 scrollLeft=0 即居中（详情封面共享元素转场要求首帧就居中）；封面项带 data-cover，转场命名由 cube-transition.astro 瞬时设置；滚动↔拨盘联动靠命令式 useEffect 改 ref。详见 docs/modules/components/README.md
  */
 import { useEffect, useRef } from "react";
+import { TWITTER, TWITTER_HANDLE } from "@/lib/site";
 import { fmtDate, BASE_H, PEAK, PSPACING, SPREAD } from "./photography-data";
 
 export interface StreamItem {
@@ -286,6 +287,17 @@ export default function PhotoStream({ items, dialMode, title, backHref, backLabe
           />
         </div>
       </div>
+
+      {/* 左下角联系方式:只展示 Twitter(链接复用首页 PROFILE) */}
+      <a
+        href={TWITTER.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute bottom-6 left-8 z-[4] flex items-baseline gap-[10px] font-[family-name:var(--mono)] text-[11px] tracking-[0.04em]"
+      >
+        <span className="text-[var(--fg-3)]">Twitter</span>
+        <span className={`${LINK} text-[var(--fg-2)]`}>{TWITTER_HANDLE}</span>
+      </a>
     </div>
   );
 }

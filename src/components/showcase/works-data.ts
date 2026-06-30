@@ -1,9 +1,11 @@
 /**
  * @purpose 作品集页的静态数据与类型：Theme/Work/Contact 类型、INTRO 简介、WORKS 列表、PALETTES 占位调色板及 placeholderBg 取色函数
  * @role    被 works.tsx / works-intro / work-card 引用的数据与类型单一来源
- * @deps    无运行时依赖（纯常量与工具函数）
- * @gotcha  Work.p 是调色板索引、ar 是宽高比；PALETTES 每主题各 6 色，placeholderBg 按 idx 取模循环，接真实图后这些占位可删
+ * @deps    @/lib/site(TWITTER/TWITTER_HANDLE,联系方式复用首页社交链接)
+ * @gotcha  Work.p 是调色板索引、ar 是宽高比；PALETTES 每主题各 6 色，placeholderBg 按 idx 取模循环，接真实图后这些占位可删。CONTACT 只展示 Twitter,链接取自 PROFILE(与首页一致)
  */
+
+import { TWITTER, TWITTER_HANDLE } from "@/lib/site";
 
 /* 作品集数据 */
 export type Theme = "dark" | "light" | "paper";
@@ -30,11 +32,7 @@ export const INTRO = {
   zh: "作品选辑",
   years: "2019 — 2026",
   para: "这里收录我这些年做过的部分项目——品牌、界面、字体与一些自发的实验。它们大小不一、媒介各异，但都关于同一件事：把复杂的东西，安静地讲清楚。",
-  contact: [
-    { label: "Email", value: "hi@lenshen.com", url: "mailto:hi@lenshen.com" },
-    { label: "Instagram", value: "@lenshen", url: "#" },
-    { label: "X / Twitter", value: "@lenshen", url: "#" },
-  ] as Contact[],
+  contact: [{ label: "Twitter", value: TWITTER_HANDLE, url: TWITTER.url }] as Contact[],
 };
 
 export const WORKS: Work[] = [
@@ -77,6 +75,33 @@ export const WORKS: Work[] = [
     img: "/works/grove.png",
     label: "grove",
     desc: "manage your worktree in menu bar",
+  },
+  {
+    t: "Journal TODO",
+    y: "2026",
+    cat: "Product",
+    ar: 1.33,
+    p: 4,
+    img: "/works/journaltodo.png",
+    label: "Journal TODO",
+  },
+  {
+    t: "Supply Smart Official",
+    y: "2026",
+    cat: "Web",
+    ar: 1.78,
+    p: 5,
+    img: "/works/supplysmart.png",
+    label: "Supply Smart Official",
+  },
+  {
+    t: "Limitless 320",
+    y: "2026",
+    cat: "Web",
+    ar: 1.78,
+    p: 0,
+    img: "/works/limitless320.png",
+    label: "Limitless 320",
   },
 ];
 
