@@ -63,6 +63,7 @@ pnpm linkcard --dry-run …    # 演练,不落盘不上传
 ## 注意事项
 
 - **命令叫 `pnpm linkcard`,不能叫 `pnpm link`**(与 pnpm 内置命令冲突)。
+- **`<PostCard slug>` 传的是 collection 的 id,不是文件名原样**:Astro 的 glob loader 会把 id 小写化(`how-I-find-*.mdx` → `how-i-find-*`)。组件已做「原样查不到就退回小写」的容错,但写的时候直接用小写最省事。
 - **归一化 URL 是缓存 key 的唯一定义**,写在 `scripts/lib/og.mjs` 的 `normalizeUrl`。改它等于改缓存格式,旧 key 会失配,需要 `--refresh` 重抓。
 - **og:image 转存自己的 R2,不外链**:对方防盗链 403 / 改图删图 / 无 CORS / 读者 IP 暴露,转存后还能复用 `processImage` 拿 thumbhash。
 - 卡片嵌在 `.prose` 里要挡两拨样式,**两个都不能少**:`not-prose` 挡 `@tailwindcss/typography` 插件(其选择器自带该逃生舱),`ref-card` 挡 `global.css` 里手写的 `.prose` 规则(无逃生舱,靠 `.prose .ref-card` 的 `revert-layer` 退回 utilities 层)。手写的 `.prose` 规则是**无层级**的,会盖过 Tailwind utilities——这是踩过的坑。
