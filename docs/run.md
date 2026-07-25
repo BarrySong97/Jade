@@ -46,12 +46,25 @@ node scripts/check-docs.mjs --strict # 把 ⚠️ 也当失败
 ```
 
 ## 博客图片管线(压缩 + 传 R2 + 生成占位)
+
 ```bash
 cp .env.example .env        # 首次:填入 R2 账户/Key/桶/公开域名(.env 已 gitignore)
 pnpm img <slug> --dry-run   # 演练:压缩/命名/thumbhash,不上传不改写
 pnpm img <slug>             # 实跑:压缩→传 R2→把 ![]() 改写成 <BlogImage/>
 ```
+
 > 详见专题 [topics/blog-images.md](topics/blog-images.md)。
+
+## 外链卡片元数据(抓 OG + 传 R2 + 写缓存)
+
+```bash
+pnpm linkcard <url> --dry-run  # 演练:抓标题/描述/og:image,不落盘不上传
+pnpm linkcard <url>            # 实跑:图片转存 R2 → 写 src/data/link-cards.json
+pnpm linkcard --scan           # 扫全部 MDX 的 <LinkCard>,补齐缺的
+pnpm linkcard --refresh <url>  # 对方改了标题/换了图,强制重抓
+```
+
+> 缓存文件要和文章一起提交,否则别人 clone 下来 `pnpm build` 会失败。详见专题 [topics/link-cards.md](topics/link-cards.md)。
 
 ## 加 shadcn 组件
 

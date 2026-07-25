@@ -25,6 +25,6 @@
 ## 📚 导航
 
 - **模块**:[components](docs/modules/components/) · [lib](docs/modules/lib/)
-- **专题(跨模块 / 复杂)**:[博客图片管线 docs/topics/blog-images.md](docs/topics/blog-images.md) · 云图片组件(旧) [docs/cloud-image-component.md](docs/cloud-image-component.md) · 上传规格(旧) [docs/cloud-image-upload-spec.md](docs/cloud-image-upload-spec.md)
+- **专题(跨模块 / 复杂)**:[博客图片管线 docs/topics/blog-images.md](docs/topics/blog-images.md) · [引用卡片 docs/topics/link-cards.md](docs/topics/link-cards.md) · 云图片组件(旧) [docs/cloud-image-component.md](docs/cloud-image-component.md) · 上传规格(旧) [docs/cloud-image-upload-spec.md](docs/cloud-image-upload-spec.md)
 - 设计系统 [design.md](design.md) · 运行手册 [docs/run.md](docs/run.md) · 规范&术语 [docs/conventions.md](docs/conventions.md)
 - 测试&验证 [docs/testing.md](docs/testing.md) · 需求 [docs/specs/](docs/specs/) · 计划 [docs/plans/](docs/plans/) · 决策 [docs/decisions/](docs/decisions/)

@@ -11,7 +11,8 @@
 - `use-copy-button.ts` — React Hook:复制按钮「已复制」态,1.5s 自动复位。代码块复制用。
 - `cloud-image-config.ts` — 云图片 CDN 域名常量 + 「Key → 完整 URL」拼接。
 - `cloud-image-utils.ts` — 云图片 Key 解析:拆文件名元信息、推导对应 BlurHash 占位图 Key。
-- 调用关系:`cloud-image-*` 被 `components/common/cloud-image.tsx` 消费,组成「云图片」专题(跨 lib/components)。
+- `thumbhash-placeholder.ts` — thumbhash(base64)→ `{ 平均色, 模糊图 dataURL }`,给 `.astro` 组件在构建期算好内联(React 侧的 `blog-image.tsx` 自己在 `useMemo` 里做同样的事)。
+- 调用关系:`cloud-image-*` 被 `components/common/cloud-image.tsx` 消费,组成「云图片」专题(跨 lib/components);`thumbhash-placeholder.ts` 被引用卡片消费,见「引用卡片」专题。
 
 ## 对外接口
 
@@ -21,3 +22,4 @@
 
 - 文件级细节看各文件**文件头**。
 - 云图片的完整规格(命名约定、上传变体、BlurHash 流程)见专题:[docs/cloud-image-component.md](../../cloud-image-component.md) · [docs/cloud-image-upload-spec.md](../../cloud-image-upload-spec.md)。
+- 引用卡片(含外链元数据缓存 `src/data/link-cards.json`)见专题:[docs/topics/link-cards.md](../../topics/link-cards.md)。

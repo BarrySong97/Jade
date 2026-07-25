@@ -14,6 +14,7 @@
 - `src/components/showcase/` — `/products`、`/photos` 展示页;数据与类型集中在 `*-data.ts`,组件纯展示。
 - `src/lib/` — 无 UI 的工具/配置(`cn()`、站点信息、云图片工具等)。
 - `src/layouts/` Astro 布局 · `src/pages/` 文件路由 · `src/content/blog/` MDX 文章 · `src/styles/` 全局与展示页样式。
+- `src/data/` — **由本地 CLI 生成、提交进仓库的构建期数据**(目前只有 `link-cards.json`,外链卡片元数据缓存)。手写数据不放这儿;它是脚本的产物,别手改,用 `pnpm linkcard` 重新生成。
 - 路径别名:`@/*` → `src/*`(如 `@/components/ui/button`、`@/lib/utils`)。
 - 每个源文件顶部必须有 **AI 文件头**(`@purpose/@role/@deps/@gotcha`),见 [scripts/check-docs.mjs](../scripts/check-docs.mjs) 检查;`.astro` 文件不强制。
 

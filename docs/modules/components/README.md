@@ -8,7 +8,7 @@
 ## 子目录与职责
 
 - `ui/` — **shadcn 生成的 vendored 组件**(button/dialog/… 共 50+)。勿手改,用 `pnpm dlx shadcn@latest add` 重新生成;已排除出文件头检查。
-- `blogs/` — 文章阅读体验:目录(`Toc.tsx` 桌面 / `MobileToc.tsx` 移动)、代码块(`codeblock.tsx` UI + `code-wrapper-client.tsx` 渐进增强 Shiki `<pre>` + `dynamic-codeblock.tsx` 直传 code)、作者卡 `author-card.tsx`、`blog-image.tsx`(thumbhash 占位 + 懒加载,由图片管线生成,见下方专题)。
+- `blogs/` — 文章阅读体验:目录(`Toc.tsx` 桌面 / `MobileToc.tsx` 移动)、代码块(`codeblock.tsx` UI + `code-wrapper-client.tsx` 渐进增强 Shiki `<pre>` + `dynamic-codeblock.tsx` 直传 code)、作者卡 `author-card.tsx`、`blog-image.tsx`(thumbhash 占位 + 懒加载,由图片管线生成,见下方专题);引用卡片 `reference-card.astro`(共用骨架)+ `post-card.astro`(站内)/ `link-card.astro`(站外),**零 JS 的纯 Astro 组件**,见下方专题。
 - `common/` — 跨页通用:`avatar.tsx`(站点头像)、`cloud-image.tsx`(云图片,见下方专题链接)。
 - `layout/` — `header.tsx`(sticky 顶栏)、`footer.tsx`(版权页脚)。
 - `showcase/` — `/products` 与 `/photos` 展示页(详见下方子页)。
@@ -34,4 +34,5 @@
 - [showcase](./showcase.md) — 作品集 / 摄影两个展示页的结构、令牌与交互联动
 - [webgl-viewer](./webgl-viewer.md) — 图片查看器引擎的分层与不变量
 - 博客图片管线(跨 scripts/components):[docs/topics/blog-images.md](../../topics/blog-images.md)
+- 引用卡片(跨 scripts/components/lib):[docs/topics/link-cards.md](../../topics/link-cards.md)
 - 云图片专题(跨 components/lib):[docs/cloud-image-component.md](../../cloud-image-component.md) · [上传规格](../../cloud-image-upload-spec.md)
