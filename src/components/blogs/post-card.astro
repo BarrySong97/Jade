@@ -3,19 +3,20 @@
  * @purpose 在正文里引用「站内文章」的卡片:按 slug 从 content collection 取标题/描述/日期/封面。
  * @role    MDX 里 `<PostCard slug="…" />`;只负责取数,渲染交给 reference-card.astro。
  * @deps    astro:content(getEntry)、./reference-card.astro
- * @gotcha  站内数据构建期天然全有,不需要任何缓存;slug 写错直接构建报错(比悄悄渲染一张空卡好)。封面缺失时自动降到紧凑档。
+ * @gotcha  站内数据构建期天然全有,不需要任何缓存;slug 写错直接构建报错(比悄悄渲染一张空卡好)。slug 是 collection id(会被 glob loader 小写化),不是文件名原样。**默认 compact**:站内引用统一用紧凑卡,大图档留给外链(用户定的规则,见 docs/topics/link-cards.md)。
  */
 import { getEntry } from "astro:content";
 import ReferenceCard from "./reference-card.astro";
 
 export interface Props {
-  /** 文章文件名(不含扩展名),如 "ai-era-accounting-design" */
+  /** content collection 的 id(文件名去扩展名并转小写),如 "ai-era-accounting-design" */
   slug: string;
+  /** 默认紧凑档——站内引用统一长这样,别一篇一个样 */
   variant?: "auto" | "wide" | "compact" | "text";
   class?: string;
 }
 
-const { slug, variant = "auto", class: className } = Astro.props;
+const { slug, variant = "compact", class: className } = Astro.props;
 
 // Astro 的 glob loader 会把 id 小写化(文件名 how-I-find-*.mdx → id how-i-find-*),
 // 直接照抄文件名会找不到,所以先按原样查、再退回小写

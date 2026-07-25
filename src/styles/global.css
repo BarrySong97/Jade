@@ -110,6 +110,10 @@
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 2px;
+  /* 大块视觉元素(引用卡片、文章封面、正文插图)的圆角。站点 UI 基调是 --radius 2px
+     近乎方,但整块的图/卡略圆一点更像「一件东西」。**统一走这一个值**,别在组件里
+     各写各的——之前卡片大图档写 10px、紧凑档写 2px,就是这么漂掉的。 */
+  --radius-media: 6px;
   --sidebar: #ffffff;
   --sidebar-foreground: var(--ink);
   --sidebar-primary: oklch(0.2 0.006 60);
@@ -278,7 +282,7 @@
   font-size: inherit;
 }
 .prose img {
-  border-radius: var(--radius);
+  border-radius: var(--radius-media);
   margin: 1.6em auto;
 }
 /* BlogImage 这类 figure 包裹的图:间距交给 figure,内部 img 充满不留边(否则顶部露出占位色块) */

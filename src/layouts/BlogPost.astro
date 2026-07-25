@@ -76,10 +76,10 @@ const hasToc = (headings?.length ?? 0) >= 2;
           height={heroHeight}
           thumbhash={heroThumbhash}
           zoomable={false}
-          className="mt-6 rounded-[2px]"
+          className="mt-6 rounded-[var(--radius-media)]"
         />
       ) : heroImage ? (
-        <div class="mt-6 overflow-hidden rounded-[2px]">
+        <div class="mt-6 overflow-hidden rounded-[var(--radius-media)]">
           <CloudImage src={heroImage} alt={title} class="w-full" />
         </div>
       ) : null

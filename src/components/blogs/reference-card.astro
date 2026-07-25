@@ -78,11 +78,12 @@ const coverRatio =
 const CARD = "ref-card not-prose group block no-underline overflow-hidden text-ink";
 // 大图档整张就是图,不描边——改用一层发丝内描边 + 阴影把它跟正文里的普通配图区分开,
 // 让人看出是可点的卡(阴影三段:内描边 / 贴地 / 远投影;hover 抬起来一点)
+// 圆角三档共用 --radius-media(定义在 global.css),别在这里按档各写各的
 const LAYOUT = {
-  wide: "relative rounded-[10px] bg-[var(--surface-2)] shadow-[0_0_0_1px_rgb(0_0_0_/_0.05),0_1px_2px_rgb(0_0_0_/_0.04),0_12px_32px_-12px_rgb(0_0_0_/_0.18)] transition-shadow duration-300 hover:shadow-[0_0_0_1px_rgb(0_0_0_/_0.07),0_2px_4px_rgb(0_0_0_/_0.06),0_22px_48px_-16px_rgb(0_0_0_/_0.26)]",
+  wide: "relative rounded-[var(--radius-media)] bg-[var(--surface-2)] shadow-[0_0_0_1px_rgb(0_0_0_/_0.05),0_1px_2px_rgb(0_0_0_/_0.04),0_12px_32px_-12px_rgb(0_0_0_/_0.18)] transition-shadow duration-300 hover:shadow-[0_0_0_1px_rgb(0_0_0_/_0.07),0_2px_4px_rgb(0_0_0_/_0.06),0_22px_48px_-16px_rgb(0_0_0_/_0.26)]",
   compact:
-    "grid grid-cols-[92px_minmax(0,1fr)] sm:grid-cols-[116px_minmax(0,1fr)] rounded-[2px] border border-line bg-surface transition-colors duration-200 hover:border-line-2",
-  text: "grid grid-cols-[3px_minmax(0,1fr)] rounded-[2px] border border-line bg-surface transition-colors duration-200 hover:border-line-2",
+    "grid grid-cols-[92px_minmax(0,1fr)] sm:grid-cols-[116px_minmax(0,1fr)] rounded-[var(--radius-media)] border border-line bg-surface transition-colors duration-200 hover:border-line-2",
+  text: "grid grid-cols-[3px_minmax(0,1fr)] rounded-[var(--radius-media)] border border-line bg-surface transition-colors duration-200 hover:border-line-2",
 }[resolved];
 const COVER_IMG = "absolute inset-0 h-full w-full object-cover";
 ---
@@ -92,7 +93,7 @@ const COVER_IMG = "absolute inset-0 h-full w-full object-cover";
   {
     resolved === "wide" && image && (
       <div
-        class="relative overflow-hidden rounded-[10px]"
+        class="relative overflow-hidden rounded-[var(--radius-media)]"
         style={{ ...coverStyle, aspectRatio: coverRatio }}
       >
         <img
@@ -104,18 +105,20 @@ const COVER_IMG = "absolute inset-0 h-full w-full object-cover";
           decoding="async"
           class={COVER_IMG}
         />
-        <span class="absolute bottom-3 left-3 max-w-[calc(100%-24px)] truncate rounded-[4px] bg-black/85 px-[9px] py-[5px] text-[13px] leading-[1.35] text-white transition-colors duration-200 group-hover:bg-black">
+        <span class="absolute bottom-3 left-3 max-w-[calc(100%-24px)] truncate rounded-[calc(var(--radius-media)-2px)] bg-black/85 px-[9px] py-[5px] text-[13px] leading-[1.35] text-white transition-colors duration-200 group-hover:bg-black">
           {title}
         </span>
       </div>
     )
   }
 
-  {/* 紧凑档:左侧 1:1 缩略图(真图 → favicon 放大 → 首字母) */}
+  {/* 紧凑档:左侧缩略图(真图 → favicon 放大 → 首字母)。
+      高度用 min-h 而不是 aspect-square:后者会把高度锁死,文字比它高时缩略图下方会空出一条;
+      grid 默认 stretch,缩略图就能跟着整行长高。 */}
   {
     resolved === "compact" && (
       <div
-        class="relative aspect-square overflow-hidden border-r border-line bg-[var(--surface-2)]"
+        class="relative min-h-[92px] overflow-hidden border-r border-line bg-[var(--surface-2)] sm:min-h-[116px]"
         style={coverStyle}
       >
         {image ? (

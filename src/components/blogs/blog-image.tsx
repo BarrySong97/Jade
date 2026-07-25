@@ -90,7 +90,7 @@ export default function BlogImage({
   return (
     <>
       <figure
-        className={cn("relative overflow-hidden rounded-md", className)}
+        className={cn("relative overflow-hidden rounded-[var(--radius-media)]", className)}
         style={{
           aspectRatio: `${width}/${height}`,
           // 平均色瞬时绘制(无需解码,杜绝首帧白屏),模糊图随后盖上

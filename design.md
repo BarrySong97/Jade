@@ -10,7 +10,7 @@
 - **强调色**:`--accent` `#2a2a2a`、`--accent-ink` `#000`(链接 hover、激活态)。
 - **表面**:`--surface` `#ffffff`、`--surface-2` `#f7f7f7`(卡片/次级背景)。
 - **字体**:`--font-sans` = Space Grotesk + PingFang SC 等(正文/标题);`--font-mono` = IBM Plex Mono(日期、代码、元信息)。
-- **圆角**:`--radius: 2px`(克制,几乎方);阴影极少用。
+- **圆角**:`--radius: 2px`(UI 基调,克制、几乎方);**大块视觉元素**(引用卡片、文章封面、正文插图)统一走 `--radius-media: 6px`——整块的图/卡略圆一点更像「一件东西」。别在组件里按需各写各的,之前卡片大图档写 10px、紧凑档写 2px 就漂了。阴影极少用,例外是引用卡片的大图档(见 [引用卡片专题](docs/topics/link-cards.md))。
 - **选区**:`::selection` 用 accent 16% 混色。
 
 ## 暗色模式
