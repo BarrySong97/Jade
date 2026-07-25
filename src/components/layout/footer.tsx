@@ -18,9 +18,7 @@ export default async function Footer() {
         <span className="font-mono text-[11.5px] text-[var(--ink-4)]">
           © 2026 {PROFILE.name} · {PROFILE.location}
         </span>
-        <span className="font-mono text-[11.5px] text-[var(--ink-4)]">
-          用克制构建
-        </span>
+        <span className="font-mono text-[11.5px] text-[var(--ink-4)]">用克制构建</span>
       </div>
     </footer>
   );
