@@ -1,0 +1,270 @@
+---
+/**
+ * @purpose 引用卡片的共用骨架:大图 / 紧凑 / 纯文本三档形态的纯展示层。
+ * @role    被 post-card.astro(站内)与 link-card.astro(站外)包装;自己不取数、不判断来源。
+ * @deps    @/lib/thumbhash-placeholder
+ * @gotcha  零 JS(纯 Astro,无岛):hover 全走 CSS,占位图在构建期由 thumbhash 解码内联。variant="auto" 的降级顺序是 有图→wide、无图有描述→compact、其余→text。
+ */
+import { thumbhashPlaceholder } from "@/lib/thumbhash-placeholder";
+
+export interface ReferenceImage {
+  src: string;
+  width?: number | null;
+  height?: number | null;
+  thumbhash?: string | null;
+  alt?: string;
+}
+
+export interface Props {
+  href: string;
+  title: string;
+  description?: string | null;
+  /** 元信息行文本:站内是日期,站外是域名 */
+  meta: string;
+  /** 站外链接:元信息行右侧出现 ↗,并在新标签打开 */
+  external?: boolean;
+  image?: ReferenceImage | null;
+  /** 无封面时,紧凑档左侧格子里显示的字形(取域名首字母/缩写) */
+  glyph?: string | null;
+  /** 元信息行左侧的小图标(favicon);缺省则用首字母墨块 */
+  icon?: string | null;
+  variant?: "auto" | "wide" | "compact" | "text";
+  class?: string;
+}
+
+const {
+  href,
+  title,
+  description = null,
+  meta,
+  external = false,
+  image = null,
+  glyph = null,
+  icon = null,
+  variant = "auto",
+  class: className = "",
+} = Astro.props;
+
+// 降级顺序:有图 → 大图;无图但有描述 → 紧凑;什么都没有 → 纯文本
+const resolved = variant !== "auto" ? variant : image ? "wide" : description ? "compact" : "text";
+
+const placeholder = thumbhashPlaceholder(image?.thumbhash);
+const coverStyle = placeholder
+  ? {
+      backgroundColor: placeholder.avg,
+      backgroundImage: `url(${placeholder.url})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+    }
+  : undefined;
+
+const glyphText = (glyph ?? meta).trim();
+// 整张卡就是一个 <a>:浏览器左下角会显示目标 URL,title 再补一条悬停提示,
+// 让人一眼看出这是可跳转的链接(大图档没有文字区,尤其需要)
+const linkAttrs = {
+  title: `${title} · ${meta}`,
+  "data-ref-card": "",
+  // 光标跟随球里显示的文案(细指针设备才会启用,见页面底部脚本)
+  "data-cursor-label": external ? "访问原文" : "阅读全文",
+  ...(external ? { target: "_blank", rel: "noopener noreferrer" } : {}),
+};
+
+// 大图档用图片自身比例(og:image 多是 1.91:1、文章封面多是 16:9),不裁切;拿不到尺寸才退回 16/9
+const coverRatio =
+  image?.width && image?.height ? `${image.width}/${image.height}` : "16/9";
+
+// 正文里要挡两拨样式:not-prose 挡 @tailwindcss/typography 插件(它的选择器自带这个逃生舱),
+// ref-card 挡 global.css 里手写的 .prose 规则(无逃生舱,靠 `.prose .ref-card` 的 revert-layer)。两个都不能少。
+const CARD = "ref-card not-prose group block no-underline overflow-hidden text-ink";
+// 大图档整张就是图,不描边——改用一层发丝内描边 + 阴影把它跟正文里的普通配图区分开,
+// 让人看出是可点的卡(阴影三段:内描边 / 贴地 / 远投影;hover 抬起来一点)
+const LAYOUT = {
+  wide: "relative rounded-[10px] bg-[var(--surface-2)] shadow-[0_0_0_1px_rgb(0_0_0_/_0.05),0_1px_2px_rgb(0_0_0_/_0.04),0_12px_32px_-12px_rgb(0_0_0_/_0.18)] transition-shadow duration-300 hover:shadow-[0_0_0_1px_rgb(0_0_0_/_0.07),0_2px_4px_rgb(0_0_0_/_0.06),0_22px_48px_-16px_rgb(0_0_0_/_0.26)]",
+  compact:
+    "grid grid-cols-[92px_minmax(0,1fr)] sm:grid-cols-[116px_minmax(0,1fr)] rounded-[2px] border border-line bg-surface transition-colors duration-200 hover:border-line-2",
+  text: "grid grid-cols-[3px_minmax(0,1fr)] rounded-[2px] border border-line bg-surface transition-colors duration-200 hover:border-line-2",
+}[resolved];
+const COVER_IMG = "absolute inset-0 h-full w-full object-cover";
+---
+
+<a href={href} class:list={[CARD, LAYOUT, className]} {...linkAttrs}>
+  {/* 大图档:整张就是图,标题压在左下角的浮层里(不再有图下方的标题/描述块) */}
+  {
+    resolved === "wide" && image && (
+      <div
+        class="relative overflow-hidden rounded-[10px]"
+        style={{ ...coverStyle, aspectRatio: coverRatio }}
+      >
+        <img
+          src={image.src}
+          alt={image.alt ?? ""}
+          width={image.width ?? undefined}
+          height={image.height ?? undefined}
+          loading="lazy"
+          decoding="async"
+          class={COVER_IMG}
+        />
+        <span class="absolute bottom-3 left-3 max-w-[calc(100%-24px)] truncate rounded-[4px] bg-black/85 px-[9px] py-[5px] text-[13px] leading-[1.35] text-white transition-colors duration-200 group-hover:bg-black">
+          {title}
+        </span>
+      </div>
+    )
+  }
+
+  {/* 紧凑档:左侧 1:1 缩略图(真图 → favicon 放大 → 首字母) */}
+  {
+    resolved === "compact" && (
+      <div
+        class="relative aspect-square overflow-hidden border-r border-line bg-[var(--surface-2)]"
+        style={coverStyle}
+      >
+        {image ? (
+          <img
+            src={image.src}
+            alt={image.alt ?? ""}
+            loading="lazy"
+            decoding="async"
+            class={COVER_IMG}
+          />
+        ) : icon ? (
+          <img
+            src={icon}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            class="absolute inset-0 m-auto h-7 w-7 object-contain"
+          />
+        ) : (
+          <span class="absolute inset-0 grid place-items-center font-mono text-[28px] tracking-[-0.02em] text-ink-4 uppercase">
+            {glyphText.slice(0, 2)}
+          </span>
+        )}
+      </div>
+    )
+  }
+
+  {/* 纯文本档:左缘墨条代替图区 */}
+  {resolved === "text" && <div class="bg-ink"></div>}
+
+  {/* 文字区只属于紧凑/纯文本两档;大图档的标题在图上的浮层里 */}
+  {
+    resolved !== "wide" && (
+      <div
+        class:list={[
+          "flex min-w-0 flex-col gap-[7px]",
+          resolved === "compact"
+            ? "justify-center px-[15px] py-[13px]"
+            : "px-[15px] pt-[14px] pb-[15px]",
+        ]}
+      >
+        <div class="flex items-center gap-[7px] font-mono text-[11px] tracking-[0.03em] text-ink-4 tabular-nums">
+          {/* favicon(或域名首字母墨块)只属于外链;站内卡的元信息行只有日期 */}
+          {external &&
+            (icon ? (
+              <img
+                src={icon}
+                alt=""
+                width="13"
+                height="13"
+                loading="lazy"
+                decoding="async"
+                class="h-[13px] w-[13px] shrink-0 object-contain"
+              />
+            ) : (
+              glyphText && (
+                <span class="grid h-[13px] w-[13px] shrink-0 place-items-center bg-ink font-mono text-[8.5px] leading-none text-surface uppercase">
+                  {glyphText.charAt(0)}
+                </span>
+              )
+            ))}
+          <span class="truncate">{meta}</span>
+          {external && (
+            <span class="ml-auto shrink-0 font-mono text-[11px] text-ink-4 transition-colors duration-200 group-hover:text-ink-2">
+              ↗
+            </span>
+          )}
+        </div>
+
+        <h3 class="m-0 line-clamp-2 text-[15px] font-medium leading-[1.42] tracking-[-0.005em] text-ink transition-colors duration-200 group-hover:text-[var(--accent-ink)]">
+          {title}
+        </h3>
+
+        {description && (
+          <p
+            class:list={[
+              "m-0 text-[13px] leading-[1.65] text-ink-2",
+              resolved === "text" ? "line-clamp-3" : "line-clamp-2",
+            ]}
+          >
+            {description}
+          </p>
+        )}
+      </div>
+    )
+  }
+</a>
+
+{/* 光标跟随球:卡片(尤其大图档)看起来像张普通配图,需要一个明确的「可点」信号。
+    Astro 会把同一组件的 script 去重,一页只出一份;样式在 global.css 的 [data-ref-cursor]。 */}
+<script>
+  function initRefCardCursor() {
+    // 触屏 / 粗指针没有 hover 概念,直接不启用
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+    const cards = document.querySelectorAll<HTMLElement>("[data-ref-card]");
+    if (cards.length === 0) return;
+
+    // ClientRouter 换页时 body 会被整个替换,所以每次 page-load 都要确认球还在
+    let ball = document.querySelector<HTMLElement>("[data-ref-cursor]");
+    if (!ball) {
+      ball = document.createElement("div");
+      ball.setAttribute("data-ref-cursor", "");
+      ball.setAttribute("aria-hidden", "true");
+      ball.innerHTML = "<span></span>";
+      document.body.append(ball);
+    }
+    const label = ball.firstElementChild as HTMLElement;
+    document.documentElement.classList.add("has-ref-cursor");
+
+    const snap = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let mx = 0;
+    let my = 0;
+    let bx = 0;
+    let by = 0;
+    let raf = 0;
+
+    function frame() {
+      // 拖尾:每帧向鼠标插值靠近;降低动效偏好下直接贴住
+      const k = snap ? 1 : 0.18;
+      bx += (mx - bx) * k;
+      by += (my - by) * k;
+      ball!.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
+      raf = requestAnimationFrame(frame);
+    }
+
+    function onMove(e: PointerEvent) {
+      mx = e.clientX;
+      my = e.clientY;
+    }
+
+    for (const card of cards) {
+      card.addEventListener("pointerenter", (e) => {
+        label.textContent = card.dataset.cursorLabel ?? "";
+        // 进入时先把球放到指针处,避免从上一个位置滑一大段过来
+        mx = bx = e.clientX;
+        my = by = e.clientY;
+        ball!.dataset.on = "true";
+        document.addEventListener("pointermove", onMove, { passive: true });
+        if (raf === 0) raf = requestAnimationFrame(frame);
+      });
+      card.addEventListener("pointerleave", () => {
+        ball!.dataset.on = "false";
+        document.removeEventListener("pointermove", onMove);
+        cancelAnimationFrame(raf);
+        raf = 0;
+      });
+    }
+  }
+
+  // ClientRouter 下 astro:page-load 首次加载与每次换页都会触发
+  document.addEventListener("astro:page-load", initRefCardCursor);
+</script>

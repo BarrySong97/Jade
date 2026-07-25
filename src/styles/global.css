@@ -294,6 +294,69 @@
   margin: 2.4em 0;
 }
 
+/* 引用卡片(PostCard / LinkCard)嵌在正文里:上面这些 .prose 规则是**无层级**的,
+   会盖过 Tailwind 的 utilities 层(`.prose img{margin:auto}` 把元信息行挤开、
+   `.prose h3/p` 覆盖字号颜色、`.prose a` 加下划线)。用 revert-layer 把卡片内部
+   退回 utilities 层,交还给组件自己的 Tailwind 类。 */
+.prose .ref-card {
+  color: revert-layer;
+  background-image: revert-layer;
+  padding-bottom: revert-layer;
+  /* 卡片上下留白比普通段落略大,读起来是「停顿」而不是「插图」 */
+  margin: 26px 0 30px;
+}
+/* 光标跟随球:卡片是链接但看起来像图,用它给出明确的「可点」信号。
+   由 reference-card.astro 的脚本创建并挂到 body 上(在组件作用域之外,所以样式写在这)。
+   只有细指针设备才会加 .has-ref-cursor,JS 没跑起来就退回系统光标,不会变成「没有光标」。 */
+.has-ref-cursor .ref-card {
+  cursor: none;
+}
+[data-ref-cursor] {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  pointer-events: none;
+  will-change: transform;
+}
+[data-ref-cursor] > span {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  margin: -44px 0 0 -44px;
+  border-radius: 9999px;
+  background: var(--accent-ink);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  opacity: 0;
+  transform: scale(0.55);
+  transition:
+    opacity 0.2s ease,
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+[data-ref-cursor][data-on="true"] > span {
+  opacity: 1;
+  transform: scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-ref-cursor] > span {
+    transition-duration: 0.01ms;
+  }
+}
+
+.prose .ref-card :is(h3, p, img) {
+  margin: revert-layer;
+  font-size: revert-layer;
+  font-weight: revert-layer;
+  line-height: revert-layer;
+  letter-spacing: revert-layer;
+  color: revert-layer;
+  border-radius: revert-layer;
+}
+
 /* View Transitions 自定义动画 - 只使用淡入淡出效果 */
 @keyframes fade-in {
   from {

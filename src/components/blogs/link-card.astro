@@ -1,0 +1,77 @@
+---
+/**
+ * @purpose 在正文里引用「外部网站」的卡片:从提交进仓库的缓存 src/data/link-cards.json 读元数据渲染,构建期零联网。
+ * @role    MDX 里 `<LinkCard url="…" />`;缓存由 `pnpm linkcard` 抓取生成,本组件只查表。
+ * @deps    @/data/link-cards.json、./reference-card.astro
+ * @gotcha  缓存 key 是归一化 URL,由 scripts/lib/og.mjs 的 normalizeUrl 定义并由 CLI 就地改写 MDX,所以这里是精确匹配(仅容错尾斜杠/fragment)。缺条目:dev 下告警并渲染兜底档,构建时直接抛错——静态站悄悄降级不会被发现。props 显式传值可覆盖缓存。
+ */
+import cache from "@/data/link-cards.json";
+import ReferenceCard from "./reference-card.astro";
+
+interface CacheEntry {
+  domain: string;
+  title: string | null;
+  description: string | null;
+  image: string | null;
+  imageWidth: number | null;
+  imageHeight: number | null;
+  thumbhash: string | null;
+  favicon: string | null;
+  fetchedAt: string;
+}
+
+export interface Props {
+  url: string;
+  /** 以下字段传了就覆盖缓存,用于对方标题起得烂 / 想换个描述的场合 */
+  title?: string;
+  description?: string | null;
+  image?: string | null;
+  variant?: "auto" | "wide" | "compact" | "text";
+  class?: string;
+}
+
+const { url, variant = "auto", class: className } = Astro.props;
+
+const entries = cache as Record<string, CacheEntry>;
+// CLI 会把 MDX 里的 url 改写成归一化形式,这里只兜底手写时多的尾斜杠 / fragment
+const lookup = (u: string) => entries[u] ?? entries[u.replace(/#.*$/, "").replace(/\/+$/, "")];
+
+const entry = lookup(url);
+if (!entry) {
+  const hint = `<LinkCard url="${url}"> 在 src/data/link-cards.json 里没有缓存。跑 \`pnpm linkcard --scan\` 抓取后提交。`;
+  if (!import.meta.env.DEV) throw new Error(hint);
+  console.warn(`⚠️  ${hint}`);
+}
+
+const domain = entry?.domain ?? url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/.*$/, "");
+const fallbackTitle = url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/+$/, "");
+
+const title = Astro.props.title ?? entry?.title ?? fallbackTitle;
+const description =
+  Astro.props.description !== undefined ? Astro.props.description : (entry?.description ?? null);
+const imageSrc = Astro.props.image !== undefined ? Astro.props.image : (entry?.image ?? null);
+
+const image = imageSrc
+  ? {
+      src: imageSrc,
+      width: entry?.imageWidth,
+      height: entry?.imageHeight,
+      // 覆盖了图片就别用旧图的 thumbhash,颜色对不上
+      thumbhash: imageSrc === entry?.image ? entry?.thumbhash : null,
+      alt: "",
+    }
+  : null;
+---
+
+<ReferenceCard
+  href={url}
+  title={title}
+  description={description}
+  meta={domain}
+  external
+  image={image}
+  glyph={domain}
+  icon={entry?.favicon ?? null}
+  variant={variant}
+  class={className}
+/>

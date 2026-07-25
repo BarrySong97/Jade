@@ -1,0 +1,46 @@
+{
+  "https://anthropic.com/engineering/building-effective-agents": {
+    "domain": "anthropic.com",
+    "title": "Building Effective AI Agents",
+    "description": "Discover how Anthropic approaches the development of reliable AI agents. Learn about our research on agent capabilities, safety considerations, and technical framework for building trustworthy AI.",
+    "image": "https://blogassets.4real.ink/link/35f4c5b47263a084658e0990e6aee221.webp",
+    "imageWidth": 1600,
+    "imageHeight": 840,
+    "thumbhash": "dwgGBID4N4iId4h8hHY0b5VPyA==",
+    "favicon": "https://blogassets.4real.ink/link/fav-1fd66cdbf95c07f282c96c46544085c1.webp",
+    "fetchedAt": "2026-07-25"
+  },
+  "https://immersed-beta.vercel.app": {
+    "domain": "immersed-beta.vercel.app",
+    "title": "Immersed - Read smarter. Learn faster.",
+    "description": "Immersed turns books and articles into an immersive language-learning loop with instant word lookup, saved vocabulary, and focused reading.",
+    "image": "https://blogassets.4real.ink/link/65fe3d61588d0e3481cf516bcf66dd9d.webp",
+    "imageWidth": 1200,
+    "imageHeight": 630,
+    "thumbhash": "n/cRFIQHaWiIdnhyeXffd/FtNw==",
+    "favicon": null,
+    "fetchedAt": "2026-07-25"
+  },
+  "https://paulgraham.com/ds.html": {
+    "domain": "paulgraham.com",
+    "title": "Do Things that Don't Scale",
+    "description": null,
+    "image": null,
+    "imageWidth": null,
+    "imageHeight": null,
+    "thumbhash": null,
+    "favicon": "https://blogassets.4real.ink/link/fav-da0a9bfb3459bf6fa898c79f9d7e71a2.webp",
+    "fetchedAt": "2026-07-25"
+  },
+  "https://trylistenup.pages.dev": {
+    "domain": "trylistenup.pages.dev",
+    "title": "ListenUp — Subtitles for anything. One menu bar.",
+    "description": "ListenUp captions whatever's playing on your Mac — YouTube, Netflix, podcasts, live calls — in real time. Click any line to replay it or ask AI what it means. A macOS menu-bar app.",
+    "image": "https://blogassets.4real.ink/link/dc9cc701c099a26c48b2f40c1899efc0.webp",
+    "imageWidth": 1200,
+    "imageHeight": 630,
+    "thumbhash": "8PcRDIBPxZR4d4d5eHdfhqiwmw==",
+    "favicon": "https://blogassets.4real.ink/link/fav-9e4ca364b2154fcf5f8184d0248ca857.webp",
+    "fetchedAt": "2026-07-25"
+  }
+}
