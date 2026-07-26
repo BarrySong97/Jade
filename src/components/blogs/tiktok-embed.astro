@@ -1,0 +1,90 @@
+---
+/**
+ * @purpose 正文里嵌一条 TikTok / 抖音国际版短视频:直接用官方 embed iframe,不引第三方脚本。
+ * @role    MDX 里 `<TikTokEmbed url="https://www.tiktok.com/@x/video/123…" />`;纯展示,只有一段调高度的原生 script。
+ * @deps    无 npm 依赖,只依赖官方嵌入页 https://www.tiktok.com/embed/v2/<id>
+ * @gotcha  官方给的 <blockquote class="tiktok-embed"> + embed.js 不用(第三方脚本会自己往页面塞 DOM/埋点,静态站不引):embed.js 干的事就是插 iframe 再按 postMessage 调高度,这里自己做。
+ *          嵌入页宽度被 TikTok 锁在 325px、高度默认 739px(实测值),真实高度由对方 postMessage 送回来后再改;拿不到消息就停在 739px,不会塌。
+ *          只认带数字 id 的完整链接(vm.tiktok.com 短链先在浏览器展开再填);解析不出 id 直接抛错——静态站悄悄少一个视频不会被发现。
+ */
+export interface Props {
+  /** 视频完整链接,如 https://www.tiktok.com/@brock1137/video/6912243945200225542 */
+  url: string;
+  /** 图注;不传就只显示「在 TikTok 打开」那行 */
+  caption?: string;
+  class?: string;
+}
+
+const { url, caption, class: className } = Astro.props;
+
+const videoId = url.match(/\/video\/(\d+)/)?.[1];
+if (!videoId) {
+  throw new Error(
+    `<TikTokEmbed url="${url}"> 解析不出视频 id。要的是形如 https://www.tiktok.com/@user/video/1234567890 的完整链接(短链请先展开)。`,
+  );
+}
+const author = url.match(/@([\w.-]+)/)?.[1];
+
+// 实测嵌入页初始就是这个高度(对方 postMessage 送回来的也是它);拿不到消息时的兜底
+const INITIAL_HEIGHT = 739;
+---
+
+{/* 间距交给 global.css 的 `.prose figure`,和站内其他配图一致 */}
+<figure class:list={["tiktok-embed not-prose", className]}>
+  <div
+    class="mx-auto w-full max-w-[325px] overflow-hidden"
+    style={{ height: `${INITIAL_HEIGHT}px` }}
+    data-tiktok-frame
+  >
+    <iframe
+      src={`https://www.tiktok.com/embed/v2/${videoId}`}
+      title={author ? `TikTok 视频 @${author}` : "TikTok 视频"}
+      class="block h-full w-full border-0"
+      loading="lazy"
+      allow="encrypted-media; picture-in-picture; fullscreen"
+      allowfullscreen
+      referrerpolicy="strict-origin-when-cross-origin"
+      scrolling="no"></iframe>
+  </div>
+
+  <figcaption
+    class="mx-auto mt-3 flex max-w-[325px] items-baseline justify-between gap-3 text-[12.5px] leading-[1.6] text-ink-3"
+  >
+    {caption && <span class="min-w-0">{caption}</span>}
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="shrink-0 font-mono text-[11px] tracking-[0.03em] text-ink-3 no-underline transition-colors hover:text-[var(--accent-ink)]"
+    >
+      {author ? `@${author}` : "TikTok"} ↗
+    </a>
+  </figcaption>
+</figure>
+
+<script>
+  // 嵌入页加载完会 postMessage 回真实高度(不同视频的文案行数不同,高度不一样)。
+  // 只绑一次:处理器每次都现查 DOM,ClientRouter 换页后也不用重绑。
+  const BOUND = "__tiktokEmbedBound";
+  if (!(BOUND in window)) {
+    Object.defineProperty(window, BOUND, { value: true });
+    window.addEventListener("message", (e) => {
+      if (e.origin !== "https://www.tiktok.com") return;
+      let height: unknown;
+      try {
+        height = JSON.parse(typeof e.data === "string" ? e.data : "{}").height;
+      } catch {
+        return; // 对方还发别的非 JSON 消息(如 "[tea-sdk]ready"),不是给我们的
+      }
+      // 别把外站消息直接当样式用:限定成合理像素范围
+      if (typeof height !== "number" || !Number.isFinite(height) || height < 200 || height > 2000) {
+        return;
+      }
+      for (const box of document.querySelectorAll<HTMLElement>("[data-tiktok-frame]")) {
+        if (box.querySelector("iframe")?.contentWindow === e.source) {
+          box.style.height = `${height}px`;
+        }
+      }
+    });
+  }
+</script>
