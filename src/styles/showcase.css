@@ -1,11 +1,11 @@
-/* 作品集 / 摄影 —— 仅保留设计令牌与字体；其余样式全部用 Tailwind 实现 */
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@400;500;600&display=swap");
+/* 作品集 / 摄影 —— 仅保留设计令牌与字体；其余样式全部用 Tailwind 实现
+ * 正文字族与站点主体对齐(Space Grotesk),由 ProductsLayout 引入的 global.css 加载;
+ * 颜色令牌仍独立,不与站点 --ink/--bg 耦合。 */
 
 /* —— 作品集（仅浅色）—— */
 .works-page {
-  --serif: "Newsreader", "Songti SC", Georgia, serif;
-  --sans: "Inter", "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --sans: var(--font-sans);
+  --mono: var(--font-mono);
   --bg: #fbfbfa;
   --fg: #16151a;
   --fg-2: #5c5a63;
@@ -15,35 +15,22 @@
   font-family: var(--sans);
 }
 
-/* —— 作品集瀑布流持续流动:奇数列向下、偶数列向上,内容复制一份做无缝循环 —— */
-@keyframes works-flow-down {
-  from {
-    transform: translateY(-50%);
-  }
+/* —— 作品集载入:左栏与各条目按 index 错开一次轻微上浮(延迟由组件内联给),只此一处动效 —— */
+@keyframes works-rise {
   to {
-    transform: translateY(0);
+    opacity: 1;
+    transform: none;
   }
 }
-@keyframes works-flow-up {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(-50%);
-  }
+.works-rise {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: works-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-.works-flow-down {
-  animation: works-flow-down 50s linear infinite;
-  will-change: transform;
-}
-.works-flow-up {
-  animation: works-flow-up 50s linear infinite;
-  will-change: transform;
-}
-/* hover 暂停改由 works.tsx 用 JS 实现「就地冻结 + 可滚动」(margin-top 冻结当前位移),不再用纯 CSS 的 play-state。 */
 @media (prefers-reduced-motion: reduce) {
-  .works-flow-down,
-  .works-flow-up {
+  .works-rise {
+    opacity: 1;
+    transform: none;
     animation: none;
   }
 }
@@ -55,7 +42,7 @@
   --fg-2: #6d6c70;
   --fg-3: #a7a6aa;
   --line: rgba(0, 0, 0, 0.16);
-  --sans: "Inter", "PingFang SC", system-ui, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --sans: var(--font-sans);
+  --mono: var(--font-mono);
   font-family: var(--sans);
 }

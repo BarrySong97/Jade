@@ -30,9 +30,9 @@
 
 ## 展示页设计语言(独立)
 
-- **作品集 `/products`**:三套主题(暗房 `dark` / 留白 `light` / 纸感 `paper`)挂在根节点 `data-theme`,色全走 `.works-page` 作用域 CSS 变量;衬线标题 Newsreader、正文 Inter、元信息 IBM Plex Mono。
+- **作品集 `/products`**:浅色单主题,色全走 `.works-page` 作用域 CSS 变量;正文字族与站点对齐(Space Grotesk via `--font-sans`),元信息 IBM Plex Mono。
 - **摄影 `/photos`**:单一浅色调(`.photo-page`),横向照片流 + 拨盘时间轴。
-- 两者字体/令牌都在 `showcase.css`,与站点主体互不影响。
+- 颜色令牌在 `showcase.css` 独立;字族复用站点 `--font-sans` / `--font-mono`(由 ProductsLayout 引入 global.css)。
 
 ## 无障碍
 

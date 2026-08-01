@@ -23,3 +23,4 @@
 | 0001 | [博客图片管线:ThumbHash + blake2b + R2](0001-blog-image-pipeline.md) | 已采纳 | 2026-06-27 |
 | 0002 | [外链卡片:提交进仓库的 JSON 缓存](0002-link-card-cache.md)           | 已采纳 | 2026-07-25 |
 | 0003 | [短视频嵌入:自渲染官方 iframe](0003-tiktok-embed-iframe.md)          | 已采纳 | 2026-07-26 |
+| 0004 | [作品集:静态两列 + 条目式卡片](0004-works-static-columns.md)         | 已采纳 | 2026-07-29 |

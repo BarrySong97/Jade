@@ -6,26 +6,28 @@
 
 ## 涉及文件
 
-- 页面入口:[src/pages/products.astro](../../../src/pages/products.astro)(作品集)· [src/pages/photos.astro](../../../src/pages/photos.astro)(摄影列表)· [src/pages/photos/[album].astro](../../../src/pages/photos/[album].astro)(图集详情,`getStaticPaths` 一图集一页)— 都用 `ProductsLayout`(带 `ClientRouter` 参与视图转场)。
-- 作品集:`works.tsx`(浅色单主题,hover 暂停滚动)→ `works-intro.tsx`(左栏)/ `work-card.tsx`(瀑布流卡,复用 `BlogImage` 渲染 R2 产品图 + 叠应用标识)。
+- 页面入口:[src/pages/products.astro](../../../src/pages/products.astro)(作品集列表)· [src/pages/products/[slug].astro](../../../src/pages/products/[slug].astro)(项目详情)· [src/pages/photos.astro](../../../src/pages/photos.astro)(摄影列表)· [src/pages/photos/[album].astro](../../../src/pages/photos/[album].astro)(图集详情)— 都用 `ProductsLayout`(带 `ClientRouter` 参与视图转场)。
+- 作品集列表:`works.tsx`(浅色单主题)→ `works-intro.tsx`(左栏 sticky 简介)+ 底角 `works-avatar-bar`(头像 + Blog / Twitter)/ `work-card.tsx`(整卡进详情)。图标在 `src/assets/works/icons/`,经 `works-icons.ts`。
+- 作品集详情:`work-detail.tsx`(左栏项目 Header + 底角同款头像栏 + 右栏静态两列瀑布流;`images[]` 按纵横比贪心装箱;图点击放大复用博客 `BlogImage` 灯箱)。TEMP:右栏暂塞全部作品图测多图。
 - 摄影:`photo-stream.tsx`(可复用横向流 + 拨盘,列表与详情共用,`dialMode` 切日期/序号)。
-- 数据:`works-data.ts`(WORKS 真实产品图,托管 R2,带 width/height/thumbhash)/ `photography-data.ts`(`ALBUMS` 图集 + 派生 `COVERS` + 占位)。
-- 作品图上传:[scripts/upload-asset.mjs](../../../scripts/upload-asset.mjs)(非 MDX 通用资源:压 WebP 宽 2400/q88 → 传 R2,产出 url/尺寸/thumbhash 手动填进 works-data)。
-- 令牌/字体:[src/styles/showcase.css](../../../src/styles/showcase.css),作用域 `.works-page`(浅色)/ `.photo-page`(浅色)。
-- 转场:`cube-transition.astro`(给 `<html>` 打 `data-vt` 立方体方向 + 给封面瞬时设 `view-transition-name` 共享元素)+ [global.css](../../../src/styles/global.css) 的 `::view-transition` 动画。
+- 数据:`works-data.ts`(`slug` + `images[]`,`images[0]`=封面)/ `photography-data.ts`。
+- 作品图上传:[scripts/upload-asset.mjs](../../../scripts/upload-asset.mjs)(压 WebP → R2,产出填进 `images[]`)。
+- 令牌/字体:[src/styles/showcase.css](../../../src/styles/showcase.css);`--sans`/`--mono` 指向站点字体。
+- 转场:`cube-transition.astro` + [global.css](../../../src/styles/global.css) 的 `::view-transition`。
 
 ## 关键设计
 
-- **首页 ↔ 作品/摄影 的立方体转场**:用 Astro View Transitions(两边 `ClientRouter`),把首页与展示页当作立方体相邻两面,**绕 X 轴(纵向)转 90°**——作品=从上往下(`data-vt="down"`)、图片=从下往上(`up`),返回各自反向(配方 `perspective(1600px) translateZ(-50vh) rotateX(θ) translateZ(50vh)`,当前面落到 z=0 满屏,见 [global.css](../../../src/styles/global.css))。`cube-transition.astro` 在 `astro:before-preparation` + `astro:after-swap` 给 `<html>` 打 `data-vt`(**ClientRouter 交换会用新文档 html 属性擦掉它,所以必须在 after-swap 补一次**,否则动画阶段选不中、退回默认淡入);CSS 据此只对「首页↔展示页」生效,其余导航走默认淡入。为让整页作为一个面整体转动,[BaseLayout](../../../src/layouts/BaseLayout.astro) 去掉了 header/footer 的 `transition:persist` 与 main 的 fade。**两页之间不互相切换**——转场只在「首页 ↔ 作品/摄影」发生。
-- **作品集**:仅浅色单主题(已移除原暗房/留白/纸感三主题切换与 theme-switch 组件)。
-- **瀑布流持续流动**:`works.tsx` 把 WORKS 轮转分到 2 个显式列,每列内容**复制一份**做无缝循环(`translateY -50%↔0`);**奇数列向下、偶数列向上**(`.works-flow-down/up`,50s 慢速,见 [showcase.css](../../../src/styles/showcase.css));外层 `main` `overflow-hidden` 裁剪视口,`group` 容器 `hover` 时 `group-hover:[animation-play-state:paused]` 暂停所有列;`prefers-reduced-motion` 关闭。
-- **拨盘联动**(摄影):照片流横向滚动 ↔ 底部刻度时间轴,靠 `photo-stream.tsx` 里一个命令式 `useEffect` 直接改多个 ref 的 `style`(绕过 React 渲染),含滚轮纵转横、松手吸附。**这是个内聚交互控件,不宜拆散**(拆开要把一堆 ref 当 props 传,更难读)。
-- **摄影图集详情 + 共享元素转场**(`/photos` ↔ `/photos/<slug>`):列表每项=一个图集(展示 `photos[0]` 封面),点封面进该图集详情(真路由,SEO 友好)。封面图带 `data-cover="<slug>"`,详情第一张同名;`cube-transition.astro` 在导航前后给这张设 `view-transition-name: photo-cover` → 列表→详情时封面**共享元素 morph**到详情居中位(本就居中则几乎不动),其余照片走默认淡入;返回反向。命名只在该导航期间挂,**不污染立方体转场**(立方体只对首页↔展示页生效)。详情底部拨盘读数由日期改「第几张 / 共 N 张」(`dialMode="index"`);为让封面在 VT 快照时即居中,首/末 spacer 按项宽算,使首项 `scrollLeft=0` 即居中。详见 [docs/spark/2026-06-28-photo-album-detail-design.md](../../spark/2026-06-28-photo-album-detail-design.md)。
+- **首页 ↔ 作品/摄影列表 的立方体转场**:Astro View Transitions + `data-vt`(作品=`down`、摄影=`up`);**只对列表页**,不对接 `/products/<slug>` 详情。`cube-transition.astro` 在 `before-preparation` + `after-swap` 打标。
+- **作品集列表**:浅色单主题;左栏 sticky 简介 + 右侧两列条目([ADR 0004](../../decisions/0004-works-static-columns.md));分列按封面纵横比贪心装箱。
+- **作品集项目详情**(`/products` ↔ `/products/<slug>`):真路由 SSG。左栏换成标题/链接/年份·平台/说明,底角头像与列表共用且**不进文案转场**(单独 `works-avatar` 原地);右栏 `images[]` 静态两列瀑布流(首张左上 morph)。转场:(1) 封面 `work-cover` morph;(2) 文案块 `works-aside` 进详情旧文右滑出、新文从左入,返回(`data-works-nav=out`)整段反向。命名只在该导航期间挂,**不污染立方体**。`prefers-reduced-motion` 关掉全部 VT 动画。
+- **条目排版**——项目名 `14px`/`font-[450]`;说明 `15px`/`leading-[1.7]` 通篇 `--fg-2`。数据支持多图,现阶段每项可先只放一张。
+- **列表载入动效**:`.works-rise` 错开上浮。
+- **拨盘联动**(摄影):见既有说明。
+- **摄影图集详情 + 共享元素转场**(`/photos` ↔ `/photos/<slug>`):`photo-cover` morph;详见 [docs/spark/2026-06-28-photo-album-detail-design.md](../../spark/2026-06-28-photo-album-detail-design.md)。
 
 ## 注意事项
 
-- Tailwind 4 字体族任意值必须 `font-[family-name:var(--serif)]`(漏 `family-name:` 字体不生效——一次真实失败)。
-- 摄影(`photo-stream`)仍用渐变色块占位,接真实图时换 `<img>`;作品集已全部接真实图(R2),无占位。
-- 顶栏返回:作品集 / 摄影列表是「← 回到博客」(`/`);图集详情是「← 返回」(`/photos`)。
-- 联系方式只展示 **Twitter**,链接/句柄取自 `@/lib/site` 的 `TWITTER`/`TWITTER_HANDLE`(与首页同源):作品集在左栏 CONTACT、摄影页在左下角。
-- 作品卡(`work-card`):复用 `BlogImage` 渲染 R2 产品图(blur-up,`zoomable=false` 不开灯箱),角落叠半透明黑底圆角「应用名 — 说明」徽标(`label`/`desc`);**竖图(`height>width`)放左上角、横图放左下角**(底部易被裁)。
+- Tailwind 4 字体族任意值必须 `font-[family-name:var(--mono)]`。
+- 顶栏返回:列表「← 回到博客」(`/`);作品详情 / 图集详情「← 返回」(`/products` 或 `/photos`)。
+- 作品条目:整卡点进详情;外链 URL 单独可点(pointer-events 分层)。新作品要同时加 `slug`、`images[]`、图标文件 + `WORK_ICONS` 键。
+- 立方体只绑 `/` ↔ `/products` 与 `/` ↔ `/photos`,别把 `/products/<slug>` 算进去。

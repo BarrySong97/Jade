@@ -405,6 +405,85 @@
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* ===== 作品列表 ↔ 项目详情:封面 morph(work-cover)+ 左栏文案横滑(works-aside)+ 头像原地(works-avatar) ===== */
+::view-transition-group(work-cover) {
+  animation-duration: 0.55s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 头像:列表/详情同位置,关掉组动画,原地不动 */
+::view-transition-group(works-avatar) {
+  animation: none;
+}
+::view-transition-old(works-avatar),
+::view-transition-new(works-avatar) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* 左栏文案:进详情旧文右滑出、新文从左入;返回则反向。节奏对齐封面 morph(0.55s) */
+::view-transition-group(works-aside) {
+  animation: none;
+  overflow: clip;
+}
+:root[data-works-nav="in"]::view-transition-old(works-aside) {
+  animation: 0.45s cubic-bezier(0.4, 0, 0.2, 1) both works-aside-slide-out-right;
+  mix-blend-mode: normal;
+}
+:root[data-works-nav="in"]::view-transition-new(works-aside) {
+  animation: 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both works-aside-slide-in-left;
+  mix-blend-mode: normal;
+}
+:root[data-works-nav="out"]::view-transition-old(works-aside) {
+  animation: 0.45s cubic-bezier(0.4, 0, 0.2, 1) both works-aside-slide-out-left;
+  mix-blend-mode: normal;
+}
+:root[data-works-nav="out"]::view-transition-new(works-aside) {
+  animation: 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both works-aside-slide-in-right;
+  mix-blend-mode: normal;
+}
+
+@keyframes works-aside-slide-out-right {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(28%);
+    opacity: 0;
+  }
+}
+@keyframes works-aside-slide-in-left {
+  from {
+    transform: translateX(-28%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes works-aside-slide-out-left {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-28%);
+    opacity: 0;
+  }
+}
+@keyframes works-aside-slide-in-right {
+  from {
+    transform: translateX(28%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 /* 博客图片灯箱「原地放大」改用 Motion React 的 layoutId 共享布局动画(见 blog-image.tsx),不再走 View Transitions。 */
 
 /* ===== 首页 ↔ 作品/摄影:把两页当作立方体相邻两面,绕 X 轴(纵向)转动 =====

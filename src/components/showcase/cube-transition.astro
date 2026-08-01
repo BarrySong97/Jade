@@ -3,54 +3,112 @@
 //  1) 首页 ↔ 作品/摄影:给 <html> 打 data-vt,触发 global.css 的立方体 ::view-transition 规则。
 //  2) 摄影列表 ↔ 图集详情(/photos ↔ /photos/<slug>):瞬时给封面元素设共享 view-transition-name,
 //     让封面"原地不动 → 居中"。名字只在该导航期间挂,避免污染立方体转场。
+//  3) 作品列表 ↔ 项目详情(/products ↔ /products/<slug>):挂 work-cover(封面 morph)、
+//     works-aside(文案右滑出/左滑入)、works-avatar(头像原地不动)。名字只在该导航期间挂。
 ---
 
 <script is:inline>
   if (!window.__cubeVT) {
     window.__cubeVT = true;
     const norm = (p) => (p !== "/" ? p.replace(/\/+$/, "") : "/");
-    const NAME = "photo-cover";
+    const PHOTO_COVER = "photo-cover";
+    const WORK_COVER = "work-cover";
+    const WORKS_ASIDE = "works-aside";
+    const WORKS_AVATAR = "works-avatar";
     let pending = ""; // 立方体方向
-    let coverSlug = ""; // 共享封面的图集 slug
+    let coverSlug = ""; // 摄影共享封面 slug
+    let workSlug = ""; // 作品共享封面 slug
+    let worksAside = false; // 是否挂左栏文案 / 头像命名
+    let worksNav = ""; // 列表→详情 in / 详情→列表 out;驱动 aside 横滑方向
 
     const applyVt = () => {
       document.documentElement.dataset.vt = pending;
+      if (worksNav) document.documentElement.dataset.worksNav = worksNav;
+      else delete document.documentElement.dataset.worksNav;
     };
-    const nameCover = () => {
-      // 先清掉上一次残留的命名
-      document.querySelectorAll('[data-cover]').forEach((el) => {
-        if (el.style.viewTransitionName === NAME) el.style.viewTransitionName = "";
+
+    const clearNamed = (attr, name) => {
+      document.querySelectorAll("[" + attr + "]").forEach((el) => {
+        if (el.style.viewTransitionName === name) el.style.viewTransitionName = "";
       });
+    };
+
+    const namePhotoCover = () => {
+      clearNamed("data-cover", PHOTO_COVER);
       if (!coverSlug) return;
       const el = document.querySelector('[data-cover="' + coverSlug + '"]');
-      if (el) el.style.viewTransitionName = NAME;
+      if (el) el.style.viewTransitionName = PHOTO_COVER;
+    };
+
+    const nameWorkCover = () => {
+      clearNamed("data-work-cover", WORK_COVER);
+      if (!workSlug) return;
+      const el = document.querySelector('[data-work-cover="' + workSlug + '"]');
+      if (el) el.style.viewTransitionName = WORK_COVER;
+    };
+
+    const nameWorksAside = () => {
+      document.querySelectorAll("[data-works-aside]").forEach((el) => {
+        el.style.viewTransitionName = worksAside ? WORKS_ASIDE : "";
+      });
+    };
+
+    const nameWorksAvatar = () => {
+      document.querySelectorAll("[data-works-avatar]").forEach((el) => {
+        el.style.viewTransitionName = worksAside ? WORKS_AVATAR : "";
+      });
     };
 
     document.addEventListener("astro:before-preparation", (e) => {
       const from = norm(e.from.pathname);
       const to = norm(e.to.pathname);
 
-      // 立方体:首页 ↔ 作品/摄影(作品=down、图片=up,返回反向)
+      // 立方体:首页 ↔ 作品列表/摄影列表(作品=down、图片=up,返回反向)
+      // 注意:首页 ↔ /products/<slug> 不走立方体(详情另有转场)
       if (from === "/" && to === "/products") pending = "down";
       else if (from === "/products" && to === "/") pending = "up";
       else if (from === "/" && to === "/photos") pending = "up";
       else if (from === "/photos" && to === "/") pending = "down";
       else pending = "";
-      applyVt();
 
-      // 共享封面:列表 ↔ 详情
-      const toDetail = to.match(/^\/photos\/([^/]+)$/);
-      const fromDetail = from.match(/^\/photos\/([^/]+)$/);
-      if (from === "/photos" && toDetail) coverSlug = toDetail[1];
-      else if (fromDetail && to === "/photos") coverSlug = fromDetail[1];
+      // 摄影共享封面:列表 ↔ 详情
+      const toPhotoDetail = to.match(/^\/photos\/([^/]+)$/);
+      const fromPhotoDetail = from.match(/^\/photos\/([^/]+)$/);
+      if (from === "/photos" && toPhotoDetail) coverSlug = toPhotoDetail[1];
+      else if (fromPhotoDetail && to === "/photos") coverSlug = fromPhotoDetail[1];
       else coverSlug = "";
-      nameCover(); // 旧页:命名被点封面 / 详情首图(进快照前)
+
+      // 作品共享封面 + 左栏文案/头像:列表 ↔ 详情(in 右出左入 / out 反向)
+      const toWorkDetail = to.match(/^\/products\/([^/]+)$/);
+      const fromWorkDetail = from.match(/^\/products\/([^/]+)$/);
+      if (from === "/products" && toWorkDetail) {
+        workSlug = toWorkDetail[1];
+        worksAside = true;
+        worksNav = "in";
+      } else if (fromWorkDetail && to === "/products") {
+        workSlug = fromWorkDetail[1];
+        worksAside = true;
+        worksNav = "out";
+      } else {
+        workSlug = "";
+        worksAside = false;
+        worksNav = "";
+      }
+
+      applyVt();
+      namePhotoCover();
+      nameWorkCover();
+      nameWorksAside();
+      nameWorksAvatar();
     });
 
     // ClientRouter 交换会用新文档属性擦掉 data-vt、且新页元素需重新命名 → 交换后各补一次
     document.addEventListener("astro:after-swap", () => {
       applyVt();
-      nameCover();
+      namePhotoCover();
+      nameWorkCover();
+      nameWorksAside();
+      nameWorksAvatar();
     });
   }
 </script>
