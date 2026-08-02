@@ -1,7 +1,7 @@
 ---
 import ProductsLayout from "@/layouts/ProductsLayout.astro";
 import WorkDetail from "@/components/showcase/work-detail";
-import { WORKS, getWorkBySlug } from "@/components/showcase/works-data";
+import { WORKS, getWorkBySlug, displayWorkTitle } from "@/components/showcase/works-data";
 import "@/styles/showcase.css";
 
 export function getStaticPaths() {
@@ -11,6 +11,6 @@ export function getStaticPaths() {
 const work = getWorkBySlug(Astro.params.slug!);
 ---
 
-<ProductsLayout title={work!.t}>
+<ProductsLayout title={displayWorkTitle(work!.t)}>
   <WorkDetail client:load work={work!} />
 </ProductsLayout>

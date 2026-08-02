@@ -2,7 +2,7 @@
  * @purpose 把任意本地图片处理成 WebP 并上传 R2 的通用 CLI(非 MDX 用,如作品集/展示页图片):复用 process-image 压缩 + r2 上传,打印 url/宽高/thumbhash 供手动填进数据文件。
  * @role    与 img.mjs(MDX 专用)并列;img.mjs 改写文章,本脚本只产出托管后的元信息,数据表(如 works-data)手动维护。
  * @deps    本目录 lib/process-image(processImage)、lib/r2(loadEnv/r2Config/uploadToR2);node:fs
- * @gotcha  默认 prefix=works、maxWidth=2400、quality=88(比博客 1600/80 更清晰);--dry-run 不上传只打印;内容寻址命名,同图重传同 key(幂等)。
+ * @gotcha  默认 prefix=works、maxWidth=2400、quality=88(比博客 1600/80 更清晰);--dry-run 不上传只打印;内容寻址命名,同图重传同 key(幂等)。**禁止**用 Cursor 聊天附件路径(`.cursor/projects/.../assets/...`,常被压到 ~1024px);必须用 Downloads / 原文件路径,上传前用 sips 核对宽高。
  */
 import { readFileSync } from "node:fs";
 import { basename } from "node:path";

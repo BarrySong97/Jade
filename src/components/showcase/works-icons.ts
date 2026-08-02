@@ -6,16 +6,22 @@
  */
 
 import flowm from "@/assets/works/icons/flowm.png";
+import flowmDesktop from "@/assets/works/icons/flowm-desktop.png";
 import immersed from "@/assets/works/icons/immersed.png";
 import grove from "@/assets/works/icons/grove.png";
+import listenUp from "@/assets/works/icons/listen-up.png";
+import post from "@/assets/works/icons/post.png";
 import journalTodo from "@/assets/works/icons/journal-todo.png";
 import supplysmart from "@/assets/works/icons/supplysmart.png";
 import limitless320 from "@/assets/works/icons/limitless-320.png";
 
 export const WORK_ICONS = {
   flowm,
+  "flowm-desktop": flowmDesktop,
   immersed,
   grove,
+  "listen-up": listenUp,
+  post,
   "journal-todo": journalTodo,
   supplysmart,
   "limitless-320": limitless320,
