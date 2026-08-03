@@ -49,7 +49,7 @@ Vibe coding 的默认路线是 WebView也就是使用Readium(支持三端ios，�
 
 这给了我一个方向。
 
-**为什么选 Flutter**
+为什么选 Flutter
 
 然后关于Immersed这个App，它其实不是一个特别靠原生能力的，或者靠原生平台某个能力的App。所以说选择Flutter来做全平台的开发，将安卓和iOS都能覆盖。
 
@@ -67,7 +67,7 @@ Canvas还有一个重要的一点就是它的速度非常快。
 
 <BlogImage client:visible src="https://blogassets.4real.ink/blog/3b0560607a7698cf42ca1de6f7a463e1.webp" alt="1777788646595-801shots_so_Content_1200x900.webp" width={1200} height={900} thumbhash="XbcNRYgFx1eKiIhleZZ4hWqQhvJ3" />
 
-**为什么用 Rust 解析 EPUB**
+为什么用 Rust 解析 EPUB
 
 Canvas 解决了渲染速度的问题，但还有另一个问题：排版还原。
 
@@ -81,7 +81,7 @@ EPUB 本质上是一个 zip 压缩包，打开之后是一堆 HTML 文件加上 
 
 于是我用 Rust 写了一个 EPUB parser，把原始 HTML 解析成内部的 RenderNode 结构，再交给 Flutter Canvas 排版和渲染。
 
-整条管道是：**Rust 解析 EPUB → 转成 RenderNode → Flutter Canvas 排版绘制**。这条路线比 WebView 累的多，但是AI刚好适合做这种脏活，但它让后续所有的阅读体验都是可控的。
+整条管道是：Rust 解析 EPUB → 转成 RenderNode → Flutter Canvas 排版绘制。这条路线比 WebView 累的多，但是AI刚好适合做这种脏活，但它让后续所有的阅读体验都是可控的。
 
 <BlogImage client:visible src="https://blogassets.4real.ink/blog/8c096480fd6d3baec163189fbe142efa.webp" alt="1777788130093-999shots_so_Content_1200x900.webp" width={1200} height={900} thumbhash="ZAYOLYI7VmiFd3dgiXiIhCdqgF75" />
 
@@ -105,9 +105,9 @@ AI每次都要重新理解上下文，所以我们agent都有Claude.md或者agen
 
 这套系统的核心价值有几个：
 
-**上下文更小，AI 更聚焦。** AI 不需要每次加载整个项目说明。改 Reader 选区，就读 `reader.md` 和 `highlight.md`，不会因为一个小需求把 Library、Settings、Parser 都顺手乱改。
+上下文更小，AI 更聚焦。 AI 不需要每次加载整个项目说明。改 Reader 选区，就读 `reader.md` 和 `highlight.md`，不会因为一个小需求把 Library、Settings、Parser 都顺手乱改。
 
-**决策沉淀下来，不只活在聊天记录里。** 聊天里做出的产品和技术决策，开发完后同步进对应模块文档。后面的 AI 不需要重新理解历史聊天，也能知道当前设计为什么是这样——比如 Mark 为什么不用 `pageIndex` 定位、Explain cache 为什么不因 Vocabulary Level 自动失效，都记在文档里。
+决策沉淀下来，不只活在聊天记录里。 聊天里做出的产品和技术决策，开发完后同步进对应模块文档。后面的 AI 不需要重新理解历史聊天，也能知道当前设计为什么是这样——比如 Mark 为什么不用 `pageIndex` 定位、Explain cache 为什么不因 Vocabulary Level 自动失效，都记在文档里。
 
 ---
 
@@ -123,7 +123,7 @@ Vibe coding 有一个不如 Web 开发的地方：Web 里浏览器 DevTools 可�
 
 但这不是无解的，只是需要换一套工作节奏。
 
-**遇到问题，先不要让 AI 改代码。**
+遇到问题，先不要让 AI 改代码。
 
 第一步：让 AI 把关键路径的 log 先打好。分页乱了，就在分页计算的入口和出口各打一条，把输入参数、中间状态、最终结果都打出来。缓存没失效，就在缓存读取和写入的地方打版本号和时间戳。
 
@@ -160,7 +160,7 @@ Vibe coding 有一个不如 Web 开发的地方：Web 里浏览器 DevTools 可�
 
 举两个我实际碰到的例子。
 
-**阅读进度定位**。进度保存用什么来定位当前位置？最直觉的答案是 `pageIndex`，AI 给的第一个方案也是这个。看起来合理，翻到第几页就存第几页。我把这个方案放在脑子里转了一圈，发现了问题：Canvas 排版是动态计算的，手机和 iPad 的 viewport 不一样宽，同一段文字在手机上是第 47 页，在 iPad 双页展开时可能是第 23 页。`pageIndex` 在设备切换之后就失效了，进度会乱。
+阅读进度定位。进度保存用什么来定位当前位置？最直觉的答案是 `pageIndex`，AI 给的第一个方案也是这个。看起来合理，翻到第几页就存第几页。我把这个方案放在脑子里转了一圈，发现了问题：Canvas 排版是动态计算的，手机和 iPad 的 viewport 不一样宽，同一段文字在手机上是第 47 页，在 iPad 双页展开时可能是第 23 页。`pageIndex` 在设备切换之后就失效了，进度会乱。
 
 真正稳定的定位应该是基于内容本身，而不是排版结果。我让 AI 换了方向，用 block anchor，也就是把进度绑定到 EPUB 内部的某个内容节点上，这个节点不会因为屏幕宽度变化而改变。这个方案 AI 第一轮给不出来，因为它不知道"排版会变"这件事在实际使用中意味着什么。
 

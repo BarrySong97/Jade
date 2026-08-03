@@ -11,38 +11,38 @@ heroThumbhash: "n50KNISIiId4d3d/d4aIeI+I9w=="
 
 ## 环境要求
 
-本文以 **React + Vite** 浏览器插件项目为例，展示如何实现 **Shadow DOM** 样式隔离。
+本文以 React + Vite 浏览器插件项目为例，展示如何实现 Shadow DOM 样式隔离。
 
-**技术栈要求：**
+技术栈要求：
 
-- • **React** 项目
-- • **Vite** 作为构建工具
-- • 使用 **Vite** 打包浏览器插件
+- • React 项目
+- • Vite 作为构建工具
+- • 使用 Vite 打包浏览器插件
 
-**其他框架适用性：**
+其他框架适用性：
 
-- • **Vue + Vite**、**Svelte + Vite** 等其他框架配合 **Vite** 使用类似思路
-- • **Webpack** 项目可以使用相应的 **loader** 实现 **CSS inline** 导入
+- • Vue + Vite、Svelte + Vite 等其他框架配合 Vite 使用类似思路
+- • Webpack 项目可以使用相应的 loader 实现 CSS inline 导入
 
 ## Shadow DOM 的使用场景
 
-我们在开发**浏览器插件**的时候，浏览器插件分为 4 个部分的 **UI**：
+我们在开发浏览器插件的时候，浏览器插件分为 4 个部分的 UI：
 
-- • **Popup**：点击浏览器 icon 弹出的页面
-- • **Side Panel**：侧边弹出框
-- • **New Tab**：新标签页
-- • **Content Script**：内容脚本
+- • Popup：点击浏览器 icon 弹出的页面
+- • Side Panel：侧边弹出框
+- • New Tab：新标签页
+- • Content Script：内容脚本
 
-前三个（**popup**、**side panel**、**new tab**）都是独立页面，所以不会有样式问题。但是第四个 **content script** 的内容是镶嵌到宿主网页的，在写 **Content script** 的时候，你的样式可能会被主网站的样式所影响。
+前三个（popup、side panel、new tab）都是独立页面，所以不会有样式问题。但是第四个 content script 的内容是镶嵌到宿主网页的，在写 Content script 的时候，你的样式可能会被主网站的样式所影响。
 
-这个时候我们就需要一个**隔离样式**的方式。
+这个时候我们就需要一个隔离样式的方式。
 
 ## 样式隔离的两种方式
 
 隔离样式分为两种：
 
-1. 1. **IFrame 方式**：用 **IFrame** 去请求一个第三方的网页，这种是最简单的
-2. 2. **Shadow DOM 方式**：**Shadow DOM** 可以很好地隔离主网站和你插件 **Content Script** 的样式
+1. 1. IFrame 方式：用 IFrame 去请求一个第三方的网页，这种是最简单的
+2. 2. Shadow DOM 方式：Shadow DOM 可以很好地隔离主网站和你插件 Content Script 的样式
 
 ### Shadow DOM 基本创建示例
 
@@ -76,19 +76,19 @@ const root = createRoot(reactContainer);
 
 ## Tailwind CSS 与 REM 单位的问题
 
-我们知道了 **Shadow DOM** 可以隔离样式，但还有一个问题：我们现在的 **CSS** 基础使用的是 **Tailwind CSS** 这个框架来做样式输出。
+我们知道了 Shadow DOM 可以隔离样式，但还有一个问题：我们现在的 CSS 基础使用的是 Tailwind CSS 这个框架来做样式输出。
 
-这样就会遇到一个问题——我们都知道 **Tailwind** 使用 **REM** 这个相对于根元素 **font-size** 的单位来做 **spacing** 和 **font-size** 的处理。
+这样就会遇到一个问题——我们都知道 Tailwind 使用 REM 这个相对于根元素 font-size 的单位来做 spacing 和 font-size 的处理。
 
-**Shadow DOM** 并不会隔离 **REM** 这个相对于根元素 **font-size** 单位换算的特性。如果主网站的根元素的 **font-size** 不是 **16px**，你的插件样式就会受到影响。
+Shadow DOM 并不会隔离 REM 这个相对于根元素 font-size 单位换算的特性。如果主网站的根元素的 font-size 不是 16px，你的插件样式就会受到影响。
 
 ### REM 与 PX 的换算关系
 
-**基础换算公式：**
+基础换算公式：
 
 `1rem = 根元素的 font-size (通常是 16px)`
 
-**Tailwind 单位换算示例：**
+Tailwind 单位换算示例：
 
 `p-4 = padding: 1rem = 16px`  
 `p-2 = padding: 0.5rem = 8px`  
@@ -97,21 +97,21 @@ const root = createRoot(reactContainer);
 
 ### 解决方案：REM 转 EM
 
-我们需要把 **REM** 换成 **EM**，在 **Shadow DOM** 的根上设置一个 **font-size** 为 **16px**，这样 **EM** 单位就会基于 **Shadow DOM** 内部的字体大小进行计算，而不会受到主网站根元素的影响。
+我们需要把 REM 换成 EM，在 Shadow DOM 的根上设置一个 font-size 为 16px，这样 EM 单位就会基于 Shadow DOM 内部的字体大小进行计算，而不会受到主网站根元素的影响。
 
 ## 两种实现方式
 
 ### 方式一：PostCSS 插件转换（构建时）
 
-通常以前 **Tailwind** 是基于 **PostCSS** 来做 **CSS** 语法的换算，但是现在 **Tailwind V4** 已经从 **PostCSS** 独立出来使用 **Lightning CSS** 了。
+通常以前 Tailwind 是基于 PostCSS 来做 CSS 语法的换算，但是现在 Tailwind V4 已经从 PostCSS 独立出来使用 Lightning CSS 了。
 
-我们当然也可以切换到 **PostCSS** 上面，因为 **Tailwind** 依旧支持这种方式，因为有很多以前的 **PostCSS** 插件需要使用。
+我们当然也可以切换到 PostCSS 上面，因为 Tailwind 依旧支持这种方式，因为有很多以前的 PostCSS 插件需要使用。
 
-比如在 **tailwind v3** 版本，你就可以使用 **postcss** 插件的方式，直接搜索插件就好了。
+比如在 tailwind v3 版本，你就可以使用 postcss 插件的方式，直接搜索插件就好了。
 
 ### 方式二：Vite + 运行时转换（推荐）
 
-现在我们可以使用 **Vite** 的一个特性，结合**运行时转换**来解决这个问题：
+现在我们可以使用 Vite 的一个特性，结合运行时转换来解决这个问题：
 
 #### 完整实现代码
 
@@ -165,16 +165,16 @@ root.render(
 );
 ```
 
-这个实现将 **Shadow DOM** 创建、样式注入和 **React** 应用渲染整合在一起，形成了完整的工作流程。**Vite** 的 `?inline` 后缀会将 **CSS** 文件作为字符串导入，而不是注入到页面的 `<head>` 中。
+这个实现将 Shadow DOM 创建、样式注入和 React 应用渲染整合在一起，形成了完整的工作流程。Vite 的 `?inline` 后缀会将 CSS 文件作为字符串导入，而不是注入到页面的 `<head>` 中。
 
-**为什么这样有效？**
+为什么这样有效？
 
-- • **REM** 相对于 HTML 根元素（`:root`）的 font-size
-- • **EM** 相对于当前元素或父元素的 font-size
-- • 通过将 `reactContainer.style.fontSize = "16px"`，我们确保了 **EM** 单位始终以 **16px** 为基准计算
+- • REM 相对于 HTML 根元素（`:root`）的 font-size
+- • EM 相对于当前元素或父元素的 font-size
+- • 通过将 `reactContainer.style.fontSize = "16px"`，我们确保了 EM 单位始终以 16px 为基准计算
 - • 即使主网站修改了根元素字体大小，我们的插件样式仍然保持一致
 
-**HTML 根元素与 Shadow DOM 根元素的区别：**
+HTML 根元素与 Shadow DOM 根元素的区别：
 
 ```css
 /* HTML 根元素选择器 - 影响整个页面 */
@@ -192,13 +192,13 @@ root.render(
 
 ## CSS 变量的处理
 
-现在我们解决了 **font-size** 换算的问题，但我们还有一个问题：有一些 **CSS 变量**是设置在 **HTML** 根元素（`:root`）上面的。
+现在我们解决了 font-size 换算的问题，但我们还有一个问题：有一些 CSS 变量是设置在 HTML 根元素（`:root`）上面的。
 
-我们就需要设置在 **Shadow DOM** 的根元素（`:host`）上面，确保这些变量在 **Shadow DOM** 内部可用。
+我们就需要设置在 Shadow DOM 的根元素（`:host`）上面，确保这些变量在 Shadow DOM 内部可用。
 
 ### CSS 样式文件中使用 :host
 
-在 **Shadow DOM** 的 **CSS** 文件中，我们直接使用 `:host` 来定义 **CSS 变量**：
+在 Shadow DOM 的 CSS 文件中，我们直接使用 `:host` 来定义 CSS 变量：
 
 ```css
 /* style.css */
@@ -238,15 +238,15 @@ root.render(
 
 ### 什么是无障碍阅读
 
-**无障碍阅读** 是指为视力障碍用户提供的屏幕阅读器支持，通过语音朗读网页内容帮助他们使用网页。常见的屏幕阅读器包括 NVDA、JAWS 等。
+无障碍阅读 是指为视力障碍用户提供的屏幕阅读器支持，通过语音朗读网页内容帮助他们使用网页。常见的屏幕阅读器包括 NVDA、JAWS 等。
 
 ### React ARIA 在 Shadow DOM 中的问题
 
-**React ARIA** 是提供无障碍访问功能的 React 库，它会根据 ARIA 属性来判断元素的交互状态和行为。但在 Shadow DOM 中可能失效，主要原因：
+React ARIA 是提供无障碍访问功能的 React 库，它会根据 ARIA 属性来判断元素的交互状态和行为。但在 Shadow DOM 中可能失效，主要原因：
 
-1. 1. **ARIA 属性检测失效**：React ARIA 内部的逻辑无法正确识别 Shadow DOM 中的 ARIA 属性
-2. 2. **交互状态判断错误**：基于 ARIA 的交互逻辑（如是否可点击、是否禁用）可能失效
-3. 3. **事件处理异常**：依赖 ARIA 状态的事件处理可能不会正确触发
+1. 1. ARIA 属性检测失效：React ARIA 内部的逻辑无法正确识别 Shadow DOM 中的 ARIA 属性
+2. 2. 交互状态判断错误：基于 ARIA 的交互逻辑（如是否可点击、是否禁用）可能失效
+3. 3. 事件处理异常：依赖 ARIA 状态的事件处理可能不会正确触发
 
 这可能会导致你的 hover、click、press 或者 active 这种依赖于 React ARIA 的交互状态不会很好地触发。
 
