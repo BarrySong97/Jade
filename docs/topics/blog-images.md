@@ -22,7 +22,7 @@
 ## 运行时表现
 
 - `<BlogImage>` 在 **SSR 时**就把 thumbhash 解码成模糊 PNG dataURL 作背景(零额外请求、无布局跳动,靠 `width/height` 撑 aspect-ratio)。
-- 真图 `loading="lazy"` 加载完淡入;点击放大走简单 `<img>` 灯箱(**不走 WebGL**:WebGL 取纹理需 CORS,而 R2 不发 CORS 头会黑屏),并用 **Motion React 的 `layoutId` 共享布局动画**让缩略图「原地放大」morph 进灯箱(缩略图与灯箱图同一 React 树,全浏览器可用)。
+- 真图 `loading="lazy"` 加载完淡入;点击放大走简单 `<img>` 灯箱(**不走 WebGL**:WebGL 取纹理需 CORS,而 R2 不发 CORS 头会黑屏),并用 **Motion React 的 `layoutId` 共享布局动画**让缩略图「原地放大」morph 进灯箱(缩略图与灯箱图同一 React 树,全浏览器可用)。灯箱内提供 100%–400% 的放大/缩小/复位,放大后可用拖拽、触控或方向键平移,滚轮调整倍率,并禁用浏览器原生拖图避免长图拖拽出现链接图标,Esc 关闭。
 - 灯箱目前显示的仍是限宽 WebP(非原图);若要看原图,需在上传时**额外存一份原图**并让灯箱指向它(TODO,见注意事项)。
 
 ## 注意事项

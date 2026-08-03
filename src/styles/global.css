@@ -361,9 +361,9 @@
   border-radius: revert-layer;
 }
 
-/* 视频嵌入(TikTokEmbed)的图注链接:`.prose a` 那条手写规则同样无层级,
+/* 视频嵌入(TikTokEmbed / BilibiliEmbed)的图注链接:`.prose a` 那条手写规则同样无层级,
    会给它按上渐变下划线并改色。跟卡片一个套路,revert-layer 退回组件自己的 Tailwind 类。 */
-.prose .tiktok-embed a {
+.prose :is(.tiktok-embed, .bilibili-embed) a {
   color: revert-layer;
   background-image: revert-layer;
   padding-bottom: revert-layer;

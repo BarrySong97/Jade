@@ -1,8 +1,8 @@
 /**
- * @purpose 博客正文图片组件:blur-up 渐进加载——thumbhash 平均色(瞬时)+ 模糊图打底,真图加载完 opacity 淡入盖上;点击放大走 <img> 灯箱,缩略图经 Motion React 的 layoutId 共享布局「原地放大」morph 进灯箱。
+ * @purpose 博客正文图片组件:blur-up 渐进加载——thumbhash 平均色(瞬时)+ 模糊图打底,真图加载完 opacity 淡入盖上;点击放大走 <img> 灯箱,支持缩放/复位/平移,缩略图经 Motion React 的 layoutId 共享布局「原地放大」morph 进灯箱。
  * @role    MDX 中由 scripts/img.mjs 改写生成的 <BlogImage/>;blog 专用,替代老 cloud-image 占位机制。
  * @deps    react;motion/react(motion / AnimatePresence,layoutId 共享布局动画);thumbhash(thumbHashToDataURL / thumbHashToAverageRGBA);@/lib/utils(cn)
- * @gotcha  灯箱用普通 <img>(不走 WebGL:WebGL 取纹理需 CORS,R2 不发 CORS 头会黑屏)。放大转场用 layoutId(缩略图与灯箱图同一 React 树、共享 useId() 生成的 layoutId)→ 全浏览器可用,无需 View Transitions。Motion 共享布局自带 crossfade,会逐帧重写两图内联 opacity(style prop 拦不住),缩回时提前显形缩略图造成重影 → 用 !important 类(invisible!/opacity-100!)压住,缩略图等 onExitComplete 才瞬时接棒。灯箱当前显示限宽 WebP(无原图);接原图见 docs/topics/blog-images.md TODO。
+ * @gotcha  灯箱用普通 <img>(不走 WebGL:WebGL 取纹理需 CORS,R2 不发 CORS 头会黑屏)。放大转场用 layoutId(缩略图与灯箱图同一 React 树、共享 useId() 生成的 layoutId)→ 全浏览器可用,无需 View Transitions。Motion 共享布局自带 crossfade,会逐帧重写两图内联 opacity(style prop 拦不住),缩回时提前显形缩略图造成重影 → 用 !important 类(invisible!/opacity-100!)压住,缩略图等 onExitComplete 才瞬时接棒。灯箱内缩放上限 4 倍,放大后可拖拽/触控平移;两张 img 都禁用浏览器原生拖图,避免长图拖拽时出现链接拖拽图标;Esc 关闭;当前显示限宽 WebP(无原图),接原图见 docs/topics/blog-images.md TODO。
  */
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -23,6 +23,11 @@ interface BlogImageProps {
 
 // 「原地放大 / 缩回」的共享布局过渡
 const MORPH = { duration: 0.36, ease: [0.22, 1, 0.36, 1] as const };
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 4;
+const ZOOM_STEP = 0.5;
+
+type Point = { x: number; y: number };
 
 function base64ToBytes(b64: string): Uint8Array {
   const bin =
@@ -43,14 +48,82 @@ export default function BlogImage({
 }: BlogImageProps) {
   const [loaded, setLoaded] = useState(false);
   const [open, setOpen] = useState(false);
+  const [zoom, setZoom] = useState(MIN_ZOOM);
+  const [pan, setPan] = useState<Point>({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
   // 关闭后 exit 缩回动画播完前仍需隐藏缩略图,否则缩回过程中原位已有真图(重影)
   const [exiting, setExiting] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
+  const dragRef = useRef<{ pointerId: number; start: Point; pan: Point } | null>(null);
   const layoutId = useId(); // 缩略图 ↔ 灯箱图共享,唯一标识本实例
+
+  const getPanBounds = (scale: number) => {
+    if (typeof window === "undefined" || scale <= MIN_ZOOM) return { x: 0, y: 0 };
+    return {
+      x: (window.innerWidth * (scale - MIN_ZOOM)) / 2,
+      y: (window.innerHeight * (scale - MIN_ZOOM)) / 2,
+    };
+  };
+
+  const clampPan = (next: Point, scale = zoom): Point => {
+    const bounds = getPanBounds(scale);
+    return {
+      x: Math.max(-bounds.x, Math.min(bounds.x, next.x)),
+      y: Math.max(-bounds.y, Math.min(bounds.y, next.y)),
+    };
+  };
+
+  const resetView = () => {
+    setZoom(MIN_ZOOM);
+    setPan({ x: 0, y: 0 });
+  };
+
+  const changeZoom = (delta: number) => {
+    const nextZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta));
+    setZoom(nextZoom);
+    setPan((current) => (nextZoom === MIN_ZOOM ? { x: 0, y: 0 } : clampPan(current, nextZoom)));
+  };
 
   const close = () => {
     setOpen(false);
     setExiting(true);
+  };
+
+  const handleWheel = (event: React.WheelEvent) => {
+    event.preventDefault();
+    changeZoom(event.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP);
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLImageElement>) => {
+    if (zoom <= MIN_ZOOM) return;
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    dragRef.current = {
+      pointerId: event.pointerId,
+      start: { x: event.clientX, y: event.clientY },
+      pan,
+    };
+    setDragging(true);
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLImageElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    setPan(
+      clampPan({
+        x: drag.pan.x + event.clientX - drag.start.x,
+        y: drag.pan.y + event.clientY - drag.start.y,
+      }),
+    );
+  };
+
+  const handlePointerUp = (event: React.PointerEvent<HTMLImageElement>) => {
+    if (dragRef.current?.pointerId !== event.pointerId) return;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    dragRef.current = null;
+    setDragging(false);
   };
 
   // thumbhash → { 平均色(瞬时绘制,免白屏), 模糊图 dataURL }。SSR 与客户端都算,首帧即有占位。
@@ -82,8 +155,23 @@ export default function BlogImage({
   // Esc 关闭 + 锁页面滚动
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") close();
+      if (event.key === "+" || event.key === "=") changeZoom(ZOOM_STEP);
+      if (event.key === "-") changeZoom(-ZOOM_STEP);
+      if (event.key === "0") resetView();
+      if (event.key.startsWith("Arrow") && zoom > MIN_ZOOM) {
+        const shift = event.shiftKey ? 80 : 40;
+        const delta =
+          event.key === "ArrowLeft"
+            ? { x: -shift, y: 0 }
+            : event.key === "ArrowRight"
+              ? { x: shift, y: 0 }
+              : event.key === "ArrowUp"
+                ? { x: 0, y: -shift }
+                : { x: 0, y: shift };
+        setPan((current) => clampPan({ x: current.x + delta.x, y: current.y + delta.y }));
+      }
     };
     document.addEventListener("keydown", onKey);
     const prevOverflow = document.body.style.overflow;
@@ -92,7 +180,7 @@ export default function BlogImage({
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prevOverflow;
     };
-  }, [open]);
+  }, [open, pan, zoom]);
 
   return (
     <>
@@ -119,6 +207,8 @@ export default function BlogImage({
           height={height}
           loading="lazy"
           decoding="async"
+          draggable={false}
+          onDragStart={(event) => event.preventDefault()}
           onClick={zoomable ? () => setOpen(true) : undefined}
           className={cn(
             "h-full w-full object-cover transition-opacity duration-700 ease-out",
@@ -133,14 +223,21 @@ export default function BlogImage({
         />
       </figure>
 
-      <AnimatePresence onExitComplete={() => setExiting(false)}>
+      <AnimatePresence
+        onExitComplete={() => {
+          setExiting(false);
+          resetView();
+        }}
+      >
         {open && (
           <motion.div
             key="lightbox"
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden p-4"
             role="dialog"
             aria-modal="true"
             aria-label="图片查看器"
+            tabIndex={-1}
+            onWheel={handleWheel}
             onClick={close}
           >
             {/* 遮罩(含关闭按钮)单独淡入淡出;opacity 动画不能放外层容器,否则缩回中的大图会跟着父级一起变透明 */}
@@ -181,11 +278,61 @@ export default function BlogImage({
               layoutId={layoutId}
               src={src}
               alt={alt}
+              draggable={false}
+              onDragStart={(event) => event.preventDefault()}
               onClick={(e) => e.stopPropagation()}
-              transition={MORPH}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+              animate={{ scale: zoom, x: pan.x, y: pan.y }}
+              transition={dragging ? { duration: 0 } : MORPH}
               // opacity-100!:压住 crossfade 对大图的淡出,让它实心缩回落位(缩略图在 onExitComplete 才接棒)
-              className="relative max-h-full max-w-full cursor-zoom-out rounded-sm object-contain opacity-100! shadow-2xl"
+              className={cn(
+                "relative max-h-full max-w-full select-none rounded-sm object-contain opacity-100! shadow-2xl touch-none",
+                zoom > MIN_ZOOM ? "cursor-grab" : "cursor-zoom-out",
+                dragging && "cursor-grabbing",
+              )}
             />
+
+            <div
+              className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 rounded-full bg-black/60 p-1 text-white shadow-lg backdrop-blur-sm"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                aria-label="缩小"
+                disabled={zoom <= MIN_ZOOM}
+                onClick={() => changeZoom(-ZOOM_STEP)}
+                className="size-9 rounded-full text-lg transition-colors hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-35"
+              >
+                −
+              </button>
+              <span
+                className="min-w-12 text-center font-mono text-[11px] tabular-nums"
+                aria-live="polite"
+              >
+                {Math.round(zoom * 100)}%
+              </span>
+              <button
+                type="button"
+                aria-label="放大"
+                disabled={zoom >= MAX_ZOOM}
+                onClick={() => changeZoom(ZOOM_STEP)}
+                className="size-9 rounded-full text-lg transition-colors hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-35"
+              >
+                +
+              </button>
+              <button
+                type="button"
+                aria-label="复位缩放"
+                disabled={zoom === MIN_ZOOM && pan.x === 0 && pan.y === 0}
+                onClick={resetView}
+                className="ml-1 rounded-full px-3 py-2 font-mono text-[10px] tracking-[0.04em] transition-colors hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-35"
+              >
+                复位
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

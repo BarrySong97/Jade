@@ -8,7 +8,7 @@
 ## 子目录与职责
 
 - `ui/` — **shadcn 生成的 vendored 组件**(button/dialog/… 共 50+)。勿手改,用 `pnpm dlx shadcn@latest add` 重新生成;已排除出文件头检查。
-- `blogs/` — 文章阅读体验:目录(`Toc.tsx` 桌面 / `MobileToc.tsx` 移动)、代码块(`codeblock.tsx` UI + `code-wrapper-client.tsx` 渐进增强 Shiki `<pre>` + `dynamic-codeblock.tsx` 直传 code)、作者卡 `author-card.tsx`、`blog-image.tsx`(thumbhash 占位 + 懒加载,由图片管线生成,见下方专题);引用卡片 `reference-card.astro`(共用骨架)+ `post-card.astro`(站内,默认紧凑档)/ `link-card.astro`(站外,有 og:image 则大图档),纯 Astro 非岛,只有光标跟随球一小段原生 `<script>`,见下方专题;短视频嵌入 `tiktok-embed.astro`(官方 embed iframe,**不引 embed.js**,高度靠对方 postMessage 校正,见 [ADR-0003](../../decisions/0003-tiktok-embed-iframe.md))。
+- `blogs/` — 文章阅读体验:目录(`Toc.tsx` 桌面 / `MobileToc.tsx` 移动)、代码块(`codeblock.tsx` UI + `code-wrapper-client.tsx` 渐进增强 Shiki `<pre>` + `dynamic-codeblock.tsx` 直传 code)、作者卡 `author-card.tsx`、`blog-image.tsx`(thumbhash 占位 + 懒加载,由图片管线生成,见下方专题);引用卡片 `reference-card.astro`(共用骨架)+ `post-card.astro`(站内,默认紧凑档)/ `link-card.astro`(站外,有 og:image 则大图档),纯 Astro 非岛,只有光标跟随球一小段原生 `<script>`,见下方专题;短视频嵌入 `tiktok-embed.astro` / `bilibili-embed.astro`(官方播放器 iframe,不引第三方 embed.js,见 ADR-0003 与 ADR-0005)。
 - `common/` — 跨页通用:`avatar.tsx`(站点头像)、`cloud-image.tsx`(云图片,见下方专题链接)。
 - `layout/` — `header.tsx`(sticky 顶栏)、`footer.tsx`(版权页脚)。
 - `showcase/` — `/products` 与 `/photos` 展示页(详见下方子页)。

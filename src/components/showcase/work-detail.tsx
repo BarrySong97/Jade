@@ -1,5 +1,5 @@
 /**
- * @purpose 作品集项目详情：左栏项目 Header(返回+右上角图标 / 名+年份·平台 / url / 说明)+ 底角头像栏 + 右栏图片瀑布流
+ * @purpose 作品集项目详情：左栏项目 Header(返回+右上角图标 / 名+年份·平台 / url / 说明)+ 底角头像栏 + 右栏图片瀑布流;每个产品第二张图(单图则第一张)叠加 Web Tag
  * @role    被 products/[slug].astro 以 client:load 挂载;纯展示
  * @deps    本目录 works-data(Work/workDetailImages/workSkipsCoverMorph/WorkImage)、works-icons(WORK_ICONS)、works-avatar-bar、@/components/blogs/blog-image
  * @gotcha  默认首图 `data-work-cover` 供 morph;`detailSolo` 时不挂、右栏只渲染 solo 图且全宽(官网长截图不收半宽)。文案块 `data-works-aside` 横滑转场;头像栏 `data-works-avatar` 单独挂名。右栏**只放本项目图**;两列贪心装箱;单张竖图(非 detailSolo)收到半宽;详情图走 BlogImage 灯箱。
@@ -38,6 +38,7 @@ export default function WorkDetail({ work }: { work: Work }) {
   const icon = WORK_ICONS[work.icon];
   const title = displayWorkTitle(work.t);
   const images = workDetailImages(work);
+  const tagIndex = Math.min(1, images.length - 1);
   const skipMorph = workSkipsCoverMorph(work);
   const columns = packColumns(images);
   /* 只有一张竖图时占满整宽会高到两屏 → 收到半宽;detailSolo 官网长图例外,保持全宽 */
@@ -102,6 +103,7 @@ export default function WorkDetail({ work }: { work: Work }) {
             {col.map(({ image, index }) => (
               <div
                 key={image.img}
+                className="relative"
                 {...(!skipMorph && index === 0 ? { "data-work-cover": work.slug } : {})}
               >
                 <BlogImage
@@ -113,6 +115,15 @@ export default function WorkDetail({ work }: { work: Work }) {
                   zoomable
                   className="rounded-[3px]"
                 />
+                {index === tagIndex && (
+                  <span
+                    data-work-platform-tag="Web"
+                    aria-label="Web 平台"
+                    className="pointer-events-none absolute top-3 left-3 z-10 rounded-[3px] bg-black/65 px-2 py-1 font-[family-name:var(--mono)] text-[10px] uppercase leading-none tracking-[0.12em] text-white/80 shadow-sm ring-1 ring-white/15 backdrop-blur-sm"
+                  >
+                    Web
+                  </span>
+                )}
               </div>
             ))}
           </div>

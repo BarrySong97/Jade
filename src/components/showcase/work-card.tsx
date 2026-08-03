@@ -1,5 +1,5 @@
 /**
- * @purpose 单个作品条目：头部行(图标 + 项目名 + 右侧「年份 · 平台」)+ 名下 URL + 一句说明 + 一张封面图;整卡进详情
+ * @purpose 单个作品条目：头部行(图标 + 项目名 + 右侧「年份 · 平台」)+ 名下 URL + 一句说明 + 一张封面图;单图作品的封面叠加 Web Tag;整卡进详情
  * @role    被 works.tsx 在两列里逐个渲染;纯展示,载入时按 index 错开一次轻微上浮
  * @deps    本目录 works-data(Work/workCover/workSkipsCoverMorph/displayWorkTitle)、works-icons(WORK_ICONS)、@/components/blogs/blog-image(BlogImage)
  * @gotcha  整卡用底层透明链接触达详情 + 上层 pointer-events-none,外链 URL 单独 pointer-events-auto(避免 a 套 a)。封面外包 `data-work-cover` 供列表↔详情 morph;`detailSolo` 时不挂(详情另显示官网长图)。BlogImage zoomable=false。
@@ -55,7 +55,10 @@ export default function WorkCard({ work, index }: { work: Work; index: number })
           {work.desc}
         </p>
 
-        <div className="mt-[1.65em]" {...(!skipMorph ? { "data-work-cover": work.slug } : {})}>
+        <div
+          className="relative mt-[1.65em]"
+          {...(!skipMorph ? { "data-work-cover": work.slug } : {})}
+        >
           <BlogImage
             src={cover.img}
             alt={title}
@@ -65,6 +68,15 @@ export default function WorkCard({ work, index }: { work: Work; index: number })
             zoomable={false}
             className="rounded-[3px] ring-1 ring-[var(--line)]"
           />
+          {work.images.length === 1 && (
+            <span
+              data-work-platform-tag="Web"
+              aria-label="Web 平台"
+              className="pointer-events-none absolute top-3 left-3 z-10 rounded-[3px] bg-black/65 px-2 py-1 font-[family-name:var(--mono)] text-[10px] uppercase leading-none tracking-[0.12em] text-white/80 shadow-sm ring-1 ring-white/15 backdrop-blur-sm"
+            >
+              Web
+            </span>
+          )}
         </div>
       </div>
     </article>

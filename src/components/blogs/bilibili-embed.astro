@@ -1,0 +1,55 @@
+---
+/**
+ * @purpose 正文里嵌一条 Bilibili 视频:直接使用官方播放器 iframe,不引入播放器脚本。
+ * @role    MDX 里 `<BilibiliEmbed url="https://www.bilibili.com/video/BV…" />`;纯展示,响应式 16:9。
+ * @deps    无 npm 依赖,只依赖官方播放器 https://player.bilibili.com/player.html。
+ * @gotcha  只认完整 Bilibili 链接或 BV 号;构建期解析失败直接抛错,避免静态站悄悄少一个视频。播放器关闭弹幕并保持懒加载,图注保留原文链接作为网络失败时的去处。
+ */
+export interface Props {
+  /** Bilibili 视频完整链接或 BV 号,如 https://www.bilibili.com/video/BV1SC4y1c7ju/ */
+  url: string;
+  /** 图注;不传就只显示「在 Bilibili 打开」那行 */
+  caption?: string;
+  class?: string;
+}
+
+const { url, caption, class: className } = Astro.props;
+
+const bvid = url.match(/\b(BV[0-9A-Za-z]+)\b/)?.[1];
+if (!bvid) {
+  throw new Error(
+    `<BilibiliEmbed url="${url}"> 解析不出 BV 号。要的是形如 https://www.bilibili.com/video/BV1SC4y1c7ju/ 的链接或直接传 BV 号。`,
+  );
+}
+
+const sourceUrl = /^BV[0-9A-Za-z]+$/.test(url) ? `https://www.bilibili.com/video/${bvid}/` : url;
+---
+
+{/* 间距交给 global.css 的 `.prose figure`,和站内其他配图一致 */}
+<figure class:list={["bilibili-embed not-prose", className]}>
+  <div class="mx-auto aspect-video w-full overflow-hidden rounded-[var(--radius-media)] bg-black">
+    <iframe
+      src={`https://player.bilibili.com/player.html?bvid=${bvid}&high_quality=1&danmaku=0`}
+      title={caption ? `Bilibili 视频：${caption}` : `Bilibili 视频 ${bvid}`}
+      class="block h-full w-full border-0"
+      loading="lazy"
+      allow="fullscreen; picture-in-picture"
+      allowfullscreen
+      referrerpolicy="strict-origin-when-cross-origin"
+      scrolling="no"></iframe>
+  </div>
+
+  <figcaption
+    class="mx-auto mt-3 flex items-baseline justify-between gap-3 text-[12.5px] leading-[1.6] text-ink-3"
+  >
+    {caption && <span class="min-w-0">{caption}</span>}
+    <a
+      href={sourceUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="shrink-0 font-mono text-[11px] tracking-[0.03em] text-ink-3 no-underline transition-colors hover:text-[var(--accent-ink)]"
+    >
+      Bilibili ↗
+    </a>
+  </figcaption>
+</figure>
