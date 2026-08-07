@@ -187,18 +187,6 @@ export const WORKS: Work[] = [
         thumbhash: "8/cJDIL36EeCeoqMdnf8hOhPaQ==",
       },
       {
-        img: `${R2}/83d58584b2bddaf7ac100f7588beeb17.webp`,
-        width: 1920,
-        height: 1440,
-        thumbhash: "ZAYOLYI7VmiFd3dgiXiIhCdqgF75",
-      },
-      {
-        img: `${R2}/4f82779c9a3391b6848b5a978f15e298.webp`,
-        width: 1920,
-        height: 1440,
-        thumbhash: "XLcJPYgFx1iLh4hVeJeJlHqQhvN3",
-      },
-      {
         img: `${R2}/1b5fe78577e84fd20d0c3c34d97cf27b.webp`,
         width: 1920,
         height: 1440,
