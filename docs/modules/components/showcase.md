@@ -7,7 +7,7 @@
 ## 涉及文件
 
 - 页面入口:[src/pages/products.astro](../../../src/pages/products.astro)(作品集列表)· [src/pages/products/[slug].astro](../../../src/pages/products/[slug].astro)(项目详情)· [src/pages/photos.astro](../../../src/pages/photos.astro)(摄影列表)· [src/pages/photos/[album].astro](../../../src/pages/photos/[album].astro)(图集详情)— 都用 `ProductsLayout`(带 `ClientRouter` 参与视图转场)。
-- 作品集列表:`works.tsx`(浅色单主题)→ `works-intro.tsx`(左栏 sticky 简介)+ 底角 `works-avatar-bar`(头像 + Blog / Twitter)/ `work-card.tsx`(整卡进详情)。只有一张图的作品，封面左上角显示 Web Tag；Tag 是黑灰半透明样式。图标在 `src/assets/works/icons/`,经 `works-icons.ts`。
+- 作品集列表:`works.tsx`(浅色单主题)→ `works-intro.tsx`(左栏 sticky 简介)+ 底角 `works-avatar-bar`(约为首页尺寸 81%、无头像容器的完整手绘肖像 + Blog / Twitter，图片使用 424px WebP 衍生资源)/ `work-card.tsx`(整卡进详情)。只有一张图的作品，封面左上角显示 Web Tag；Tag 是黑灰半透明样式。图标在 `src/assets/works/icons/`,经 `works-icons.ts`。
 - 作品集详情:`work-detail.tsx`(左栏项目 Header + 底角同款头像栏 + 右栏静态两列瀑布流;`images[]` 按纵横比贪心装箱;图点击放大复用博客 `BlogImage` 灯箱;每个产品默认第二张图左上角显示 Web Tag，只有一张时显示在第一张)。TEMP:右栏暂塞全部作品图测多图。
 - 摄影:`photo-stream.tsx`(可复用横向流 + 拨盘,列表与详情共用,`dialMode` 切日期/序号)。
 - 数据:`works-data.ts`(`slug` + `images[]`,`images[0]`=列表封面)/ `photography-data.ts`。官网长截图用 `detailSolo` + 图上 `solo`:详情只渲染该图、关闭封面 morph,列表仍用 `images[0]`。

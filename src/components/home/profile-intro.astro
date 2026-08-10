@@ -1,33 +1,49 @@
 ---
+import { Image } from "astro:assets";
 import { PROFILE } from "@/lib/site";
+import profilePortrait from "@/assets/info/profile-portrait.png";
+
+const bioBreak = PROFILE.bio.indexOf("。") + 1;
+const bioLead = PROFILE.bio.slice(0, bioBreak);
+const bioDetail = PROFILE.bio.slice(bioBreak);
 ---
 
-<section class="pb-8 pt-[104px]">
-  <h1 class="m-0 text-[clamp(26px,3.6vw,36px)] font-semibold leading-[1.1] tracking-[-0.02em]">
-    {PROFILE.name}
-  </h1>
-  <p class="mt-4 max-w-[52ch] text-[15px] leading-[1.7] text-[var(--ink-2)]">
-    {PROFILE.bio}
-  </p>
-  <p class="mt-2 max-w-[52ch] text-[15px] leading-[1.7] text-[var(--ink-2)]">
-    在 {
-      PROFILE.social.map((s, i) => (
-        <>
-          <a
-            href={s.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="ulink whitespace-nowrap text-[var(--accent-ink)]"
-          >
-            {s.label}
-          </a>
-          {i < PROFILE.social.length - 1 && <span class="text-[var(--ink-4)]"> · </span>}
-        </>
-      ))
-    } 找到我。
-  </p>
-  <p class="mt-2 max-w-[52ch] text-[15px] leading-[1.7] text-[var(--ink-2)]">
-    这是我的 <a href="/products" class="ulink text-[var(--accent-ink)]">作品</a>。
-    {/* 图片暂未整理,先隐藏;整理好恢复: 和 <a href="/photos" class="ulink text-[var(--accent-ink)]">图片</a> */}
-  </p>
+<section class="grid items-end gap-6 pb-8 pt-[104px] sm:grid-cols-[minmax(0,1fr)_212px] sm:gap-8">
+  <div>
+    <h1 class="m-0 text-[clamp(26px,3.6vw,36px)] font-semibold leading-[1.1] tracking-[-0.02em]">
+      {PROFILE.name}
+    </h1>
+    <p class="mt-4 max-w-[52ch] text-[15px] leading-[1.7] text-[var(--ink-2)]">
+      <span class="block">{bioLead}</span>
+      <span class="block">{bioDetail}</span>
+      <span class="block">
+        在 {
+          PROFILE.social.map((s, i) => (
+            <>
+              <a
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="ulink whitespace-nowrap text-[var(--accent-ink)]"
+              >
+                {s.label}
+              </a>
+              {i < PROFILE.social.length - 1 && <span class="text-[var(--ink-4)]"> · </span>}
+            </>
+          ))
+        } 找到我。
+      </span>
+      <span class="block">
+        这是我的 <a href="/products" class="ulink text-[var(--accent-ink)]">作品</a>。
+        {/* 图片暂未整理,先隐藏;整理好恢复: 和 <a href="/photos" class="ulink text-[var(--accent-ink)]">图片</a> */}
+      </span>
+    </p>
+  </div>
+  <Image
+    src={profilePortrait}
+    alt="Barry Song 的手绘肖像"
+    width={424}
+    quality={90}
+    class="mx-auto h-auto w-[190px] sm:ml-auto sm:mr-0 sm:w-[212px] sm:-translate-x-4"
+  />
 </section>
