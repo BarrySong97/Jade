@@ -330,7 +330,7 @@ export const WORKS: Work[] = [
     y: "2026",
     cat: "macOS",
     icon: "journal-todo",
-    url: "https://journal-todo.vercel.app",
+    url: "https://todo.4real.ltd",
     desc: "按天写的待办，一天一页、工作区分开，写完就关",
     images: [
       {

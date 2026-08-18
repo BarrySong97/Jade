@@ -10,7 +10,7 @@
 - 作品集列表:`works.tsx`(浅色单主题)→ `works-intro.tsx`(左栏 sticky 简介)+ 底角 `works-avatar-bar`(约为首页尺寸 81%、无头像容器的完整手绘肖像 + Blog / Twitter，图片使用 424px WebP 衍生资源)/ `work-card.tsx`(整卡进详情)。只有一张图的作品，封面左上角显示 Web Tag；Tag 是黑灰半透明样式。图标在 `src/assets/works/icons/`,经 `works-icons.ts`。
 - 作品集详情:`work-detail.tsx`(左栏项目 Header + 底角同款头像栏 + 右栏静态两列瀑布流;`images[]` 按纵横比贪心装箱;图点击放大复用博客 `BlogImage` 灯箱;每个产品默认第二张图左上角显示 Web Tag，只有一张时显示在第一张)。TEMP:右栏暂塞全部作品图测多图。
 - 摄影:`photo-stream.tsx`(可复用横向流 + 拨盘,列表与详情共用,`dialMode` 切日期/序号)。
-- 数据:`works-data.ts`(`slug` + `images[]`,`images[0]`=列表封面)/ `photography-data.ts`。官网长截图用 `detailSolo` + 图上 `solo`:详情只渲染该图、关闭封面 morph,列表仍用 `images[0]`。
+- 数据:`works-data.ts`(`slug` + `images[]`,`images[0]`=列表封面)/ `photography-data.ts`。作品外链维护在每条数据的 `url` 字段,失效链接直接更新这里,不改卡片组件。官网长截图用 `detailSolo` + 图上 `solo`:详情只渲染该图、关闭封面 morph,列表仍用 `images[0]`。
 - 作品图上传:[scripts/upload-asset.mjs](../../../scripts/upload-asset.mjs)(压 WebP → R2,产出填进 `images[]`)。**必须用原文件路径**(如 `~/Downloads/...`),禁止用 Cursor 聊天附件(`.cursor/.../assets/`,会被压到 ~1024px 导致发糊)。
 - 令牌/字体:[src/styles/showcase.css](../../../src/styles/showcase.css);`--sans`/`--mono` 指向站点字体。
 - 转场:`cube-transition.astro` + [global.css](../../../src/styles/global.css) 的 `::view-transition`。
