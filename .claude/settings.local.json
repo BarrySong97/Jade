@@ -9,7 +9,16 @@
       "Bash(pnpm build *)",
       "Bash(pnpm lint *)",
       "Bash(pkill -f \"astro dev\")",
-      "Bash(agent-browser close *)"
+      "Bash(agent-browser close *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(cp \"/Users/songtianjian/Downloads/53shots_so.png\" public/works/journaltodo.png)",
+      "Bash(sips -g pixelWidth -g pixelHeight public/works/journaltodo.png)",
+      "Bash(awk '{print $5\" bytes\"}')",
+      "Artifact",
+      "Bash(node -e ' *)",
+      "Bash(curl -sS -o t.webp -w \"%{http_code} %{size_download}\\\\n\" \"https://blogassets.4real.ink/works/a91c90f16bbfedfb41a5000b9c603429.webp\")",
+      "Read(//Users/songtianjian/Documents/post-test-folder/随便写写/**)"
     ]
   }
 }
