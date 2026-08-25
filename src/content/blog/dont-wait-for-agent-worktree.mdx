@@ -1,0 +1,157 @@
+---
+title: "别再等 Agent：我是怎么同时推进 3 个 AI 编程任务的"
+description: "与其等待一个 Agent 完成，不如用 Git Worktree 隔离两到三个任务，把等待时间变成可控的并发时间。"
+pubDate: "2026-08-11"
+---
+
+import BlogImage from "@/components/blogs/blog-image";
+
+import PostCard from "@/components/blogs/post-card.astro";
+
+AI 时代做开发，有一个很常见的场景。
+
+你把任务交给 Agent，它开始读代码、调用工具、修改文件、运行测试。简单的任务可能要等几分钟，复杂一点的任务可能要半个小时，甚至更久。
+
+这个时候，大多数人都会下意识拿起手机。
+
+刷一会儿社交媒体，看几个短视频，或者顺手做点别的事情。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/00a7efc40c133344845393d43b64457b.webp" alt="Agent 在后台执行时，人很容易顺手打开短视频" width={1024} height={1536} thumbhash="0BeCAwA2TmwHFcZJj9D0Bwd4qFeDi0Y=" />
+
+但等你再切回来，注意力已经断了。你需要重新确认 Agent 在做什么、任务为什么开始、刚才进行到了哪一步。Agent 帮你节省下来的时间，又被上下文切换消耗掉了。
+
+后来我改变了工作方式：**不再等待一个 Agent 完成，而是同时推进两到三个彼此隔离的任务。**
+
+## 把等待时间变成并发时间
+
+我的日常状态通常是这样的：
+
+- 一个 Agent 在开发新的 Feature；
+
+- 一个 Agent 在修已有的 Bug；
+
+- 另一个 Agent 在运行测试或者整理文档。
+
+哪个 Agent 需要我确认，我就切过去处理一下，然后继续让它执行。
+
+这样做的价值，不只是同一段时间里完成更多工作。更重要的是，我不需要在等待期间离开项目。注意力仍然停留在同一组工作上，切换成本远小于刷完手机以后再重新进入状态。
+
+为什么通常是两到三个任务，而不是同时启动十个？
+
+因为 Agent 的并发能力远高于人的并发能力。
+
+任务超过三个以后，我很容易忘记半个小时前交给某个 Agent 的任务是什么、它采用了什么解决方案、现在需要我做什么判断。继续增加 Agent，并不会线性提高效率，反而会让人先失去控制。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/e325d01cf93b9efb4287b3a36455629a.webp" alt="并发任务太少会空等，太多会让人丢失上下文，三个通常刚好" width={1600} height={900} thumbhash="+/cBBIBQuItVlbqKd8pgNQhokw==" />
+
+所以我的并发数量通常控制在两到三个：人能管住，电脑也扛得住。
+
+## 同一个项目，怎么同时修改代码
+
+并发任务首先会遇到一个实际问题：如果几个任务都属于同一个 Git 仓库，它们怎么同时修改代码？
+
+我的答案是 Git Worktree。
+
+我会提前为每个任务创建一个独立的 Worktree。每个 Worktree 都有自己的目录和分支，然后分别在这些目录中启动新的 Agent 会话。
+
+```text
+Agent A → Worktree A → Feature 分支
+Agent B → Worktree B → Bugfix 分支
+Agent C → Worktree C → Test 分支
+```
+
+这样，三个 Agent 虽然处理的是同一个仓库，却不会挤在同一个工作目录里，我也不需要来回切换分支。
+
+这里最重要的原则是：
+
+> 先创建 Worktree，再启动 Agent。
+
+不要让同一个 Agent 在执行过程中临时创建 Worktree、跳到另一个目录，再切换成另一个任务。
+
+Agent 的工作质量依赖连续的上下文。一个会话从开始到结束，最好只处理一张任务，并且一直停留在自己的工作目录里。隔离应该在 Agent 启动之前完成，而不是让 Agent 在运行过程中自己管理。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/3aebb25d8232bef3e757524ff97cb8ed.webp" alt="一个任务对应一个 Worktree：独立目录、独立分支和独立 Agent 会话" width={1600} height={900} thumbhash="CucBBIA9aVOfhVdmdpo/jtfyqg==" />
+
+## Worktree 也有成本
+
+Worktree 共享同一套 Git 对象库，不会重复保存整个仓库的历史记录。
+
+但每个 Worktree 仍然有自己的检出文件、构建产物和项目依赖。前端项目一多，最占空间的通常就是 `node_modules`。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/0113f38b1b77ddba489873c3cb24021d.webp" alt="多个 Worktree 带来的 node_modules 磁盘重力井" width={1448} height={1086} thumbhash="D+eBBIAjV5iKhnBvd/4o54Z/gFqoOJh6CA==" />
+
+这时候 pnpm 会很有帮助。
+
+pnpm 使用全局内容寻址 Store 复用真实的包文件。两个 Worktree 安装同一个版本的依赖时，不需要在硬盘上完整复制两份相同内容，而是可以链接到已经存在的文件。
+
+它能缓解磁盘占用和重复下载的问题，但不能解决运行时资源消耗。
+
+每个任务如果都要启动开发服务、运行测试、连接数据库，就相当于同时运行了多套服务栈。CPU、内存、端口和数据库连接都会变成限制。
+
+所以真正决定并发上限的，不是能创建多少个 Worktree，而是三件事：
+
+1. 你的注意力能够同时维持多少条任务线；
+2. 你能否在任务之间快速做出准确判断；
+3. 电脑能够同时支撑多少套服务和测试。
+
+Worktree 解决的是代码工作区隔离，不是 Docker 意义上的环境隔离。如果任务需要独立的系统依赖、数据库或者运行环境，仍然应该使用 Docker 或 devcontainer。
+
+## Desktop Agent 也可能成为瓶颈
+
+当 Codex、Conductor 或 Claude Code 这类 Desktop Agent 同时运行多个任务时，桌面应用本身也可能开始变卡，任务之间切换并不轻松。
+
+这个时候，我会回到 Terminal。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/2ccaa81745584de31ae0a721f8294d68.webp" alt="当 Desktop Agent 的界面成为瓶颈时，把并发任务切换到更轻的 Terminal" width={1600} height={640} thumbhash="ofeRCoBHf4WIeEh/iPjEZ4dYh3dwh2c=" />
+
+例如在 Ghostty 里，一个 Tab 对应一个 Worktree。每个 Tab 都停留在自己的项目目录中，Tab 名字直接对应任务。我要检查哪张任务，就切到哪个 Tab。
+
+Terminal 不负责环境隔离，真正的隔离仍然来自 Worktree。它只是让多个任务之间的切换更轻、更直接。
+
+为了减少 Worktree、分支、终端和项目路径之间的管理成本，我还做了一个自己的小工具 Grove。它可以快速打开 Git 项目、创建 Worktree，并直接在编辑器或 Terminal 中进入相应目录。
+
+工具本身不是重点。关键是每一个 Agent 会话都应该拥有一个清晰、独立、能够随任务一起创建和回收的工作空间。
+
+## Worktree 只解决了并发执行
+
+当任务只有两三个时，我还可以在脑子里记住每个 Agent 正在做什么。
+
+但当旧版维护、新版迁移、Bug 和新 Feature 同时推进，一条工作线又继续拆出很多 Ticket 时，Worktree 就只解决了问题的一半。
+
+它能告诉我代码在哪里执行，却不能管理：
+
+- 当前有哪些任务；
+
+- 哪些正在执行，哪些等待 Review；
+
+- 哪些需要返工，哪些可以进入测试；
+
+- Agent 提交了什么证据；
+
+- 整个项目下一步应该推进什么。
+
+这时需要的就不再是更多 Worktree，而是一套能够掌控项目进度的软件工程系统。
+
+这篇文章解决“多个 Agent 怎么同时执行”；下面这篇继续解决“并发以后，一个人怎么控制项目进度，并让这些任务形成持续交付”。
+
+<PostCard slug="ai-era-needs-software-engineering" />
+
+## 结论
+
+AI 时代，我们需要掌握的不只是如何使用一个 Agent，还包括如何同时调度几个 Agent。
+
+我的基本工作方式是：
+
+- 用两到三个任务控制人的认知负担；
+
+- 用 Worktree 隔离每个 Agent 的目录和分支；
+
+- 用 pnpm 减少重复依赖带来的磁盘成本；
+
+- 用 Terminal 和项目工具降低任务切换成本；
+
+- 当任务规模继续扩大时，用项目管理工具和软件工程流程掌控进度。
+
+Worktree 让多个 Agent 真正并发起来，但并发只是开始。
+
+当一个人开始拥有一支 Agent 团队的执行力，下一个问题一定是：怎么让这支团队持续、稳定地交付软件。
