@@ -2,10 +2,10 @@
 title: "谈谈我对 Worktree 的使用感受：如何在 AI 时代并发多个任务"
 description: "与其等待一个 Agent 完成，不如用 Git Worktree 隔离两到三个任务，把等待时间变成可控的并发时间。"
 pubDate: "2026-08-11"
-heroImage: "https://blogassets.4real.ink/blog/98a0e72872cef5fd06a6d4a76feab10b.webp"
+heroImage: "https://blogassets.4real.ink/blog/4a546271cb15168d9c6b639ee406844a.webp"
 heroWidth: 1600
 heroHeight: 900
-heroThumbhash: "i/cFBIBaeHaJh2ZgenNpmIB4CA=="
+heroThumbhash: "i/cFBIBaeHaKh3hQaXOZeICJBw=="
 ---
 
 import BlogImage from "@/components/blogs/blog-image";
@@ -19,8 +19,6 @@ AI 时代做开发，有一个很常见的场景。
 这个时候，大多数人都会下意识拿起手机。
 
 刷一会儿社交媒体，看几个短视频，或者顺手做点别的事情。
-
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/00a7efc40c133344845393d43b64457b.webp" alt="Agent 在后台执行时，人很容易顺手打开短视频" width={1024} height={1536} thumbhash="0BeCAwA2TmwHFcZJj9D0Bwd4qFeDi0Y=" />
 
 但等你再切回来，注意力已经断了。你需要重新确认 Agent 在做什么、任务为什么开始、刚才进行到了哪一步。Agent 帮你节省下来的时间，又被上下文切换消耗掉了。
 
@@ -46,7 +44,7 @@ AI 时代做开发，有一个很常见的场景。
 
 任务超过三个以后，我很容易忘记半个小时前交给某个 Agent 的任务是什么、它采用了什么解决方案、现在需要我做什么判断。继续增加 Agent，并不会线性提高效率，反而会让人先失去控制。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/e325d01cf93b9efb4287b3a36455629a.webp" alt="并发任务太少会空等，太多会让人丢失上下文，三个通常刚好" width={1600} height={900} thumbhash="+/cBBIBQuItVlbqKd8pgNQhokw==" />
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/017de6ffa6141285ea1236e60e607fa6.webp" alt="并发多个：太少会空等，太多会丢上下文，关键是保持可控" width={1600} height={900} thumbhash="+vcBBIDQV7lAmaaJiM3CQAlPYA==" />
 
 所以我的并发数量通常控制在两到三个：人能管住，电脑也扛得住。
 
@@ -74,7 +72,7 @@ Agent C → Worktree C → Test 分支
 
 Agent 的工作质量依赖连续的上下文。一个会话从开始到结束，最好只处理一张任务，并且一直停留在自己的工作目录里。隔离应该在 Agent 启动之前完成，而不是让 Agent 在运行过程中自己管理。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/3aebb25d8232bef3e757524ff97cb8ed.webp" alt="一个任务对应一个 Worktree：独立目录、独立分支和独立 Agent 会话" width={1600} height={900} thumbhash="CucBBIA9aVOfhVdmdpo/jtfyqg==" />
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/8dfc278814201b90f9c12ff72ee1dbae.webp" alt="一个任务对应一个 Worktree：独立目录、独立分支和独立 Agent 会话" width={1600} height={900} thumbhash="CucBBIA9WWOfhUhmdppfj8X2aQ==" />
 
 ## Worktree 也有成本
 
