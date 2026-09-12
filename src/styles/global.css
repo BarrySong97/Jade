@@ -241,13 +241,20 @@
 }
 .prose blockquote {
   margin: 1.6em 0;
-  padding: 4px 0 4px 20px;
+  padding: 6px 0 6px 20px;
   border-left: 2px solid var(--accent);
   color: var(--ink-2);
   font-style: normal;
 }
+/* 上下 padding 对称 + 段落不拖 1.2em 下边距 = 文字在墨条里上下居中。
+   漏掉 margin:0 的话,那 1.2em 会把墨条撑到文字的两倍高、文字贴在顶上。 */
 .prose blockquote p {
+  margin: 0;
   color: var(--ink-2);
+  line-height: 1.62;
+}
+.prose blockquote p + p {
+  margin-top: 0.8em;
 }
 .prose code {
   font-family: var(--font-mono);
@@ -406,6 +413,21 @@
   color: revert-layer;
   background-image: revert-layer;
   padding-bottom: revert-layer;
+}
+
+/* 图下小标题(BlogImage 的 caption)里的出处链接:同样被 `.prose a` 按上渐变下划线并改色。
+   退回组件自己的类,只留一条细下划线,hover 才回墨色——图注是配角,别抢正文链接的戏。 */
+.prose .blog-image-caption a {
+  color: inherit;
+  background-image: none;
+  padding-bottom: 0;
+  text-decoration: underline;
+  text-decoration-color: var(--line-2, var(--ink-4));
+  text-underline-offset: 2px;
+  transition: color 0.2s;
+}
+.prose .blog-image-caption a:hover {
+  color: var(--ink-2);
 }
 
 /* View Transitions 自定义动画 - 只使用淡入淡出效果 */

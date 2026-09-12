@@ -11,7 +11,14 @@ import { cn } from "@/lib/utils";
 
 interface BlogImageProps {
   src: string;
-  alt: string;
+  /** 替代文本;给了 caption 就以 caption 为准(同一句话,不重复写) */
+  alt?: string;
+  /** 图下小标题:灰色、居中、比正文小一档。给了它就同时当 alt */
+  caption?: string;
+  /** 出处名,如 "impeccable.style";接在 caption 后面淡一档 */
+  source?: string;
+  /** 出处链接;没有就只显示 source 文字 */
+  sourceUrl?: string;
   width: number;
   height: number;
   /** 脚本生成的 thumbhash(base64);缺省则退化为无占位 */
@@ -40,12 +47,17 @@ function base64ToBytes(b64: string): Uint8Array {
 export default function BlogImage({
   src,
   alt,
+  caption,
+  source,
+  sourceUrl,
   width,
   height,
   thumbhash,
   className,
   zoomable = true,
 }: BlogImageProps) {
+  // 用户要求:图下那句小标题和 alt 是同一句话,只写一遍
+  const altText = caption ?? alt ?? "";
   const [loaded, setLoaded] = useState(false);
   const [open, setOpen] = useState(false);
   const [zoom, setZoom] = useState(MIN_ZOOM);
@@ -184,43 +196,66 @@ export default function BlogImage({
 
   return (
     <>
-      <figure
-        className={cn("relative overflow-hidden rounded-[var(--radius-media)]", className)}
-        style={{
-          aspectRatio: `${width}/${height}`,
-          // 平均色瞬时绘制(无需解码,杜绝首帧白屏),模糊图随后盖上;
-          // 灯箱打开到缩回落位前连底图一起藏,原位留白,免得大图缩进一张模糊图里
-          backgroundColor: open || exiting ? undefined : placeholder?.avg,
-          backgroundImage:
-            placeholder && !(open || exiting) ? `url(${placeholder.url})` : undefined,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        {/* 真图加载完 opacity 0→1 淡入,盖在模糊图上(blur-up);灯箱打开时隐藏自身,morph 的是灯箱里的同 layoutId 图 */}
-        <motion.img
-          ref={imgRef}
-          layoutId={layoutId}
-          src={src}
-          alt={alt}
-          width={width}
-          height={height}
-          loading="lazy"
-          decoding="async"
-          draggable={false}
-          onDragStart={(event) => event.preventDefault()}
-          onClick={zoomable ? () => setOpen(true) : undefined}
-          className={cn(
-            "h-full w-full object-cover transition-opacity duration-700 ease-out",
-            loaded ? "opacity-100" : "opacity-0",
-            zoomable && "cursor-zoom-in",
-            // Motion 的共享布局 crossfade 会逐帧重写内联样式(opacity/transform,连 style prop 都会被抹掉),
-            // 缩回途中就把缩略图淡入到全显,造成原位重影;只有 !important 类能压住它。
-            // 灯箱打开到缩回动画播完(onExitComplete)前保持不可见,播完瞬时显示、无缝接上落位的大图;
-            // opacity-100! 抵掉 crossfade 写下的中间值,免得 reveal 瞬间被 700ms 过渡从半透明补齐
-            (open || exiting) && "invisible! opacity-100!",
-          )}
-        />
+      {/* figure 只做外壳(图 + 图注);比例框是里面那个 div,免得 caption 被算进 aspect-ratio。
+          shrink-0 是给 ImageStrip 那种 flex 行用的,普通流里不起作用。
+          外边距交给 CSS:preflight 置 0、`.prose figure` 给 1.6em、条子里再压回 0。 */}
+      <figure className="shrink-0">
+        <div
+          className={cn("relative overflow-hidden rounded-[var(--radius-media)]", className)}
+          style={{
+            aspectRatio: `${width}/${height}`,
+            // 平均色瞬时绘制(无需解码,杜绝首帧白屏),模糊图随后盖上;
+            // 灯箱打开到缩回落位前连底图一起藏,原位留白,免得大图缩进一张模糊图里
+            backgroundColor: open || exiting ? undefined : placeholder?.avg,
+            backgroundImage:
+              placeholder && !(open || exiting) ? `url(${placeholder.url})` : undefined,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          {/* 真图加载完 opacity 0→1 淡入,盖在模糊图上(blur-up);灯箱打开时隐藏自身,morph 的是灯箱里的同 layoutId 图 */}
+          <motion.img
+            ref={imgRef}
+            layoutId={layoutId}
+            src={src}
+            alt={altText}
+            width={width}
+            height={height}
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+            onDragStart={(event) => event.preventDefault()}
+            onClick={zoomable ? () => setOpen(true) : undefined}
+            className={cn(
+              "h-full w-full object-cover transition-opacity duration-700 ease-out",
+              loaded ? "opacity-100" : "opacity-0",
+              zoomable && "cursor-zoom-in",
+              // Motion 的共享布局 crossfade 会逐帧重写内联样式(opacity/transform,连 style prop 都会被抹掉),
+              // 缩回途中就把缩略图淡入到全显,造成原位重影;只有 !important 类能压住它。
+              // 灯箱打开到缩回动画播完(onExitComplete)前保持不可见,播完瞬时显示、无缝接上落位的大图;
+              // opacity-100! 抵掉 crossfade 写下的中间值,免得 reveal 瞬间被 700ms 过渡从半透明补齐
+              (open || exiting) && "invisible! opacity-100!",
+            )}
+          />
+        </div>
+
+        {caption && (
+          <figcaption className="blog-image-caption mt-2.5 text-center text-[12.5px] leading-[1.6] text-[var(--ink-3)]">
+            {caption}
+            {source && (
+              <span className="text-[var(--ink-4)]">
+                {" · 图片来源 "}
+                {sourceUrl ? (
+                  <a href={sourceUrl} target="_blank" rel="noopener noreferrer">
+                    {source}
+                  </a>
+                ) : (
+                  source
+                )}
+              </span>
+            )}
+          </figcaption>
+        )}
       </figure>
 
       <AnimatePresence

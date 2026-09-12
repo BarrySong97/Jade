@@ -2,10 +2,10 @@
 title: "AI 写的 UI 都长一个样，这事怪 AI 吗？"
 description: "AI slop 的本质不是难看，而是泛滥带来的审美疲劳。风格每隔一阵就换一张脸，与其追着流行跑，不如把你自己要什么写清楚。"
 pubDate: "2026-09-12"
-heroImage: "https://blogassets.4real.ink/blog/e658ae75be45645397490c3cb5ab3094.webp"
+heroImage: "https://blogassets.4real.ink/blog/a0183cebddc5fba335860b52b089fbf8.webp"
 heroWidth: 1600
 heroHeight: 900
-heroThumbhash: "ywcGDIBYKWXzO2YxlySf3KGKDw=="
+heroThumbhash: "yQcGBIBsVIivZmZkmEACyUxACA=="
 ---
 
 import BlogImage from "@/components/blogs/blog-image";
@@ -65,10 +65,7 @@ import ImageStrip from "@/components/blogs/image-strip";
 
 回到两年前。那时候大家用 AI coding agent 生成的页面，几乎都是一种蓝紫色渐变。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/04bb55d243d2f09cbaea0f21bce02eb1.webp" alt="典型的 2022 年 AI 生成界面：蓝紫渐变标题、渐变按钮、Powered by AI 小徽章" width={1600} height={641} thumbhash="iAcKC4IHt3l5hyeo+oSbgGc=" />
-
-> 图片来源：[impeccable.style](https://impeccable.style/slop)
-
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/04bb55d243d2f09cbaea0f21bce02eb1.webp" caption="典型的 2022 年 AI 生成界面：蓝紫渐变标题、渐变按钮、Powered by AI 小徽章" width={1600} height={641} thumbhash="iAcKC4IHt3l5hyeo+oSbgGc=" />
 但你把这个蓝紫色界面单独拿出来看，颜色没问题，字体和间距也没问题，按钮也做得规规矩矩。
 
 那为什么我们一眼就觉得它有 AI 味？
@@ -93,20 +90,14 @@ AI 生成的界面也是一样。所以 AI slop 的本质不是难看，而是**
 
 > 我正式为五年前把 Tailwind UI 里每一个按钮都设成 `bg-indigo-500` 道歉，这导致地球上每一个 AI 生成的界面也都是靛蓝色的。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/d3015ab2263334234735b3d95b9b563d.webp" alt="Tailwind CSS 作者 Adam Wathan 的道歉帖，引用的是一条吐槽 GPT-5 还没解决&quot;紫色问题&quot;的推文" width={1216} height={1220} thumbhash="rQcODwLJiHdvdYdsdieYmHh17Oj0Z2sA" />
-
-> 图片来源：[X @adamwathan](https://x.com/adamwathan/status/1953510802159219096)
-
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/d3015ab2263334234735b3d95b9b563d.webp" caption="Tailwind CSS 作者 Adam Wathan 的道歉帖，引用的是一条吐槽 GPT-5 还没解决&quot;紫色问题&quot;的推文" width={1216} height={1220} thumbhash="rQcODwLJiHdvdYdsdieYmHh17Oj0Z2sA" />
 Tailwind 是使用量非常大的 CSS 框架，大量项目照着它的官方示例写，这些代码又进了模型的训练数据。于是今天你让 AI 写个按钮，它最先想到的就是这个颜色。
 
 不过要公平地说，这个蓝紫色放在五年前一点问题都没有。当时很多网页和作品都在用这种设计，Tailwind 的示例用它也很正常。
 
 同样的道理也适用于别的 AI 味特征。比如现在 AI 很喜欢在卡片左边加一根彩色竖条。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/99a7df22f67d95ab1da1edf5e9d1239a.webp" alt="AI 生成界面常见的&quot;卡片左边加一根彩色竖条&quot;，黄色标签是 impeccable.style 的检测标注" width={1600} height={944} thumbhash="fAgCDICicb96d5iCiXo7hJ9g6Q==" />
-
-> 图片来源：[impeccable.style](https://impeccable.style/slop)
-
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/99a7df22f67d95ab1da1edf5e9d1239a.webp" caption="AI 生成界面常见的&quot;卡片左边加一根彩色竖条&quot;，黄色标签是 impeccable.style 的检测标注" width={1600} height={944} thumbhash="fAgCDICicb96d5iCiXo7hJ9g6Q==" />
 这个设计几年前在后台 dashboard 里很常见，指标卡片就爱这么用，放在那时完全没问题。放到现在，每个人的页面上都有，它就成了问题。
 
 当然这也要看场景。在需要一眼区分状态的指标卡片上，这根竖条是有活干的；到处都加，它就只剩装饰了。
@@ -157,22 +148,13 @@ Tailwind 是使用量非常大的 CSS 框架，大量项目照着它的官方示
 
 **[Dribbble](https://dribbble.com)。** 设计师用的平台，以 Web 和 App 为主，但内容主要是图片，是设计师自己做的精美效果图。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/30cf2bdc7752382585ef060837158dd8.webp" alt="Dribbble 首页" width={1600} height={900} thumbhash="avYNLIInNEiHl3iAmXc2hJD2qA==" />
-
-> 图片来源：[dribbble.com](https://dribbble.com)
-
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/30cf2bdc7752382585ef060837158dd8.webp" caption="Dribbble 首页" width={1600} height={900} thumbhash="avYNLIInNEiHl3iAmXc2hJD2qA==" />
 **[Awwwards](https://www.awwwards.com)。** 它会自己收集网站，也接受用户上传，每隔一段时间给这些网站颁奖。和 Dribbble 不一样的是，这里放的是已经真实上线的网站，你看到截图感兴趣，可以直接点进去体验。这里的网站偏艺术，很多都很有创意、动效也很重。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/4430ff3a6499003173e043469aaa0031.webp" alt="Awwwards 首页，Winning websites 精选合集" width={1600} height={900} thumbhash="ZPYJJIJTB2aelZaxZnEVhGDzqQ==" />
-
-> 图片来源：[awwwards.com](https://www.awwwards.com)
-
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/4430ff3a6499003173e043469aaa0031.webp" caption="Awwwards 首页，Winning websites 精选合集" width={1600} height={900} thumbhash="ZPYJJIJTB2aelZaxZnEVhGDzqQ==" />
 **[Mobbin](https://mobbin.com)。** 比 Awwwards 更进一步，Web 和 App 都有，而且以真实的 App 为主。Awwwards 偏向拿奖的设计，Mobbin 的好处是它收的是真实的商业案例。你要参考商业产品的设计，来这里看更合适。不过它是收费的。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/df5ff49302f8f162afcb472fe9d509ca.webp" alt="Mobbin 首页" width={1600} height={900} thumbhash="a/YRNIRGN2eHh4iAiXdHhID2mA==" />
-
-> 图片来源：[mobbin.com](https://mobbin.com)
-
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/df5ff49302f8f162afcb472fe9d509ca.webp" caption="Mobbin 首页" width={1600} height={900} thumbhash="a/YRNIRGN2eHh4iAiXdHhID2mA==" />
 **[GitHub](https://github.com)。** 很多我们想做的东西其实都有人开源过，可以直接在别人的基础上改，或者看看别人是怎么写的。
 
 最后再补充一点：**看到好看的设计，要收藏下来。**
@@ -189,42 +171,21 @@ Tailwind 是使用量非常大的 CSS 框架，大量项目照着它的官方示
 
 如果你写的是 **B 端**，可以考虑 [Ant Design](https://ant.design)、[Element](https://element-plus.org)、[Arco Design](https://arco.design) 或者 [TDesign](https://tdesign.tencent.com)。这里特别提一下 TDesign，它是腾讯出的，支持小程序，如果你要写小程序可以优先考虑。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/d5a5f594c944eac9f578350e536c12c7.webp" alt="Ant Design 首页" width={1600} height={900} thumbhash="bPYRNIQ2R2eHh4iAinc3hKD2qA==" />
-
-> 图片来源：[ant.design](https://ant.design)
-
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/9f7b885cf0349490b7ff3e4473ee837e.webp" alt="Element 首页" width={1600} height={900} thumbhash="K/YRNIJGR2eHh4iAindHhID3qQ==" />
-
-> 图片来源：[element-plus.org](https://element-plus.org)
-
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/3874079fcf18cd2b2a20a2ad6e02da37.webp" alt="Arco Design 首页" width={1600} height={900} thumbhash="a/YNLII3NliHh4iAmXdHhJD3uA==" />
-
-> 图片来源：[arco.design](https://arco.design)
-
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/4ee59082af64ac87ec5041243a6e0137.webp" alt="TDesign 首页" width={1600} height={900} thumbhash="a/YRNII2R2eHh4iAindHhID1mA==" />
-
-> 图片来源：[tdesign.tencent.com](https://tdesign.tencent.com)
-
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/d5a5f594c944eac9f578350e536c12c7.webp" caption="Ant Design 首页" width={1600} height={900} thumbhash="bPYRNIQ2R2eHh4iAinc3hKD2qA==" />
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/9f7b885cf0349490b7ff3e4473ee837e.webp" caption="Element 首页" width={1600} height={900} thumbhash="K/YRNIJGR2eHh4iAindHhID3qQ==" />
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/3874079fcf18cd2b2a20a2ad6e02da37.webp" caption="Arco Design 首页" width={1600} height={900} thumbhash="a/YNLII3NliHh4iAmXdHhJD3uA==" />
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/4ee59082af64ac87ec5041243a6e0137.webp" caption="TDesign 首页" width={1600} height={900} thumbhash="a/YRNII2R2eHh4iAindHhID1mA==" />
 如果是 **C 端**，我推荐 [HeroUI](https://www.heroui.com)、[MUI](https://mui.com) 和 [shadcn/ui](https://ui.shadcn.com)。
 
 喜欢 Google Material Design 风格的话，可以选 MUI，它是 React 的组件库。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/9541ab631beb31d2a28da7b77c84e6c1.webp" alt="MUI 首页" width={1600} height={900} thumbhash="KfYRLIJHRmeHh4iAiXhXg7D66Q==" />
-
-> 图片来源：[mui.com](https://mui.com)
-
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/9541ab631beb31d2a28da7b77c84e6c1.webp" caption="MUI 首页" width={1600} height={900} thumbhash="KfYRLIJHRmeHh4iAiXhXg7D66Q==" />
 shadcn/ui 是这两年非常出名的一个，以 Tailwind 为核心，也是一个很 AI native 的组件库。它和其他组件库不一样的地方在于，你不是把它当依赖装进项目，而是它直接把组件源码放进你的项目里。这样 AI 能读到、改到每一个组件，很适合让 AI 帮你定制。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/d8f44aad1508dfa2aa334a391dc030b8.webp" alt="shadcn/ui 首页" width={1600} height={900} thumbhash="avYRNIRGR2eIh4iAindHhID2mA==" />
-
-> 图片来源：[ui.shadcn.com](https://ui.shadcn.com)
-
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/d8f44aad1508dfa2aa334a391dc030b8.webp" caption="shadcn/ui 首页" width={1600} height={900} thumbhash="avYRNIRGR2eIh4iAindHhID2mA==" />
 我自己最喜欢的是 HeroUI，我觉得它比 shadcn/ui 更细致一点。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/04a5a64a288dc4a59d1e49221b616609.webp" alt="HeroUI 首页" width={1600} height={900} thumbhash="avYRNIRGR2eHh4iAindGhID2qA==" />
-
-> 图片来源：[heroui.com](https://www.heroui.com)
-
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/04a5a64a288dc4a59d1e49221b616609.webp" caption="HeroUI 首页" width={1600} height={900} thumbhash="avYRNIRGR2eHh4iAindGhID2qA==" />
 除了组件库这条路，还有另一条路。
 
 有时候你只是想快速做个 demo，拿个原型给客户看，或者赶紧验证一个想法，不想考虑这么多。那可以直接让 AI 生成。
@@ -233,28 +194,16 @@ shadcn/ui 是这两年非常出名的一个，以 Tailwind 为核心，也是一
 
 **[v0](https://v0.app)。** Vercel 做的，shadcn 的作者也参与了，是最早的一批 AI 设计平台。用起来和 agent 差不多，输入需求，背后有一套 agent 帮你把设计做出来。它还有模板市场，你可以挑一个模板，参考别人的 prompt 和代码，改出自己的样式。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/ac30254df20f81accc59b6a899929053.webp" alt="v0 官网" width={1600} height={900} thumbhash="aPYRNIRWRkeJhoeAinVHhID2mA==" />
-
-> 图片来源：[v0.app](https://v0.app)
-
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/ac30254df20f81accc59b6a899929053.webp" caption="v0 官网" width={1600} height={900} thumbhash="aPYRNIRWRkeJhoeAinVHhID2mA==" />
 **[Lovable](https://lovable.dev)。** 类似的思路，但更偏向做一个完整的应用，能连后端，也能帮你部署。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/901d8f18900951ac536764f415ae4b6c.webp" alt="Lovable 官网" width={1600} height={900} thumbhash="5hUOHII2VmeZhoiAinUVg8AQxg==" />
-
-> 图片来源：[lovable.dev](https://lovable.dev)
-
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/901d8f18900951ac536764f415ae4b6c.webp" caption="Lovable 官网" width={1600} height={900} thumbhash="5hUOHII2VmeZhoiAinUVg8AQxg==" />
 **[Google Stitch](https://stitch.withgoogle.com)。** 小有名气，而且提出了后来 agent 做设计时很关键的一个文件：[design.md](https://github.com/google-labs-code/design.md)。现在越来越多的项目会放一份 design.md 来指导 agent 做设计，参考它里面的内容，agent 能产出更稳定的 UI。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/e372276c86cc5928f70f568bbb9c07a1.webp" alt="Google Stitch 官网" width={1600} height={900} thumbhash="afYRNIRGR2eIhoiAinc3hID2qA==" />
-
-> 图片来源：[stitch.withgoogle.com](https://stitch.withgoogle.com)
-
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/e372276c86cc5928f70f568bbb9c07a1.webp" caption="Google Stitch 官网" width={1600} height={900} thumbhash="afYRNIRGR2eIhoiAinc3hID2qA==" />
 **[Claude Design](https://claude.ai/design)。** 最近的产品，Anthropic 自家出的设计平台。虽然还在 beta，但已经很好用了。Claude 本身设计能力就比较强，我个人感觉它是目前最强的原型输出平台。
 
-<BlogImage client:visible src="https://blogassets.4real.ink/blog/40dbe0bfb26b38313c030db3da7a8136.webp" alt="Claude Design 官网" width={1600} height={900} thumbhash="a/YNLIIGNoeHh4iCincGhJL1uQ==" />
-
-> 图片来源：[claude.ai/design](https://claude.ai/design)
-
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/40dbe0bfb26b38313c030db3da7a8136.webp" caption="Claude Design 官网" width={1600} height={900} thumbhash="a/YNLIIGNoeHh4iCincGhJL1uQ==" />
 ## 进项目：决定 UI 风格的三层
 
 前面说的是怎么给项目找定位、去哪找设计灵感、用什么组件。
