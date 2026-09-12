@@ -361,6 +361,45 @@
   border-radius: revert-layer;
 }
 
+/* 横向图片条(ImageStrip)里的 BlogImage:上面 `.prose figure{margin:1.6em 0}` 同样无层级,
+   会在条内每张图左右各撑出间距、上下把条子顶高并错位。这里不能用 revert-layer——
+   figure 的 UA 默认是 `margin:1em 40px`,退回去更糟,直接归零。 */
+.prose .image-strip figure {
+  margin: 0;
+}
+
+/* 横向图片条的滚动条:**只在细指针设备(鼠标 / 触控板)上显示**。
+   手机是直接用手指推,系统浮层条本就会自动隐去,再画一条只会压在图上碍事;
+   桌面没有这条就看不出「还能往右」,所以留着,但按墨色阶收敛成一条细线。
+   媒体查询 + ::-webkit-scrollbar 伪元素是 Tailwind 工具类表达不了的,故写在这。 */
+.image-strip {
+  scrollbar-width: none;
+}
+.image-strip::-webkit-scrollbar {
+  display: none;
+}
+@media (pointer: fine) {
+  /* 新 Chrome / Firefox / Safari 18.2+ 走标准属性,老 Safari 回落到下面的 webkit 伪元素 */
+  .image-strip {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ink-4) transparent;
+  }
+  .image-strip::-webkit-scrollbar {
+    display: block;
+    height: 8px;
+  }
+  .image-strip::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .image-strip::-webkit-scrollbar-thumb {
+    background: var(--ink-4);
+    border-radius: 999px;
+  }
+  .image-strip::-webkit-scrollbar-thumb:hover {
+    background: var(--ink-3);
+  }
+}
+
 /* 视频嵌入(TikTokEmbed / BilibiliEmbed)的图注链接:`.prose a` 那条手写规则同样无层级,
    会给它按上渐变下划线并改色。跟卡片一个套路,revert-layer 退回组件自己的 Tailwind 类。 */
 .prose :is(.tiktok-embed, .bilibili-embed) a {
