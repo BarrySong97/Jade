@@ -1,0 +1,313 @@
+---
+title: "AI 写的 UI 都长一个样，这事怪 AI 吗？"
+description: "AI slop 的本质不是难看，而是泛滥带来的审美疲劳。风格每隔一阵就换一张脸，与其追着流行跑，不如把你自己要什么写清楚。"
+pubDate: "2026-09-12"
+heroImage: "https://blogassets.4real.ink/blog/e658ae75be45645397490c3cb5ab3094.webp"
+heroWidth: 1600
+heroHeight: 900
+heroThumbhash: "ywcGDIBYKWXzO2YxlySf3KGKDw=="
+---
+
+import BlogImage from "@/components/blogs/blog-image";
+
+这两年我用 AI 做了不少自己用的东西。
+
+有记账软件，用来记我自己的财务；有资产管理软件，管视频、图片和 Markdown；有随手记的 Todo；有看 YouTube 字幕、帮我学英语的小工具；还有一个复盘股票用的软件。
+
+有网页，有桌面软件，也有 Mac 菜单栏里的小 App。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/fa61652db56dc7ca9d68ad1af7e7fe7a.webp" alt="FLOWM 流记" width={1600} height={1005} thumbhash="9veBA4QP2XUstI/JurCvaEaekPRLQzY=" />
+
+**[FLOWM 流记](https://flowm-official.vercel.app)** · iOS · 正在做的复式记账 App，把资产、负债和现金流放进同一张表里
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/23e5a6d6622da219996f844134341469.webp" alt="Flowm Desktop" width={1200} height={630} thumbhash="PPgBBIBBuotQiImId5qYf4oFpg==" />
+
+**[Flowm Desktop](https://flowmoney.pages.dev)** · macOS · AI native 的 Flowm 桌面版：不再对账，用 Agent 整理数据，App 只做 UI 展示
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/79581ddfffbe44b4e96d9cb20e5880af.webp" alt="Post" width={1200} height={630} thumbhash="8/cJDII/h5NjiaaFeId/8cYZfw==" />
+
+**[Post](https://topostt.pages.dev)** · macOS · 本地优先的资产卡片管理器，用标签与视图整理笔记、图片和素材
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/016cfc6ce976b594cf7bf56e6ca18616.webp" alt="Grove" width={1200} height={630} thumbhash="OvgBBIBmmXqnZnfvV2Vk4NgFrw==" />
+
+**[Grove](https://groveworktree.pages.dev)** · macOS · menu bar 里的 git worktree 管理器，每个分支一个独立工作区
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/5c7bc94f9fecaedd99a6271beec48797.webp" alt="Listen Up" width={1200} height={630} thumbhash="8PcRDIBPxZR4d4d5eHdfhqiwmg==" />
+
+**[Listen Up](https://trylistenup.pages.dev)** · macOS · YouTube 字幕桌面 App，极轻量；靠 Chrome 扩展与页面通信，不嵌在网页里
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/96f89143285a2855ab4d307c02e1440d.webp" alt="Journal TODO" width={1600} height={1200} thumbhash="HvYRFYRwT3p2d4eUaIiIl0JvAFnH" />
+
+**[Journal TODO](https://todo.4real.ltd)** · macOS · 按天写的待办，一天一页、工作区分开，写完就关
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/179c50c0642ac234192dc8a56de0f300.webp" alt="Immersed" width={1200} height={630} thumbhash="n/cRFIQHaWiIdnhyeXffd/FtNw==" />
+
+**[Immersed](https://immersed-beta.vercel.app)** · iOS · 用 AI 陪着读英文原著，查词与释义都留在书页里
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/b0201635c64412354575e3b5f8386ce4.webp" alt="SupplySmart" width={1600} height={900} thumbhash="uOcFDIIGNzaTiomTZ2UGpHNgag==" />
+
+**[SupplySmart](https://supplysmart.net)** · Web · 为原料供应商做的 AI 外呼与情报平台官网，从设计到上线一个人完成
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/0a419e0132ec04f3a474d394f49d546c.webp" alt="Limitless 320" width={1600} height={900} thumbhash="n/cJJIL45bpvdYd9lZMKaGaASg==" />
+
+**[Limitless 320](https://www.4real.ltd/products/limitless-320)** · Web · 西雅图一家战略咨询公司的官网，大图与衬线标题撑起首屏
+
+> 更多作品见我的作品集：[4real.ltd/products](https://www.4real.ltd/products)
+
+这些界面基本都是 AI 写的。我拿出来不是想说它们有多好看，而是它们**没有太大的 AI 味**。
+
+先说清楚一件事：不存在一句话就能生成好看界面的方法。你想做一个有质感的 App，仍然需要花大量精力去调教，微调总是痛苦的。
+
+所以这篇不讲 prompt 技巧，也不推荐什么一键出图的 skill。我想讲的是用 AI 做设计的一套基本逻辑。
+
+## 拆开看，它其实不丑
+
+先回答一个问题：为什么有的页面你一眼就能看出是 AI 做的，有的不是？
+
+回到两年前。那时候大家用 AI coding agent 生成的页面，几乎都是一种蓝紫色渐变。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/04bb55d243d2f09cbaea0f21bce02eb1.webp" alt="典型的 2022 年 AI 生成界面：蓝紫渐变标题、渐变按钮、Powered by AI 小徽章" width={1600} height={641} thumbhash="iAcKC4IHt3l5hyeo+oSbgGc=" />
+
+> 图片来源：[impeccable.style](https://impeccable.style/slop)
+
+但你把这个蓝紫色界面单独拿出来看，颜色没问题，字体和间距也没问题，按钮也做得规规矩矩。
+
+那为什么我们一眼就觉得它有 AI 味？
+
+道理很简单：**每个人都能生成这样的界面，所以它满大街都是。**
+
+看多了，就不新鲜了，甚至有点审美疲劳。
+
+举个例子。以前椰子鞋刚火的时候，只有少数人穿，你会觉得很酷、很时尚。后来平替出来了，满大街每个人脚上都是，你反而会觉得它很普通，甚至有点土。
+
+鞋没变，变的是穿的人太多了。
+
+AI 生成的界面也是一样。所以 AI slop 的本质不是难看，而是**泛滥带来的审美疲劳**，是它没有个性、太普通了。
+
+这里要先排除一类情况：边距没对齐、元素互相重叠、配色明显出错。这些是真的做错了，修就行，不在我们讨论的范围里。我们讨论的是，东西做对了，但你还是一眼看出是 AI 做的。
+
+## 那个蓝紫色是从哪来的
+
+这个蓝紫色有一个很具体的来源。
+
+[Tailwind CSS](https://tailwindcss.com) 的作者 Adam Wathan 在 X 上发过[一条帖子](https://x.com/adamwathan/status/1953510802159219096)，大意是：
+
+> 我正式为五年前把 Tailwind UI 里每一个按钮都设成 `bg-indigo-500` 道歉，这导致地球上每一个 AI 生成的界面也都是靛蓝色的。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/d3015ab2263334234735b3d95b9b563d.webp" alt="Tailwind CSS 作者 Adam Wathan 的道歉帖，引用的是一条吐槽 GPT-5 还没解决&quot;紫色问题&quot;的推文" width={1216} height={1220} thumbhash="rQcODwLJiHdvdYdsdieYmHh17Oj0Z2sA" />
+
+> 图片来源：[X @adamwathan](https://x.com/adamwathan/status/1953510802159219096)
+
+Tailwind 是使用量非常大的 CSS 框架，大量项目照着它的官方示例写，这些代码又进了模型的训练数据。于是今天你让 AI 写个按钮，它最先想到的就是这个颜色。
+
+不过要公平地说，这个蓝紫色放在五年前一点问题都没有。当时很多网页和作品都在用这种设计，Tailwind 的示例用它也很正常。
+
+同样的道理也适用于别的 AI 味特征。比如现在 AI 很喜欢在卡片左边加一根彩色竖条。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/99a7df22f67d95ab1da1edf5e9d1239a.webp" alt="AI 生成界面常见的&quot;卡片左边加一根彩色竖条&quot;，黄色标签是 impeccable.style 的检测标注" width={1600} height={944} thumbhash="fAgCDICicb96d5iCiXo7hJ9g6Q==" />
+
+> 图片来源：[impeccable.style](https://impeccable.style/slop)
+
+这个设计几年前在后台 dashboard 里很常见，指标卡片就爱这么用，放在那时完全没问题。放到现在，每个人的页面上都有，它就成了问题。
+
+当然这也要看场景。在需要一眼区分状态的指标卡片上，这根竖条是有活干的；到处都加，它就只剩装饰了。
+
+## AI slop 永远存在，只是换一张脸
+
+再往后看一步。
+
+2022 年前后，AI coding agent 更喜欢产出蓝紫色的页面。到了 2026 年，又变成了偏米黄、纸感的页面。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/224c0aadf127852d98ad1acdafd19002.webp" alt="2022 蓝紫渐变与 2026 米黄纸感的对比：变的只是长相" width={1600} height={900} thumbhash="OQgCBICAmYlDl4mKl6zQddeysA==" />
+
+原因还是一样的。当年蓝紫色是因为大量作品用过这种风格，AI 学了进去。这两年米黄纸感流行起来，我觉得和 Claude 带起来的那一波设计风格有很大关系，大家都在用这套配色，AI 又学了进去。
+
+所以能得出一个结论：**AI slop 的风格一直在变。**
+
+隔一段时间，AI 就会学出一种新风格，大家生成出来的"平均页面"就会换成那个新样子。它不是难看，是重复；是大量的人在用，产生了审美疲劳。
+
+所以 AI slop 是永远存在的。那句老话在这里很合适：唯一不变的就是变化。
+
+说到底，是你没有表达清楚自己的意思。你没有自己的想法，只是单纯让它做一个页面出来，它就只能给你一个**大众款**。
+
+这个区分很重要。想明白了这一点，你就知道该怎么用 AI 做设计了。
+
+## 第一步：先想清楚你为了什么
+
+动手之前，先搞清楚你的出发点：你要做什么，目的是什么。
+
+我把它分成三种。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/cb5261150e5c4da10ba02a3c55db1cd8.webp" alt="三种出发点：为了艺术、为了工业、为了商业，对标完全不一样" width={1600} height={900} thumbhash="+/cBBICEuaVmiIhflqmQZg1ppg==" />
+
+**为了艺术。** 纯粹做一个好玩、好看的东西，让别人记住你的作品。
+
+**为了工业。** 快速、低成本地解决问题，不管它长什么样子。你在工业机器上看到的界面、各种后台管理系统，都没什么设计感，但它们用最低的成本、最快的速度把活干完了，不需要花里胡哨。
+
+**为了商业。** 要吸引别人消费，你就得解决别人的问题，还要提供情绪价值，让人愿意留下来用。这需要做很多设计，也需要做商业上的考量，在设计和商业之间找平衡。
+
+如果说艺术和工业是天平的两端，商业就在中间找平衡点。可能偏商业一点，也可能偏艺术一点，取决于你更想提供情绪价值，还是更想帮别人完成任务。
+
+## 第二步：找对标
+
+找到出发点之后，第二步是找对标。
+
+你的大部分想法，网上其实都有人实现过或者设计过。不用从头开始，马上去找就行。
+
+我常去这几个地方。
+
+**[Dribbble](https://dribbble.com)。** 设计师用的平台，以 Web 和 App 为主，但内容主要是图片，是设计师自己做的精美效果图。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/30cf2bdc7752382585ef060837158dd8.webp" alt="Dribbble 首页" width={1600} height={900} thumbhash="avYNLIInNEiHl3iAmXc2hJD2qA==" />
+
+> 图片来源：[dribbble.com](https://dribbble.com)
+
+**[Awwwards](https://www.awwwards.com)。** 它会自己收集网站，也接受用户上传，每隔一段时间给这些网站颁奖。和 Dribbble 不一样的是，这里放的是已经真实上线的网站，你看到截图感兴趣，可以直接点进去体验。这里的网站偏艺术，很多都很有创意、动效也很重。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/4430ff3a6499003173e043469aaa0031.webp" alt="Awwwards 首页，Winning websites 精选合集" width={1600} height={900} thumbhash="ZPYJJIJTB2aelZaxZnEVhGDzqQ==" />
+
+> 图片来源：[awwwards.com](https://www.awwwards.com)
+
+**[Mobbin](https://mobbin.com)。** 比 Awwwards 更进一步，Web 和 App 都有，而且以真实的 App 为主。Awwwards 偏向拿奖的设计，Mobbin 的好处是它收的是真实的商业案例。你要参考商业产品的设计，来这里看更合适。不过它是收费的。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/df5ff49302f8f162afcb472fe9d509ca.webp" alt="Mobbin 首页" width={1600} height={900} thumbhash="a/YRNIRGN2eHh4iAiXdHhID2mA==" />
+
+> 图片来源：[mobbin.com](https://mobbin.com)
+
+**[GitHub](https://github.com)。** 很多我们想做的东西其实都有人开源过，可以直接在别人的基础上改，或者看看别人是怎么写的。
+
+最后再补充一点：**看到好看的设计，要收藏下来。**
+
+我给自己做的那个资产管理软件，就是干这个用的。社交媒体上、这些平台上看到好的 UI，我都会存进去，视频、图片、App 设计、Web 设计都有。
+
+需要找灵感的时候，除了去这些平台，我也会回自己的收藏里翻。没事的时候也会看一眼，看着看着，可能就会发现以前做过的某个产品哪里设计得不好，别人这个做法更好，然后顺着这个思路去改。
+
+## 第三步：别从零开始
+
+看完了，终于轮到动手。
+
+动手也不用从零开始。先选一个基础组件库，帮你更快地把产品搭起来。
+
+如果你写的是 **B 端**，可以考虑 [Ant Design](https://ant.design)、[Element](https://element-plus.org)、[Arco Design](https://arco.design) 或者 [TDesign](https://tdesign.tencent.com)。这里特别提一下 TDesign，它是腾讯出的，支持小程序，如果你要写小程序可以优先考虑。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/d5a5f594c944eac9f578350e536c12c7.webp" alt="Ant Design 首页" width={1600} height={900} thumbhash="bPYRNIQ2R2eHh4iAinc3hKD2qA==" />
+
+> 图片来源：[ant.design](https://ant.design)
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/9f7b885cf0349490b7ff3e4473ee837e.webp" alt="Element 首页" width={1600} height={900} thumbhash="K/YRNIJGR2eHh4iAindHhID3qQ==" />
+
+> 图片来源：[element-plus.org](https://element-plus.org)
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/3874079fcf18cd2b2a20a2ad6e02da37.webp" alt="Arco Design 首页" width={1600} height={900} thumbhash="a/YNLII3NliHh4iAmXdHhJD3uA==" />
+
+> 图片来源：[arco.design](https://arco.design)
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/4ee59082af64ac87ec5041243a6e0137.webp" alt="TDesign 首页" width={1600} height={900} thumbhash="a/YRNII2R2eHh4iAindHhID1mA==" />
+
+> 图片来源：[tdesign.tencent.com](https://tdesign.tencent.com)
+
+如果是 **C 端**，我推荐 [HeroUI](https://www.heroui.com)、[MUI](https://mui.com) 和 [shadcn/ui](https://ui.shadcn.com)。
+
+喜欢 Google Material Design 风格的话，可以选 MUI，它是 React 的组件库。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/9541ab631beb31d2a28da7b77c84e6c1.webp" alt="MUI 首页" width={1600} height={900} thumbhash="KfYRLIJHRmeHh4iAiXhXg7D66Q==" />
+
+> 图片来源：[mui.com](https://mui.com)
+
+shadcn/ui 是这两年非常出名的一个，以 Tailwind 为核心，也是一个很 AI native 的组件库。它和其他组件库不一样的地方在于，你不是把它当依赖装进项目，而是它直接把组件源码放进你的项目里。这样 AI 能读到、改到每一个组件，很适合让 AI 帮你定制。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/d8f44aad1508dfa2aa334a391dc030b8.webp" alt="shadcn/ui 首页" width={1600} height={900} thumbhash="avYRNIRGR2eIh4iAindHhID2mA==" />
+
+> 图片来源：[ui.shadcn.com](https://ui.shadcn.com)
+
+我自己最喜欢的是 HeroUI，我觉得它比 shadcn/ui 更细致一点。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/04a5a64a288dc4a59d1e49221b616609.webp" alt="HeroUI 首页" width={1600} height={900} thumbhash="avYRNIRGR2eHh4iAindGhID2qA==" />
+
+> 图片来源：[heroui.com](https://www.heroui.com)
+
+除了组件库这条路，还有另一条路。
+
+有时候你只是想快速做个 demo，拿个原型给客户看，或者赶紧验证一个想法，不想考虑这么多。那可以直接让 AI 生成。
+
+这种时候我一般不会直接打开 coding agent，而是去专门做 AI 设计的平台。
+
+**[v0](https://v0.app)。** Vercel 做的，shadcn 的作者也参与了，是最早的一批 AI 设计平台。用起来和 agent 差不多，输入需求，背后有一套 agent 帮你把设计做出来。它还有模板市场，你可以挑一个模板，参考别人的 prompt 和代码，改出自己的样式。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/ac30254df20f81accc59b6a899929053.webp" alt="v0 官网" width={1600} height={900} thumbhash="aPYRNIRWRkeJhoeAinVHhID2mA==" />
+
+> 图片来源：[v0.app](https://v0.app)
+
+**[Lovable](https://lovable.dev)。** 类似的思路，但更偏向做一个完整的应用，能连后端，也能帮你部署。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/901d8f18900951ac536764f415ae4b6c.webp" alt="Lovable 官网" width={1600} height={900} thumbhash="5hUOHII2VmeZhoiAinUVg8AQxg==" />
+
+> 图片来源：[lovable.dev](https://lovable.dev)
+
+**[Google Stitch](https://stitch.withgoogle.com)。** 小有名气，而且提出了后来 agent 做设计时很关键的一个文件：[design.md](https://github.com/google-labs-code/design.md)。现在越来越多的项目会放一份 design.md 来指导 agent 做设计，参考它里面的内容，agent 能产出更稳定的 UI。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/e372276c86cc5928f70f568bbb9c07a1.webp" alt="Google Stitch 官网" width={1600} height={900} thumbhash="afYRNIRGR2eIhoiAinc3hID2qA==" />
+
+> 图片来源：[stitch.withgoogle.com](https://stitch.withgoogle.com)
+
+**[Claude Design](https://claude.ai/design)。** 最近的产品，Anthropic 自家出的设计平台。虽然还在 beta，但已经很好用了。Claude 本身设计能力就比较强，我个人感觉它是目前最强的原型输出平台。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/40dbe0bfb26b38313c030db3da7a8136.webp" alt="Claude Design 官网" width={1600} height={900} thumbhash="a/YNLIIGNoeHh4iCincGhJL1uQ==" />
+
+> 图片来源：[claude.ai/design](https://claude.ai/design)
+
+## 进项目：决定 UI 风格的三层
+
+前面说的是怎么给项目找定位、去哪找设计灵感、用什么组件。
+
+现在我们直接进到真实的项目里看。
+
+在一个项目里，通常有三层东西决定了你的设计风格，决定了你界面上的一切。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/7ab94fa5ef5a584a9b3e6dc3de97dd3f.webp" alt="三层结构：design.md 决定该长什么样，UI 组件不从零造，Design Token 提供变化的值——三层都得有" width={1080} height={1440} thumbhash="OggCBQCw+4l4lyO4eWhmaZGABU3K" />
+
+### 第一层：design.md
+
+我们的 coding agent 在处理项目时，都会读一份 Markdown 来了解该怎么做事。用 Claude 就是 CLAUDE.md，用 Codex 就是 AGENTS.md。
+
+随着模型能力上升，CLAUDE.md 已经不需要写太多东西了。最开始我们的设计内容也放在 CLAUDE.md 里，后来单独拆出来，就成了 design.md，也就是前面说的 Google Stitch 提出的那个概念。
+
+现在我项目里和设计有关的内容，都放在 design.md 里。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/b910c52850b932beb1612816ff3cdb40.webp" alt="终端 tree 命令展示 design.md 在项目里的位置：和 AGENTS.md、package.json 平级，47 行，只讲设计" width={1600} height={711} thumbhash="xfcBA4CvZ0WIiYZ4hIoPldg=" />
+
+里面会写这个产品的基本信息，视觉相关的字体、颜色、间距、阴影，还有组件怎么用。这些是基础。如果你的组件有一些特殊的设计或交互，也可以写进去。下次 agent 再创建类似的组件，就会参考这份文件。
+
+### 第二层：UI 组件
+
+前面说过，我们不是从零开始建的，一般会先用某个组件库快速把界面搭起来。
+
+但只用组件库有个问题：**大家都会长得一模一样。**
+
+这就又回到了开头说的 AI slop。
+
+我们要的是长得不一样。那有没有办法，让大家都拥有组件的能力，比如按钮、下拉框、开关，同时又让每个人的组件长得不一样？
+
+### 第三层：Design Token
+
+这就是第三层，Design Token。
+
+如果你是前端工程师或者设计师，应该听过这个词。它是前几年流行起来的概念，能让组件有变化的能力，又不丢掉组件本身的能力。
+
+落到代码里，它其实就是 CSS 变量。
+
+<BlogImage client:visible src="https://blogassets.4real.ink/blog/2fd7c1b50343c9ca0cbd6972d892117d.webp" alt="globals.css 里的 Design Token：accent 和 success 共用同一个绿，radius 只定一次，ink 分五档深浅——变量本身管不了风格，挑哪个靠 design.md" width={1600} height={711} thumbhash="xvcBA4CfZ0R3eJZ4pIoPeMc=" />
+
+你修改颜色、字体、边距这一系列数值，其他样式会跟着联动，整套组件的样子就一起变了。这样你就能打造出自己风格的组件。
+
+## 最后
+
+如果你的项目现在还没有 design.md，可以先做一件事：**让 agent 读一遍你现有的代码，总结出一份 design.md。**
+
+总结出来的那份文件，就是你自己的风格。
+
+AI slop 会一直存在，每隔一阵就换一张脸。
+
+还是那句老话：**永远不变的，只有变化。**
+
+与其追着流行的风格跑，不如把你自己要什么写清楚。
