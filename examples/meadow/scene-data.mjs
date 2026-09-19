@@ -1,5 +1,5 @@
 /**
- * @purpose 花草素材目录、三种混种与五种原版场景的确定性排布
+ * @purpose 花草素材目录、照片参考草甸与历次场景的确定性排布
  * @role 页面、缩略图和预览服务共享的数据模块
  * @deps 无；调用者传入包含图片及比例的素材对象
  * @gotcha 大图和缩略图共用排布；混种前后两层错开落点，低花最后绘制以免被高花遮住
@@ -27,6 +27,34 @@ export const ASSETS = [
 ];
 const assetInfo = Object.fromEntries(ASSETS.map((asset) => [asset.id, asset]));
 export const SCENES = [
+  {
+    id: "wild-meadow",
+    code: "I",
+    name: "野花草甸",
+    mood: "照片参考 · 密草、小花、自然散落",
+    description:
+      "白色小花与暖黄散在浓密草叶间，蓝紫穿插，少量粉色点缀。花朵高低不齐，像自然长成的一小片草甸。",
+    meadow: true,
+    flowers: [
+      "flower-daisy",
+      "flower-yellow",
+      "flower-forget",
+      "flower-daisy",
+      "flower-violet",
+      "flower-yellow",
+      "flower-daisy",
+      "flower-bell",
+      "flower-cosmos",
+      "flower-daisy",
+      "flower-forget",
+      "flower-yellow",
+    ],
+    grassSpacing: 57,
+    grassScale: 0.82,
+    lowScale: 0.77,
+    flowerSpacing: 48,
+    seed: 5.6,
+  },
   {
     id: "mixed-natural",
     code: "F",
@@ -195,7 +223,28 @@ export function arrangeScene(scene, width, height, byId) {
     add("grass-low", i * lowSpacing, (91 + (Math.sin(i * 2.8) + 1) * 17) * scene.lowScale, i, 9);
   }
   const flowerSpacing = scene.flowerSpacing * scale;
-  if (scene.accents) {
+  if (scene.meadow) {
+    // 各层独立散布；花种和高度用坐标种子决定，避免整齐重复的花头队列。
+    const noise = (value) => {
+      const result = Math.sin(value * 127.1 + scene.seed * 311.7) * 43758.5453;
+      return result - Math.floor(result);
+    };
+    for (let depth = 0; depth < 3; depth++) {
+      const spacing = flowerSpacing * (depth === 1 ? 1.15 : 1);
+      for (let i = -1; i * spacing < width + spacing; i++) {
+        const key = i + depth * 103;
+        const id = scene.flowers[Math.floor(noise(key + 17) * scene.flowers.length)];
+        const x = (i + noise(key + 43) * 0.65 + depth * 0.24) * spacing;
+        const size = (depth === 2 ? 0.37 : 0.53) + noise(key + 89) * 0.32;
+        add(id, x, assetInfo[id].height * size, key, depth === 0 ? -26 : depth * 6, i % 11 === 2);
+      }
+      if (depth === 1) {
+        for (let i = 0; i * 149 * scale < width; i++) {
+          add("grass-tall", (i * 149 + noise(i) * 37) * scale, 105 + noise(i + 61) * 75, i, 8);
+        }
+      }
+    }
+  } else if (scene.accents) {
     const tallFlowers = scene.flowers.filter((id) => !scene.accents.includes(id));
     const flowerStart = plants.length;
     for (let i = 0; i * flowerSpacing < width + flowerSpacing; i++) {

@@ -1,5 +1,5 @@
 /**
- * @purpose 切换三种混种与五种原版花草组合，展示独立素材
+ * @purpose 切换照片参考草甸与历次花草组合，展示独立素材
  * @role 页面控制、缩略图和动画生命周期
  * @deps renderer.js、scene-data.mjs、ResizeObserver / IntersectionObserver
  * @gotcha 折叠组展开后重绘缩略图；切换保留暂停状态；自动化点击须用 button[data-scene]，canvas 同样带 data-scene
@@ -36,9 +36,9 @@ for (const item of SCENES) {
   button.querySelector("[data-title]").textContent = `${item.code} · ${item.name}`;
   button.querySelector("[data-mood]").textContent = item.mood;
   sceneButtons.set(item.id, button);
-  $(item.accents ? "scene-options" : "previous-options").append(fragment);
+  $(item.accents || item.meadow ? "scene-options" : "previous-options").append(fragment);
 }
-previousScenes.open = !scene.accents;
+previousScenes.open = !scene.accents && !scene.meadow;
 for (const asset of ASSETS) {
   const fragment = $("asset-card-template").content.cloneNode(true);
   fragment.querySelector("a").href = `/assets/${asset.id}.png`;
@@ -141,13 +141,13 @@ try {
     const selected = SCENES.find((item) => item.id === location.hash.slice(1));
     if (selected) {
       scene = selected;
-      if (!scene.accents) previousScenes.open = true;
+      if (!scene.accents && !scene.meadow) previousScenes.open = true;
       updateScene();
     }
   });
   previousScenes.addEventListener("toggle", () => {
     if (previousScenes.open)
-      for (const item of SCENES.filter((item) => !item.accents))
+      for (const item of SCENES.filter((item) => !item.accents && !item.meadow))
         drawThumbnail(item, sceneButtons.get(item.id));
   });
   function tick(timestamp) {
