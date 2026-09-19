@@ -22,8 +22,9 @@
     "start": "astro dev",
     "format": "oxfmt",
     "lint": "oxlint",
-    "check": "pnpm test:hooks && oxlint && oxfmt",
+    "check": "pnpm test:hooks && pnpm test:meadow && oxlint && oxfmt",
     "test:hooks": "node --test scripts/check-docs.test.mjs",
+    "test:meadow": "node --test scripts/meadow.test.mjs",
     "download-logos": "node scripts/download-company-logos.js",
     "generate-blogs": "node scripts/generate-blogs.js"
   },

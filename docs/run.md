@@ -33,8 +33,9 @@ pnpm preview      # 本地预览生产构建
 ```bash
 pnpm lint         # oxlint
 pnpm format       # oxfmt(原地格式化)
-pnpm check        # hook 回归测试 + oxlint + oxfmt,收尾跑这个
+pnpm check        # hook / 草甸回归测试 + oxlint + oxfmt,收尾跑这个
 pnpm test:hooks   # 单独验证 Stop hook 输出协议和文档错误拦截
+pnpm test:meadow  # 共享草甸排布、密度与仅首页接入边界
 ```
 
 > 没有独立的 `typecheck` 脚本;`pnpm build` 即包含类型检查。

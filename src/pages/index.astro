@@ -3,6 +3,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import { PROFILE } from "@/lib/site";
 import ProfileIntro from "@/components/home/profile-intro.astro";
 import PostArchive from "@/components/home/post-archive.astro";
+import HomeMeadow from "@/components/home/home-meadow.astro";
 ---
 
 <BaseLayout title={PROFILE.name} description={PROFILE.bio}>
@@ -10,4 +11,5 @@ import PostArchive from "@/components/home/post-archive.astro";
     <ProfileIntro />
     <PostArchive />
   </div>
+  <HomeMeadow slot="page-end" />
 </BaseLayout>

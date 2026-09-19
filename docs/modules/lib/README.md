@@ -9,6 +9,7 @@
 - `utils.ts` — `cn()`:合并并去重 Tailwind class(clsx + tailwind-merge)。几乎所有组件都用。
 - `site.ts` — `PROFILE` 常量:站点作者身份(姓名、handle、简介、社交链接);另导出 `TWITTER` / `TWITTER_HANDLE`(从 social 派生),供展示页(作品/摄影)联系方式复用,与首页一致。首页与展示页引用。
 - `use-copy-button.ts` — React Hook:复制按钮「已复制」态,1.5s 自动复位。代码块复制用。
+- `meadow-layout.mjs` — 首页与设计预览共享的纯草甸排布：`MEADOW_ASSET_IDS` 限定 11 张原画，`meadowReferencePopulation()` 保留旧预览计数边界，`arrangeNaturalMeadow()` 用固定种子生成不规则花簇与草叶分层，株数为旧版的 90%。构建期静态图与客户端 WebGL 都调用它；非正画布尺寸返回空集合，`pnpm test:meadow` 验证与已确认预览一致。
 - `cloud-image-config.ts` — 云图片 CDN 域名常量 + 「Key → 完整 URL」拼接。
 - `cloud-image-utils.ts` — 云图片 Key 解析:拆文件名元信息、推导对应 BlurHash 占位图 Key。
 - `thumbhash-placeholder.ts` — thumbhash(base64)→ `{ 平均色, 模糊图 dataURL }`,给 `.astro` 组件在构建期算好内联(React 侧的 `blog-image.tsx` 自己在 `useMemo` 里做同样的事)。

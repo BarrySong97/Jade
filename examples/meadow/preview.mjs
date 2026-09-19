@@ -30,6 +30,14 @@ const routes = new Map([
   ["/index.html", ["index.html", "text/html; charset=utf-8"]],
   ["/meadow.js", ["meadow.js", "text/javascript; charset=utf-8"]],
   ["/renderer.js", ["renderer.js", "text/javascript; charset=utf-8"]],
+  [
+    "/src/components/home/meadow-renderer.js",
+    ["../../src/components/home/meadow-renderer.js", "text/javascript; charset=utf-8"],
+  ],
+  [
+    "/src/lib/meadow-layout.mjs",
+    ["../../src/lib/meadow-layout.mjs", "text/javascript; charset=utf-8"],
+  ],
   ["/variations.js", ["variations.js", "text/javascript; charset=utf-8"]],
   ["/scene-data.mjs", ["scene-data.mjs", "text/javascript; charset=utf-8"]],
   ["/natural-meadow.mjs", ["natural-meadow.mjs", "text/javascript; charset=utf-8"]],

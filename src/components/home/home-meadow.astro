@@ -1,0 +1,51 @@
+---
+/**
+ * @purpose 在博客首页最底部呈现全宽手绘草甸
+ * @role 仅首页引用的装饰组件，构建期静态画面 + 原生 WebGL 渐进增强
+ * @deps astro:assets、meadow-layout.mjs、home-meadow-client.js、已生成 PNG
+ * @gotcha 不引入 BaseLayout 或通用 Footer；SVG 只排列原画，不用矢量图形替代笔触
+ */
+import { getImage } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { arrangeNaturalMeadow, MEADOW_ASSET_IDS } from "@/lib/meadow-layout.mjs";
+
+const originals = import.meta.glob<{ default: ImageMetadata }>("../../../examples/meadow/assets/*.png", { eager: true });
+const assets = await Promise.all(MEADOW_ASSET_IDS.map(async (id) => {
+  const source = Object.entries(originals).find(([path]) => path.endsWith(`/${id}.png`))?.[1].default;
+  if (!source) throw new Error(`Missing meadow asset: ${id}`);
+  const image = await getImage({
+    src: source,
+    width: Math.round(source.width * Math.min(1, 640 / Math.max(source.width, source.height))),
+    format: "webp",
+    quality: 82,
+  });
+  return { id, src: image.src, aspect: source.width / source.height };
+}));
+const byId = Object.fromEntries(assets.map((asset) => [asset.id, asset]));
+const fallback = arrangeNaturalMeadow({ seed: 5.6 }, 1440, 240, byId);
+---
+
+<home-meadow
+  class="pointer-events-none relative block h-44 w-full shrink-0 select-none overflow-hidden sm:h-60"
+  data-assets={JSON.stringify(assets)}
+  aria-hidden="true"
+>
+  <svg data-meadow-fallback class="absolute inset-0 size-full" viewBox="0 0 1440 240" preserveAspectRatio="xMidYMax slice" focusable="false">
+    {fallback.map((plant) => (
+      <image
+        href={plant.asset.src}
+        x={-plant.height * plant.asset.aspect / 2}
+        y={-plant.height}
+        width={plant.height * plant.asset.aspect}
+        height={plant.height}
+        transform={`translate(${plant.x} ${plant.base}) scale(${plant.flip ? -1 : 1} 1)`}
+      />
+    ))}
+  </svg>
+  <canvas class="absolute inset-0 size-full" hidden></canvas>
+</home-meadow>
+
+<script>
+  import { defineHomeMeadow } from "./home-meadow-client.js";
+  defineHomeMeadow();
+</script>

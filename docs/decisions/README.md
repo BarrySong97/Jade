@@ -25,3 +25,4 @@
 | 0003 | [短视频嵌入:自渲染官方 iframe](0003-tiktok-embed-iframe.md)                | 已采纳 | 2026-07-26 |
 | 0004 | [作品集:静态两列 + 条目式卡片](0004-works-static-columns.md)               | 已采纳 | 2026-07-29 |
 | 0005 | [Bilibili 视频嵌入:响应式官方播放器 iframe](0005-bilibili-embed-iframe.md) | 已采纳 | 2026-08-03 |
+| 0006 | [首页草甸:页面独有挂载与共享二维渲染](0006-home-meadow.md)                 | 已采纳 | 2026-09-19 |

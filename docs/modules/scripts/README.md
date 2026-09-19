@@ -2,7 +2,7 @@
 
 ## 职责与边界
 
-`scripts/` 保存构建辅助、内容处理与 Agent 质量检查工具；它们在本地命令行执行，不进入网站客户端。本文记录文档检查器与 Stop hook 的接口。
+`scripts/` 保存构建辅助、内容处理与 Agent 质量检查工具；它们在本地命令行执行，不进入网站客户端。本文记录文档检查器、Stop hook 接口与草甸回归测试。
 
 ## 文档检查器
 
@@ -23,3 +23,5 @@
 ## 回归验证
 
 [check-docs.test.mjs](../../../scripts/check-docs.test.mjs) 使用临时文件和实际 Node 子进程验证输出、JSON 可解析性与退出码；通过 `pnpm test:hooks` 执行，已接入 `pnpm check`。更多流程见 [测试策略](../../testing.md) 和 [运行手册](../../run.md)。
+
+[meadow.test.mjs](../../../scripts/meadow.test.mjs) 通过 `pnpm test:meadow` 验证迁入首页后的共享排布与已确认预览相同、90% 株数和固定种子稳定，并检查只有首页接入草甸、通用布局只提供 Footer 后插槽；执行 [ADR-0006](../../decisions/0006-home-meadow.md) 的页面边界。它也接入 `pnpm check`。

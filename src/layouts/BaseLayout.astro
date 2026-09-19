@@ -1,4 +1,10 @@
 ---
+/**
+ * @purpose 博客页面基础布局
+ * @role Header、内容、Footer 与可选页尾插槽
+ * @deps HeadSEO、ClientRouter、Header、Footer
+ * @gotcha page-end 只提供插槽；首页自行传入草甸，其他页面不会挂载或加载它
+ */
 import { ClientRouter } from "astro:transitions";
 import HeadSEO from "@/components/HeadSEO.astro";
 import Header from "@/components/layout/header";
@@ -22,6 +28,7 @@ const { title, description, ogImage } = Astro.props;
         <slot />
       </main>
       <Footer />
+      <slot name="page-end" />
     </div>
   </body>
 </html>
