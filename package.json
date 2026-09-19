@@ -17,6 +17,7 @@
     "linkcard": "node scripts/link-card.mjs",
     "dev": "astro dev",
     "demo:grass": "node examples/png-grass/preview.mjs",
+    "demo:meadow": "node examples/meadow/preview.mjs",
     "preview": "astro preview",
     "start": "astro dev",
     "format": "oxfmt",
