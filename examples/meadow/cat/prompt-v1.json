@@ -1,0 +1,19 @@
+{
+  "tool": "built-in ImageGen",
+  "date": "2026-09-19",
+  "useCase": "stylized-concept",
+  "file": "cat-idle-v1.png",
+  "purpose": "以用户提供的猫照片生成草甸角色第一版静态坐姿，尚未拆分或用于首页",
+  "references": [
+    {
+      "role": "identity reference",
+      "source": "用户本轮提供的 6b41a27eb0ed323e26b18845afcafcf6.jpg；原始私人照片不复制进仓库"
+    },
+    {
+      "role": "painted style reference",
+      "source": "../assets/flower-daisy.png"
+    }
+  ],
+  "generatedSource": "exec-de990606-5388-467d-b4ef-2a2445dff17c.png",
+  "prompt": "Use case: stylized-concept.\nAsset type: one isolated full-body cat character concept / transparent 2D sprite for a painterly flower-meadow website.\nInput images: Image 1 is the user's own cat photograph: use it as the PRIMARY identity, facial proportions and fur-color reference. Image 2 is an existing meadow daisy PNG: use ONLY its painted surface texture, restrained color planes, warm gentle light and illustration finish as STYLE guidance. Do not include plants in the output.\nPrimary request: portray the SAME recognizable cat from image 1 as a natural, quietly attentive small cat in a painterly 3D-to-2D animation look. Retain the reference's rounded face and cheeks, short dense creamy ivory-white fur, broad but not flat little muzzle, dark outlined blue-gray eyes with dark pupils (avoid bright saturated blue), small muted pink-gray nose, soft pink inner ears, and delicate long white whiskers. Keep the subtle warm-gray fur shading visible in the photo. Do not invent tabby stripes, calico patches or orange markings. Natural feline anatomy and proportions, not a chibi kitten, not an anthropomorphic mascot.\nPose/composition: one complete cat in a relaxed upright seated resting pose, full body in three-quarter view, body slightly angled toward the right and head gently looking right, both eyes visible. Match the calm observant expression of the reference. Front paws rest naturally together on the same baseline; hindquarters grounded; tail lies in a gentle loose curve beside the body with the entire tip visible. The photograph does not show the entire body or tail: complete those conservatively in the same cream-white coat and plausible proportions. Separate tail silhouette sufficiently to read clearly at website footer size. Center the whole silhouette with 10 percent breathing room on every side; no cropped ears, whiskers, paws or tail.\nStyle/medium: richly crafted hand-painted animation concept art, convincing solid volume with deliberately simplified angular light-and-shadow planes, restrained gouache/oil brush marks matching the daisy's painterly finish. Creamy warm highlights, soft cool gray shadows, selective short fur strokes at cheeks, chest and silhouette. Preserve the cat's individual face while stylizing the surface. Clear body masses and readable silhouette. Moderate stylization, no photorealistic fur noise, no smooth glossy plastic 3D render, no flat vector illustration, no thick black cartoon outline.\nLighting: gentle upper-left daylight consistent with the meadow assets; no dramatic rim glow.\nBackground: genuinely transparent RGBA, alpha zero outside the cat and in negative spaces. Opaque painted cat interior with naturally antialiased silhouette and fine whiskers. No white background, no checkerboard painted into the image, no colored backdrop, no landscape, no grass, no window, no floor, no cast shadow, no contact-shadow oval, no halo.\nOutput: one cat only, around 1024 x 1024 resolution, no multi-view sheet, no accessory or collar, no butterfly, no text, no border, no watermark."
+}

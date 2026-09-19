@@ -33,3 +33,7 @@
 - 默认入口为 `#wild-meadow`：[natural-meadow.mjs](../../../examples/meadow/natural-meadow.mjs) 以不规则群落、同类花局部聚集和连续草叶密度场打破等距分段；总株数取上一版同视口的 90%，固定种子保证排布稳定。旧版为 `#wild-meadow-v1`，用于实看密度与重复感变化。
 - 新增疏叶细草、弧叶草丛和侧向白花，以独立 PNG 补足轮廓与姿态变化；无穗草按叶片尺度与旧草匹配，避免视觉体积变大。
 - `natural-meadow.mjs` 与 `renderer.js` 是共享源码的兼容导出；预览服务明确允许两个共享文件的路径，不开放整个 `src/`。共享真源分别是 [meadow-layout.mjs](../../../src/lib/meadow-layout.mjs) 与 [meadow-renderer.js](../../../src/components/home/meadow-renderer.js)。
+
+## 草甸小猫造型
+
+[cat/README.md](../../../examples/meadow/cat/README.md) 保存按用户猫照片生成的透明坐姿初稿和完整提示词。它匹配花草的手绘明暗色块，作为自然小猫动画的造型参考；当前只有单张原画，尚未拆部件、制作动作帧或接入首页。原始私人照片不复制进仓库。
