@@ -1,8 +1,8 @@
 <!doctype html>
 <!--
-  @purpose 对照自然群落草甸与历次混种花草，并查看独立素材
+  @purpose 对照自然群落草甸与历次混种花草，并查看花草和小猫独立素材
   @role 独立设计比较页，可切换可动大图与静态场景缩略图
-  @deps variations.js、scene-data.mjs、renderer.js、Tailwind CSS
+  @deps variations.js、scene-data.mjs、renderer.js、cat/cat-idle-v1.png、Tailwind CSS
   @gotcha 缩略图与主画面共享排布，所有花草均使用真实 PNG
 -->
 <html lang="zh-CN">
@@ -106,10 +106,29 @@
         aria-labelledby="assets-title"
       >
         <div class="mb-5 flex flex-wrap items-baseline justify-between gap-3">
-          <h2 id="assets-title" class="font-serif text-xl">草叶与小花，各有自己的姿态。</h2>
-          <p class="text-xs text-[#89957c]">3 种新增姿态 · 点击查看透明 PNG 原图</p>
+          <h2 id="assets-title" class="font-serif text-xl">花草之间，来了一只小猫。</h2>
+          <p class="text-xs text-[#89957c]">小猫初稿与 3 种花草姿态 · 点击查看透明 PNG 原图</p>
         </div>
-        <div id="refinement-assets" class="grid grid-cols-1 gap-3 sm:grid-cols-3"></div>
+        <div id="refinement-assets" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <a
+            id="cat-sample"
+            href="/cat/cat-idle-v1.png"
+            target="_blank"
+            rel="noreferrer"
+            class="group scroll-mt-6 rounded-xl border border-[#e0e4d7] bg-white/60 p-4 transition-colors hover:bg-white"
+          >
+            <img
+              src="/cat/cat-idle-v1.png"
+              alt="按照片生成的奶白小猫，圆脸、深蓝灰眼睛，手绘坐姿造型"
+              width="1254"
+              height="1254"
+              class="h-40 w-full object-contain transition-transform motion-safe:group-hover:-translate-y-1"
+              loading="lazy"
+            />
+            <p class="mt-3 text-sm">奶白小猫</p>
+            <p class="mt-1 text-[11px] leading-5 text-[#8b987e]">照片参考 · 坐姿造型初稿</p>
+          </a>
+        </div>
         <h3 class="mb-4 mt-7 text-sm text-[#7d8a70]">之前的 8 种花型</h3>
         <div id="new-assets" class="grid grid-cols-2 gap-3 md:grid-cols-4"></div>
         <details class="mt-6 text-xs text-[#7d8a70]">
