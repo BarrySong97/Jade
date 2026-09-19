@@ -20,7 +20,7 @@
 - [五张独立 PNG](../../../examples/meadow/README.md) 分别为低草、高草、白雏菊、淡紫花和黄色野花；原画由内置 ImageGen 生成，保留透明通道，提示词可追溯。
 - [场景排布](../../../examples/meadow/meadow.js) 使用多层植物遮挡和不同高度、间距组成连续底边；[共享渲染器](../../../examples/meadow/renderer.js) 为每株设置不同摆动相位与幅度，根部固定。
 - 页面提供整景风动、暂停、风力与代表植物网格，以及每张素材的原图入口。窄屏调整排布；后台、屏外、零风力时停止动画帧，减少动态效果时默认暂停。
-- 预览控件和历史方案留在独立目录；选定自然草甸已通过 [首页组件](../../../src/components/home/home-meadow.astro) 放到首页 Footer 后。蝴蝶另行制作。
+- 预览控件和历史方案留在独立目录；选定自然草甸已通过 [首页组件](../../../src/components/home/home-meadow.astro) 放到首页 Footer 后。蝴蝶已有独立预览，尚未合入草甸。
 
 ## 更多花型与混种场景比较
 
@@ -49,3 +49,14 @@
 动画板默认显示关节辅助线，可关闭或切换“只看骨架”，也可拖动进度暂停观察当前姿势。[cat-skeleton.mjs](../../../examples/meadow/cat/cat-skeleton.mjs) 人工标注 16 个跑跳姿势和坐姿，并合并 [cat-transition-skeletons.mjs](../../../examples/meadow/cat/cat-transition-skeletons.mjs) 的 32 个过渡姿势，按躯干、前腿、后腿、尾巴配色，遮挡侧腿使用虚线。它是说明性标注，不能表述为驱动图集的真实骨骼或蒙皮；尾巴标记调用实际网格的变形函数。图集与辅助线共用 `cat-atlas.mjs` 的坐标变换，保证镜像、离地与响应式缩放一致；回归同时验证可见标记落在真实 PNG 主体内。
 
 坐站、起跑收步、跳跃准备恢复、转身四组图集补足状态衔接，原 PNG 和提示词见 [过渡说明](../../../examples/meadow/cat/README.md)。`cat-motion.mjs` 用已有姿势作为过渡端点，只在坐稳/站稳接受新动作；`cat-board.js` 排队最新请求，飞行必须先落地，跑动完成当前跑段再收步。动作继承位置、朝向、观察距离与尾巴幅度；尾巴相位单独累计。坐姿图层和标注也按当前朝向镜像，尾巴观察距离平滑改变。自动演示回场前缀只执行一次。协议与回归见 [ADR-0008](../../decisions/0008-cat-action-transitions.md)。
+
+## 蝴蝶独立预览
+
+[butterfly/README.md](../../../examples/meadow/butterfly/README.md) 保存暖杏黄色蝴蝶的八姿势透明图集、来源及完整提示词。由内置 ImageGen 参考已有花草笔触生成并修正留白，PNG 原样保存。入口仍在原页 <http://localhost:55022/#butterfly-board>。
+
+- [butterfly-motion.mjs](../../../examples/meadow/butterfly/butterfly-motion.mjs) 定义帧注册点、统一比例、八姿势循环、连续飞行路线与原地观察过渡。切换可中途反向且不重置振翅相位；手机限制活动范围。
+- [butterfly-board.js](../../../examples/meadow/butterfly/butterfly-board.js) 在独立 Canvas 2D 中采样当前 PNG 姿势，提供暂停、慢放、原地放大及轨迹开关。屏外/后台停表，减少动态效果默认暂停，页面退出清理监听与观察器；失败保留静态原画。不会调用猫或花草的状态。
+- 预览服务只新增一张 PNG 和两个模块的明确路径；页面折叠区提供八姿势原画，PNG 和两个模块均不进入首页构建，没有新增运行依赖。
+- `pnpm test:meadow` 检查周期、注册点、观察切换连续性与真实 alpha/间隔/窄屏边界；实际振翅观感和控件需浏览器验收，延续用户自行打开原页的选择。
+
+后续整合方向：用户选择猫半藏在草里，前方低草遮住脚和部分腹部，头身可见；本轮按用户要求先完成蝴蝶预览，尚未合并猫、蝶、草甸画布或追逐逻辑。

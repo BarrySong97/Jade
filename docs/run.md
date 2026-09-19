@@ -35,7 +35,7 @@ pnpm lint         # oxlint
 pnpm format       # oxfmt(原地格式化)
 pnpm check        # hook / 草甸回归测试 + oxlint + oxfmt,收尾跑这个
 pnpm test:hooks   # 单独验证 Stop hook 输出协议和文档错误拦截
-pnpm test:meadow  # 共享草甸排布、页面边界、猫尾巴与跑跳动作/图集约束
+pnpm test:meadow  # 草甸排布/页面边界、猫动作过渡、蝴蝶振翅飞行与图集约束
 ```
 
 > 没有独立的 `typecheck` 脚本;`pnpm build` 即包含类型检查。
