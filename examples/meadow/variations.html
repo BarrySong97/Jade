@@ -1,0 +1,142 @@
+<!doctype html>
+<!--
+  @purpose 对照五种花草场景，并查看八种新增花型及既有素材
+  @role 独立设计比较页，可切换可动大图与静态场景缩略图
+  @deps variations.js、scene-data.mjs、renderer.js、Tailwind CSS
+  @gotcha 缩略图与主画面共享排布，所有花草均使用真实 PNG
+-->
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>五种花草场景 · 视觉对比</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script type="module" src="/variations.js"></script>
+  </head>
+  <body class="min-h-screen bg-[#f7f7f2] font-sans text-[#344333] antialiased">
+    <main class="mx-auto max-w-[1480px] px-5 pb-12 pt-8 sm:px-12 sm:pt-10">
+      <header class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="text-[11px] tracking-[0.2em] text-[#7e896f]">草坪实验 · 03</p>
+          <h1 class="mt-3 font-serif text-3xl tracking-tight sm:text-4xl">
+            让不同的花，长成不同的风景。
+          </h1>
+          <p class="mt-3 text-sm leading-7 text-[#7e896f]">
+            八种新花型，四种新组合。点选下方场景，看花草在微风中的样子。
+          </p>
+        </div>
+        <a href="#assets" class="mb-1 text-xs text-[#71815f] underline underline-offset-4"
+          >查看全部花型 ↓</a
+        >
+      </header>
+      <section class="mt-6" aria-label="场景对比">
+        <div id="scene-options" class="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-5"></div>
+      </section>
+      <section
+        id="scene-panel"
+        class="mt-5 overflow-hidden rounded-2xl border border-[#d9dfd1] bg-[#fffefb]"
+        aria-labelledby="scene-title"
+      >
+        <div class="flex items-start justify-between gap-5 px-5 pt-5 sm:px-7">
+          <div>
+            <h2 id="scene-title" class="font-serif text-xl">林间白蓝</h2>
+            <p id="scene-description" class="mt-2 max-w-3xl text-xs leading-6 text-[#859178]">
+              正在准备花草素材…
+            </p>
+          </div>
+          <span id="status" role="status" class="shrink-0 pt-1 text-[11px] text-[#919984]"
+            >加载中</span
+          >
+        </div>
+        <div id="stage" class="relative h-[280px] sm:h-[340px]">
+          <canvas
+            id="meadow"
+            class="absolute inset-0 size-full"
+            role="img"
+            aria-label="花草组合预览"
+          ></canvas
+          ><canvas
+            id="mesh"
+            class="pointer-events-none absolute inset-0 size-full"
+            aria-hidden="true"
+          ></canvas>
+        </div>
+      </section>
+      <p id="error" class="mt-3 text-sm text-red-700" role="alert" hidden></p>
+      <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
+        <fieldset
+          id="controls"
+          disabled
+          class="flex flex-wrap items-center gap-x-6 gap-y-4 text-xs text-[#637458] disabled:opacity-50"
+        >
+          <legend class="sr-only">动画控制</legend>
+          <button
+            id="pause"
+            type="button"
+            class="min-w-24 rounded-full bg-[#425a3c] px-5 py-3 text-white hover:bg-[#536d4b] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#425a3c]"
+          >
+            暂停微风
+          </button>
+          <label class="flex items-center gap-2"
+            ><input id="grid" type="checkbox" class="size-4 accent-[#425a3c]" /> 查看网格</label
+          >
+          <label for="wind" class="flex items-center gap-3"
+            >风力
+            <input
+              id="wind"
+              type="range"
+              min="0"
+              max="100"
+              value="45"
+              class="w-24 accent-[#425a3c] sm:w-32"
+            /><output id="wind-value" for="wind" class="w-6 tabular-nums">45</output></label
+          >
+        </fieldset>
+        <p id="scene-flowers" class="text-xs leading-6 text-[#89957c]"></p>
+      </div>
+      <section
+        id="assets"
+        class="mt-10 border-t border-[#dce1d4] pt-6"
+        aria-labelledby="assets-title"
+      >
+        <div class="mb-5 flex flex-wrap items-baseline justify-between gap-3">
+          <h2 id="assets-title" class="font-serif text-xl">先看每一种花，再看它们如何相遇。</h2>
+          <p class="text-xs text-[#89957c]">8 种新花型 · 点击查看透明 PNG 原图</p>
+        </div>
+        <div id="new-assets" class="grid grid-cols-2 gap-3 md:grid-cols-4"></div>
+        <details class="mt-6 text-xs text-[#7d8a70]">
+          <summary class="cursor-pointer py-2">原版花草素材 · 5 张</summary>
+          <div id="original-assets" class="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-5"></div>
+        </details>
+      </section>
+      <p class="mt-6 text-[11px] leading-6 text-[#939c88]">
+        同一套手绘笔触与固定视角。所有场景由独立花草 PNG 组合，草叶与花株可以各自摇摆。
+      </p>
+    </main>
+    <template id="scene-card-template"
+      ><button
+        type="button"
+        class="group overflow-hidden rounded-xl border border-[#dce2d3] bg-[#fffefb] text-left transition-colors hover:border-[#92a181] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#425a3c] aria-pressed:border-[#526f45] aria-pressed:ring-1 aria-pressed:ring-[#526f45] disabled:opacity-50"
+        aria-pressed="false"
+        disabled
+      >
+        <canvas class="h-[86px] w-full sm:h-[100px]" aria-hidden="true"></canvas
+        ><span class="block px-3 pb-2.5 pt-2"
+          ><span data-title class="block text-xs font-medium"></span
+          ><span data-mood class="mt-1 block text-[10px] leading-4 text-[#8a967d]"></span
+        ></span></button
+    ></template>
+    <template id="asset-card-template"
+      ><a
+        target="_blank"
+        rel="noreferrer"
+        class="group rounded-xl border border-[#e0e4d7] bg-white/60 p-4 transition-colors hover:bg-white"
+        ><img
+          class="h-40 w-full object-contain transition-transform motion-safe:group-hover:-translate-y-1"
+          loading="lazy" />
+        <p data-name class="mt-3 text-sm"></p>
+        <p data-note class="mt-1 text-[11px] leading-5 text-[#8b987e]"></p></a
+    ></template>
+  </body>
+</html>
