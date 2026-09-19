@@ -1,8 +1,8 @@
 <!doctype html>
 <!--
-  @purpose 对照自然群落草甸、小猫动作与蝴蝶振翅飞行，查看独立素材与动作
+  @purpose 对照自然草甸、草中追蝶完整场景和猫/蝴蝶独立动作素材
   @role 独立设计比较页，可切换可动大图与静态场景缩略图
-  @deps variations.js、scene-data.mjs、renderer.js、cat/cat-board.js、butterfly/butterfly-board.js、PNG、Tailwind CSS
+  @deps variations.js、scene-data.mjs、renderer.js、cat/cat-board.js、butterfly/butterfly-board.js、chase/chase-board.js、PNG、Tailwind CSS
   @gotcha 缩略图与主画面共享排布，所有花草均使用真实 PNG
 -->
 <html lang="zh-CN">
@@ -15,18 +15,20 @@
     <script type="module" src="/variations.js"></script>
     <script type="module" src="/cat/cat-board.js"></script>
     <script type="module" src="/butterfly/butterfly-board.js"></script>
+    <script type="module" src="/chase/chase-board.js"></script>
   </head>
   <body class="min-h-screen bg-[#f7f7f2] font-sans text-[#344333] antialiased">
     <main class="mx-auto max-w-[1480px] px-5 pb-12 pt-8 sm:px-12 sm:pt-10">
       <header class="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p class="text-[11px] tracking-[0.2em] text-[#7e896f]">草坪实验 · 06</p>
+          <p class="text-[11px] tracking-[0.2em] text-[#7e896f]">草坪实验 · 07</p>
           <h1 class="mt-3 font-serif text-3xl tracking-tight sm:text-4xl">花有花簇，草有疏密。</h1>
           <p class="mt-3 text-sm leading-7 text-[#7e896f]">
             花草少一点，生长的变化多一点。大小不同的花簇之间，留一些草叶舒展的空间。
           </p>
         </div>
         <nav class="mb-1 flex flex-wrap gap-5 text-xs text-[#71815f]" aria-label="预览内容">
+          <a href="#chase-scene" class="underline underline-offset-4">看草丛追蝶 ↓</a>
           <a href="#cat-board" class="underline underline-offset-4">看小猫动起来 ↓</a>
           <a href="#butterfly-board" class="underline underline-offset-4">看蝴蝶飞起来 ↓</a>
           <a href="#assets" class="underline underline-offset-4">查看全部素材 ↓</a>
@@ -104,6 +106,133 @@
         </fieldset>
         <p id="scene-flowers" class="text-xs leading-6 text-[#89957c]"></p>
       </div>
+      <section
+        id="chase-scene"
+        class="mt-10 scroll-mt-6 overflow-hidden rounded-2xl border border-[#d9dfd1] bg-[#fffefb]"
+        aria-labelledby="chase-title"
+      >
+        <div class="flex flex-wrap items-start justify-between gap-5 px-5 pt-5 sm:px-7">
+          <div>
+            <p class="text-[10px] tracking-[0.15em] text-[#859178]">草丛里的小故事</p>
+            <h2 id="chase-title" class="mt-2 font-serif text-2xl">嘘，花上有只蝴蝶。</h2>
+            <p class="mt-2 text-xs leading-6 text-[#859178]">
+              探出头，伏低等一会儿，再跑过去扑一下。蝴蝶轻轻绕开，小猫又藏进草里。
+            </p>
+          </div>
+          <span
+            id="chase-status"
+            role="status"
+            class="max-w-full pt-1 text-[11px] leading-6 text-[#919984]"
+            >正在准备追蝶场景…</span
+          >
+        </div>
+        <div id="chase-stage" class="relative mt-3 h-[300px] overflow-hidden sm:h-[340px]">
+          <canvas
+            id="chase-fallback"
+            class="absolute inset-0 size-full"
+            role="img"
+            aria-label="小猫半藏在花草间，蝴蝶停在花头上的静态预览"
+          ></canvas>
+          <canvas
+            id="chase-canvas"
+            class="absolute inset-0 size-full"
+            role="img"
+            aria-label="小猫半藏在草丛里探头，等蝴蝶落花后伏低观察、奔跑扑跳；蝴蝶飞开，小猫回草丛等待"
+            hidden
+          ></canvas>
+        </div>
+        <div class="border-t border-[#e8ebdf] px-5 py-5 sm:px-7">
+          <fieldset
+            id="chase-controls"
+            disabled
+            class="flex flex-wrap items-center gap-x-6 gap-y-4 text-xs text-[#637458] disabled:opacity-50"
+          >
+            <legend class="sr-only">追蝶场景播放控制</legend>
+            <button
+              id="chase-pause"
+              type="button"
+              aria-pressed="false"
+              class="min-w-24 rounded-full bg-[#425a3c] px-5 py-3 text-white hover:bg-[#536d4b] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#425a3c]"
+            >
+              暂停
+            </button>
+            <label class="flex items-center gap-3"
+              >播放速度<select
+                id="chase-speed"
+                class="rounded-lg border border-[#ced6c3] bg-white px-3 py-2"
+              >
+                <option value="1">正常</option>
+                <option value="0.5">0.5 × 慢放</option>
+                <option value="0.25">0.25 × 慢放</option>
+              </select></label
+            >
+            <button
+              id="chase-restart"
+              type="button"
+              class="rounded-full border border-[#ced6c3] px-4 py-2.5 hover:bg-[#e8ecdf]"
+            >
+              从头看一遍
+            </button>
+            <label for="chase-seek" class="flex w-full flex-wrap items-center gap-3"
+              >这一轮<input
+                id="chase-seek"
+                type="range"
+                min="0"
+                max="1000"
+                value="0"
+                class="min-w-28 flex-1 accent-[#425a3c]"
+              /><output id="chase-progress" for="chase-seek" class="w-28 text-right tabular-nums"
+                >0 / 0 秒</output
+              ></label
+            >
+          </fieldset>
+          <p id="chase-error" role="alert" class="mt-3 text-xs leading-6 text-red-700" hidden></p>
+          <details class="mt-5 text-xs leading-6 text-[#859178]">
+            <summary class="cursor-pointer">看看这次补的动作素材</summary>
+            <div class="mt-4 grid gap-3 sm:grid-cols-3">
+              <a
+                href="/chase/cat-stalk-v1.png"
+                target="_blank"
+                rel="noreferrer"
+                class="rounded-xl border border-[#e0e4d7] bg-[#f0f1e9] p-3"
+                ><img
+                  src="/chase/cat-stalk-v1.png"
+                  alt="小猫从站立伏低，再慢慢抬头的八个姿势"
+                  loading="lazy"
+                  class="aspect-[2/1] w-full object-contain"
+                /><span class="mt-2 block">伏低与探头 ↗</span></a
+              >
+              <a
+                href="/chase/cat-dash-v1.png"
+                target="_blank"
+                rel="noreferrer"
+                class="rounded-xl border border-[#e0e4d7] bg-[#f0f1e9] p-3"
+                ><img
+                  src="/chase/cat-dash-v1.png"
+                  alt="小猫伏低起跑、蹬地扑跳的八个姿势"
+                  loading="lazy"
+                  class="aspect-[2/1] w-full object-contain"
+                /><span class="mt-2 block">起跑与扑跳 ↗</span></a
+              >
+              <a
+                href="/chase/butterfly-perch-v1.png"
+                target="_blank"
+                rel="noreferrer"
+                class="rounded-xl border border-[#e0e4d7] bg-[#f0f1e9] p-3"
+                ><img
+                  src="/chase/butterfly-perch-v1.png"
+                  alt="蝴蝶收翅落花、展翅离开的八个姿势"
+                  loading="lazy"
+                  class="aspect-[2/1] w-full object-contain"
+                /><span class="mt-2 block">落花与起飞 ↗</span></a
+              >
+            </div>
+            <p class="mt-3">
+              原画姿势负责身体动作，连续路径负责跑跳和飞行。前景草叶遮住猫的下半身，蝴蝶落下后跟着花头轻摇。
+            </p>
+          </details>
+        </div>
+      </section>
       <section
         id="cat-board"
         class="mt-10 scroll-mt-6 overflow-hidden rounded-2xl border border-[#d9dfd1] bg-[#fffefb]"

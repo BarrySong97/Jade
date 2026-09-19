@@ -24,7 +24,7 @@
     "lint": "oxlint",
     "check": "pnpm test:hooks && pnpm test:meadow && oxlint && oxfmt",
     "test:hooks": "node --test scripts/check-docs.test.mjs",
-    "test:meadow": "node --test scripts/meadow.test.mjs scripts/cat-tail.test.mjs scripts/cat-actions.test.mjs scripts/butterfly.test.mjs",
+    "test:meadow": "node --test scripts/meadow.test.mjs scripts/cat-tail.test.mjs scripts/cat-actions.test.mjs scripts/butterfly.test.mjs scripts/chase.test.mjs",
     "download-logos": "node scripts/download-company-logos.js",
     "generate-blogs": "node scripts/generate-blogs.js"
   },

@@ -31,6 +31,7 @@
 - [home-meadow-client.js](../../../src/components/home/home-meadow-client.js) 注册自定义元素，接近视口时解码素材、创建 WebGL；画面可见且页面在前台才运行微风。减少动态效果时静止，离开首页时释放监听器、动画帧和 GPU 资源，支持 ClientRouter 往返。
 - [meadow-renderer.js](../../../src/components/home/meadow-renderer.js) 是首页与设计预览的共同真源；透明位图通过固定根部的二维网格轻微弯曲。自然排布来自 `src/lib/meadow-layout.mjs`，不在每帧重新随机。
 - 页面边界和排布回归由 `pnpm test:meadow` 强制，见 [ADR-0006](../../decisions/0006-home-meadow.md)。
+- 猫与蝴蝶追逐先在 [原花草 demo](../../../examples/meadow/chase/README.md) 合成验收，复用自然排布但使用自己的画布和共同剧情；目前首页组件仍仅包含花草。
 
 ## 注意事项
 

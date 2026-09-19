@@ -1,7 +1,7 @@
 /**
  * @purpose 提供花草素材组合的本地预览
  * @role 开发辅助服务，不进入 Astro 构建
- * @deps node:http、node:fs/promises、tailwindcss、scene-data.mjs 与猫/蝴蝶素材和独立动画模块固定路由
+ * @deps node:http、node:fs/promises、tailwindcss、scene-data.mjs、猫/蝴蝶独立画板与 chase 合成场景固定路由
  * @gotcha 仅 loopback 监听与白名单路径；CSS 在启动时编译到内存
  */
 import { createServer } from "node:http";
@@ -70,6 +70,21 @@ const routes = new Map([
     ["butterfly/butterfly-board.js", "text/javascript; charset=utf-8"],
   ],
 ]);
+for (const file of [
+  "chase-assets.mjs",
+  "chase-layout.mjs",
+  "chase-motion.mjs",
+  "chase-renderer.js",
+  "chase-board.js",
+  "cat-stalk-v1.png",
+  "cat-dash-v1.png",
+  "butterfly-perch-v1.png",
+]) {
+  routes.set(`/chase/${file}`, [
+    `chase/${file}`,
+    file.endsWith(".png") ? "image/png" : "text/javascript; charset=utf-8",
+  ]);
+}
 for (const { id } of ASSETS) {
   routes.set(`/assets/${id}.png`, [`assets/${id}.png`, "image/png"]);
 }
