@@ -1,0 +1,14 @@
+{
+  "generator": "OpenAI built-in image_gen",
+  "date": "2026-09-19",
+  "useCase": "precise-object-edit",
+  "output": "portrait-monochrome-v2.png",
+  "source": "/Users/songtianjian/.codex/generated_images/01a0b827-c628-7a03-a6a2-9d6ec84766f6/exec-ca0418af-64d7-4c9d-b0d8-26e367878695.png",
+  "references": [
+    {
+      "path": "portrait-painted-v1.png",
+      "role": "Edit target; preserve identity, composition, brushwork and shading; change only palette to grayscale"
+    }
+  ],
+  "prompt": "Use case: precise-object-edit\nAsset type: transparent homepage portrait, monochrome revision.\nInput image: the EDIT TARGET is the existing approved-form painterly portrait.\nPrimary request: Change ONLY the color palette to pure neutral black, white, and gray. The user wants the same 3D-to-2D painterly (三渲二) portrait entirely in black and white, not color.\nInvariants: Keep this exact person, face, proportions, eyes, expression, glasses, haircut, clothing, head angle, gaze direction, shoulders, silhouette, framing and original painted brush marks. Preserve the existing dimensional light/shadow planes and soft hand-painted texture. This is a palette-only revision, not a redraw into different facial features or a line drawing.\nPalette: strictly neutral grayscale throughout ALL visible pixels; equal red, green and blue channels. No sepia, no warm cream, no cool blue, no tinted edge pixels, no colored accents. Translate existing color luminance into rich grayscale with clear midtones, soft white face highlights, dark graphite hair and shirt, readable black glasses. Retain detail in the shadows.\nBackground: preserve true transparent alpha; no solid background, checkerboard drawing, framing circle, border, text, logos or extra objects.\nOutput one transparent PNG portrait in the same composition and approximately same 1341 x 1173 aspect ratio."
+}

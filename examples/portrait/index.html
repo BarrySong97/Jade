@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  @purpose 对照首页原头像与三渲二手绘版本
+  @purpose 对照首页原头像与纯黑白三渲二手绘版本
   @role 独立设计预览，不作为 Astro 页面发布
   @deps preview.mjs 编译 Tailwind；preview.js 切换观察底色；两张透明 PNG
   @gotcha 原画按完整画布显示，不裁切或自动替换首页头像
@@ -25,7 +25,7 @@
           <p class="mb-3 text-xs tracking-[0.18em] opacity-50">PORTRAIT STUDY / 01</p>
           <h1 class="text-3xl font-medium tracking-tight sm:text-4xl">同一张头像，换一种笔触。</h1>
           <p class="mt-3 text-sm leading-7 opacity-65">
-            黑白线稿与三渲二手绘。先看神态，再看放进首页的大小。
+            保留黑白，只改变笔触与明暗。先看神态，再看放进首页的大小。
           </p>
         </div>
         <div class="flex gap-2" role="group" aria-label="预览底色">
@@ -82,15 +82,15 @@
           class="overflow-hidden rounded-2xl border border-current/10 bg-white group-data-[surface=dark]:bg-[#202723]"
         >
           <a
-            href="/portrait-painted-v1.png"
+            href="/portrait-monochrome-v2.png"
             target="_blank"
             rel="noopener"
             class="block p-5 sm:p-8"
             aria-label="打开三渲二头像 PNG"
           >
             <img
-              src="/portrait-painted-v1.png"
-              alt="三渲二头像：保留相同眼镜、发型和朝向，暖色肤色配合手绘笔触与块面明暗"
+              src="/portrait-monochrome-v2.png"
+              alt="黑白三渲二头像：保留相同眼镜、发型和朝向，用灰阶呈现手绘笔触与块面明暗"
               width="1341"
               height="1173"
               class="aspect-[8/7] w-full object-contain"
@@ -102,9 +102,9 @@
           >
             <div>
               <span class="mr-2 text-xs opacity-45">02</span
-              ><span class="font-medium">三渲二 · 第一版</span>
+              ><span class="font-medium">三渲二 · 黑白版</span>
             </div>
-            <span class="text-xs opacity-55">色彩 · 块面 · 笔触</span>
+            <span class="text-xs opacity-55">黑白 · 块面 · 笔触</span>
           </figcaption>
         </figure>
       </section>
@@ -131,13 +131,13 @@
             class="flex flex-col items-center gap-5 rounded-2xl border border-current/10 bg-white px-6 py-8 group-data-[surface=dark]:bg-[#202723]"
           >
             <img
-              src="/portrait-painted-v1.png"
-              alt="首页尺寸的三渲二头像"
+              src="/portrait-monochrome-v2.png"
+              alt="首页尺寸的黑白三渲二头像"
               width="1341"
               height="1173"
               class="h-auto w-[190px] sm:w-[212px]"
             />
-            <figcaption class="text-xs opacity-55">三渲二头像</figcaption>
+            <figcaption class="text-xs opacity-55">黑白三渲二头像</figcaption>
           </figure>
         </div>
       </section>
@@ -146,7 +146,7 @@
         class="mt-8 flex flex-wrap items-center justify-between gap-3 text-xs leading-6 opacity-60"
       >
         <p>预览稿 · 当前首页仍使用原头像。点击大图查看透明 PNG。</p>
-        <a href="/portrait-painted-v1.png" download class="underline underline-offset-4"
+        <a href="/portrait-monochrome-v2.png" download class="underline underline-offset-4"
           >下载这一版 ↗</a
         >
       </footer>

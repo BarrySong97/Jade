@@ -1,7 +1,7 @@
 /**
  * @purpose 提供首页头像风格对照的本地独立预览
  * @role 开发辅助服务，不进入 Astro 构建
- * @deps node:http、node:fs/promises、已有 tailwindcss，首页原 PNG 与新生成 PNG
+ * @deps node:http、node:fs/promises、已有 tailwindcss，首页原 PNG 与黑白三渲二 PNG
  * @gotcha 仅监听 loopback；固定资源白名单；CSS 启动时编译，改工具类后需重启
  */
 import { createServer } from "node:http";
@@ -24,7 +24,7 @@ const routes = new Map([
   ["/", ["index.html", "text/html; charset=utf-8"]],
   ["/preview.js", ["preview.js", "text/javascript; charset=utf-8"]],
   ["/original.png", ["../../src/assets/info/profile-portrait.png", "image/png"]],
-  ["/portrait-painted-v1.png", ["portrait-painted-v1.png", "image/png"]],
+  ["/portrait-monochrome-v2.png", ["portrait-monochrome-v2.png", "image/png"]],
 ]);
 
 createServer(async (request, response) => {
