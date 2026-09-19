@@ -1,8 +1,8 @@
 /**
- * @purpose 花草素材目录与五种场景的确定性排布
+ * @purpose 花草素材目录、三种混种与五种原版场景的确定性排布
  * @role 页面、缩略图和预览服务共享的数据模块
  * @deps 无；调用者传入包含图片及比例的素材对象
- * @gotcha 大图和缩略图共用排布；每种新花至少用于一景，低草不会遮住最矮的花头
+ * @gotcha 大图和缩略图共用排布；混种前后两层错开落点，低花最后绘制以免被高花遮住
  */
 export const ASSETS = [
   { id: "flower-lily", name: "铃兰", note: "垂下的一串白色小铃铛", height: 164, fresh: true },
@@ -27,6 +27,75 @@ export const ASSETS = [
 ];
 const assetInfo = Object.fromEntries(ASSETS.map((asset) => [asset.id, asset]));
 export const SCENES = [
+  {
+    id: "mixed-natural",
+    code: "F",
+    name: "自然混种",
+    mood: "7 种花 · 粉、白、蓝、黄交织",
+    description: "波斯菊、风铃草、虞美人与白雏菊交错生长，低处穿插铃兰、勿忘草和黄色野花。",
+    flowers: [
+      "flower-cosmos",
+      "flower-bell",
+      "flower-poppy",
+      "flower-daisy",
+      "flower-forget",
+      "flower-yellow",
+      "flower-lily",
+    ],
+    accents: ["flower-forget", "flower-yellow", "flower-lily"],
+    grassSpacing: 151,
+    grassScale: 0.66,
+    lowScale: 0.62,
+    flowerSpacing: 107,
+    seed: 1.7,
+  },
+  {
+    id: "mixed-full",
+    code: "G",
+    name: "繁花草甸",
+    mood: "11 种花 · 丰富、繁茂、高低错落",
+    description: "所有花型一起生长：鸢尾与波斯菊伸向高处，郁金香、耧斗菜和小野花层层交织。",
+    flowers: [
+      "flower-iris",
+      "flower-cosmos",
+      "flower-tulip",
+      "flower-bell",
+      "flower-poppy",
+      "flower-columbine",
+      "flower-daisy",
+      "flower-violet",
+      "flower-lily",
+      "flower-forget",
+      "flower-yellow",
+    ],
+    accents: ["flower-lily", "flower-forget", "flower-yellow"],
+    grassSpacing: 144,
+    grassScale: 0.75,
+    lowScale: 0.61,
+    flowerSpacing: 79,
+    seed: 3.1,
+  },
+  {
+    id: "mixed-airy",
+    code: "H",
+    name: "疏朗花间",
+    mood: "6 种花 · 花团与留白交替",
+    description: "粉色波斯菊、白雏菊与两种紫花轻轻相遇，铃兰和勿忘草藏在低处，草叶间留出空隙。",
+    flowers: [
+      "flower-cosmos",
+      "flower-columbine",
+      "flower-daisy",
+      "flower-bell",
+      "flower-lily",
+      "flower-forget",
+    ],
+    accents: ["flower-forget", "flower-lily"],
+    grassSpacing: 195,
+    grassScale: 0.48,
+    lowScale: 0.55,
+    flowerSpacing: 163,
+    seed: 4.4,
+  },
   {
     id: "woodland",
     code: "A",
@@ -126,10 +195,30 @@ export function arrangeScene(scene, width, height, byId) {
     add("grass-low", i * lowSpacing, (91 + (Math.sin(i * 2.8) + 1) * 17) * scene.lowScale, i, 9);
   }
   const flowerSpacing = scene.flowerSpacing * scale;
-  for (let i = 0; i * flowerSpacing < width + flowerSpacing; i++) {
-    const id = scene.flowers[i % scene.flowers.length];
-    const x = 40 * scale + i * flowerSpacing + Math.sin(i * 1.8 + scene.seed) * 21 * scale;
-    add(id, x, assetInfo[id].height + Math.sin(i * 2.7 + scene.seed) * 20, i + 3, 5, i % 3 === 0);
+  if (scene.accents) {
+    const tallFlowers = scene.flowers.filter((id) => !scene.accents.includes(id));
+    const flowerStart = plants.length;
+    for (let i = 0; i * flowerSpacing < width + flowerSpacing; i++) {
+      const id = tallFlowers[i % tallFlowers.length];
+      const x = (35 + Math.sin(i * 2.3 + scene.seed) * 28) * scale + i * flowerSpacing;
+      const heightVariation = 0.83 + (Math.sin(i * 1.7 + scene.seed) + 1) * 0.12;
+      add(id, x, assetInfo[id].height * heightVariation, i + 3, 1 + (i % 3) * 5, i % 4 === 0);
+    }
+    // 较矮的花在前，避免大株的叶片覆盖相邻花头。
+    const tallPlants = plants.splice(flowerStart).sort((a, b) => b.height - a.height);
+    plants.push(...tallPlants);
+    const accentSpacing = flowerSpacing * 1.25;
+    for (let i = 0; i * accentSpacing < width; i++) {
+      const id = scene.accents[i % scene.accents.length];
+      const x = (69 + Math.sin(i * 2.7 + scene.seed) * 20) * scale + i * accentSpacing;
+      add(id, x, assetInfo[id].height * (0.93 + Math.sin(i * 1.6) * 0.09), i + 7, 11, i % 5 === 1);
+    }
+  } else {
+    for (let i = 0; i * flowerSpacing < width + flowerSpacing; i++) {
+      const id = scene.flowers[i % scene.flowers.length];
+      const x = 40 * scale + i * flowerSpacing + Math.sin(i * 1.8 + scene.seed) * 21 * scale;
+      add(id, x, assetInfo[id].height + Math.sin(i * 2.7 + scene.seed) * 20, i + 3, 5, i % 3 === 0);
+    }
   }
   const frontSpacing = 73 * scale;
   for (let i = -1; i * frontSpacing < width + frontSpacing; i++) {

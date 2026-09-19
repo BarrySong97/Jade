@@ -1,8 +1,8 @@
 /**
- * @purpose 切换五种花草组合，展示八种新花型和既有素材
+ * @purpose 切换三种混种与五种原版花草组合，展示独立素材
  * @role 页面控制、缩略图和动画生命周期
  * @deps renderer.js、scene-data.mjs、ResizeObserver / IntersectionObserver
- * @gotcha 缩略图与大图共用排布；切换保留暂停状态；自动化点击须用 button[data-scene]，canvas 同样带 data-scene
+ * @gotcha 折叠组展开后重绘缩略图；切换保留暂停状态；自动化点击须用 button[data-scene]，canvas 同样带 data-scene
  */
 import { createRenderer, loadPlant } from "./renderer.js";
 import { ASSETS, SCENES, arrangeScene } from "./scene-data.mjs";
@@ -15,6 +15,7 @@ const pauseButton = $("pause");
 const grid = $("grid");
 const windInput = $("wind");
 const status = $("status");
+const previousScenes = $("previous-scenes");
 const preference = matchMedia("(prefers-reduced-motion: reduce)");
 let paused = preference.matches;
 let visible = true;
@@ -35,8 +36,9 @@ for (const item of SCENES) {
   button.querySelector("[data-title]").textContent = `${item.code} · ${item.name}`;
   button.querySelector("[data-mood]").textContent = item.mood;
   sceneButtons.set(item.id, button);
-  $("scene-options").append(fragment);
+  $(item.accents ? "scene-options" : "previous-options").append(fragment);
 }
+previousScenes.open = !scene.accents;
 for (const asset of ASSETS) {
   const fragment = $("asset-card-template").content.cloneNode(true);
   fragment.querySelector("a").href = `/assets/${asset.id}.png`;
@@ -70,6 +72,7 @@ try {
     const preview = button.querySelector("canvas");
     const width = preview.clientWidth;
     const height = preview.clientHeight;
+    if (!width || !height) return;
     const dpr = Math.min(devicePixelRatio || 1, 2);
     preview.width = Math.round(width * dpr);
     preview.height = Math.round(height * dpr);
@@ -138,8 +141,14 @@ try {
     const selected = SCENES.find((item) => item.id === location.hash.slice(1));
     if (selected) {
       scene = selected;
+      if (!scene.accents) previousScenes.open = true;
       updateScene();
     }
+  });
+  previousScenes.addEventListener("toggle", () => {
+    if (previousScenes.open)
+      for (const item of SCENES.filter((item) => !item.accents))
+        drawThumbnail(item, sceneButtons.get(item.id));
   });
   function tick(timestamp) {
     if (previousTime !== null) time += Math.min((timestamp - previousTime) / 1000, 0.05);
