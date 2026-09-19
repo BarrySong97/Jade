@@ -1,10 +1,33 @@
 /**
- * @purpose 花草素材目录、照片参考草甸与历次场景的确定性排布
+ * @purpose 花草素材目录、自然群落草甸与历次场景的确定性排布
  * @role 页面、缩略图和预览服务共享的数据模块
- * @deps 无；调用者传入包含图片及比例的素材对象
+ * @deps natural-meadow.mjs；调用者传入包含图片及比例的素材对象
  * @gotcha 大图和缩略图共用排布；混种前后两层错开落点，低花最后绘制以免被高花遮住
  */
+import { arrangeNaturalMeadow } from "./natural-meadow.mjs";
+
 export const ASSETS = [
+  {
+    id: "grass-wispy",
+    name: "疏叶细草",
+    note: "细长叶片、疏朗轮廓",
+    height: 180,
+    refinement: true,
+  },
+  {
+    id: "grass-arching",
+    name: "弧叶草丛",
+    note: "向一侧舒展的弧形细叶",
+    height: 105,
+    refinement: true,
+  },
+  {
+    id: "flower-daisy-side",
+    name: "侧向白花",
+    note: "侧面小花与弯曲细茎",
+    height: 180,
+    refinement: true,
+  },
   { id: "flower-lily", name: "铃兰", note: "垂下的一串白色小铃铛", height: 164, fresh: true },
   { id: "flower-bell", name: "风铃草", note: "蓝紫色钟形花，细茎轻盈", height: 210, fresh: true },
   { id: "flower-forget", name: "勿忘草", note: "低处散落的细小蓝花", height: 110, fresh: true },
@@ -30,11 +53,36 @@ export const SCENES = [
   {
     id: "wild-meadow",
     code: "I",
-    name: "野花草甸",
-    mood: "照片参考 · 密草、小花、自然散落",
+    name: "自然生长的草甸",
+    mood: "减少约 10% · 花簇与疏草自然过渡",
+    description:
+      "大小不同的白、黄、蓝紫花簇松散交织，少量粉花散落其间。细草有疏有密，花头朝向、高低与前后各不相同。",
+    natural: true,
+    meadow: true,
+    flowers: [
+      "flower-daisy",
+      "flower-daisy-side",
+      "flower-yellow",
+      "flower-forget",
+      "flower-violet",
+      "flower-bell",
+      "flower-cosmos",
+    ],
+    grassSpacing: 57,
+    grassScale: 0.82,
+    lowScale: 0.77,
+    flowerSpacing: 48,
+    seed: 5.6,
+  },
+  {
+    id: "wild-meadow-v1",
+    code: "I₀",
+    name: "上一版草甸",
+    mood: "密度与排布对照",
     description:
       "白色小花与暖黄散在浓密草叶间，蓝紫穿插，少量粉色点缀。花朵高低不齐，像自然长成的一小片草甸。",
     meadow: true,
+    archived: true,
     flowers: [
       "flower-daisy",
       "flower-yellow",
@@ -198,6 +246,15 @@ export const SCENES = [
   },
 ];
 export function arrangeScene(scene, width, height, byId) {
+  if (scene.natural) {
+    const reference = arrangeScene(
+      SCENES.find((item) => item.id === "wild-meadow-v1"),
+      width,
+      height,
+      byId,
+    );
+    return arrangeNaturalMeadow(scene, width, height, byId, reference);
+  }
   const scale = Math.min(1, height / 340, width < 640 ? 0.77 : 1);
   const baseline = height + 8 * scale;
   const plants = [];

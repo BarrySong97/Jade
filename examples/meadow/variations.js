@@ -1,5 +1,5 @@
 /**
- * @purpose 切换照片参考草甸与历次花草组合，展示独立素材
+ * @purpose 切换自然群落草甸与历次花草组合，展示独立素材
  * @role 页面控制、缩略图和动画生命周期
  * @deps renderer.js、scene-data.mjs、ResizeObserver / IntersectionObserver
  * @gotcha 折叠组展开后重绘缩略图；切换保留暂停状态；自动化点击须用 button[data-scene]，canvas 同样带 data-scene
@@ -16,6 +16,7 @@ const grid = $("grid");
 const windInput = $("wind");
 const status = $("status");
 const previousScenes = $("previous-scenes");
+const isFeatured = (item) => !item.archived && (item.accents || item.meadow);
 const preference = matchMedia("(prefers-reduced-motion: reduce)");
 let paused = preference.matches;
 let visible = true;
@@ -36,9 +37,9 @@ for (const item of SCENES) {
   button.querySelector("[data-title]").textContent = `${item.code} · ${item.name}`;
   button.querySelector("[data-mood]").textContent = item.mood;
   sceneButtons.set(item.id, button);
-  $(item.accents || item.meadow ? "scene-options" : "previous-options").append(fragment);
+  $(isFeatured(item) ? "scene-options" : "previous-options").append(fragment);
 }
-previousScenes.open = !scene.accents && !scene.meadow;
+previousScenes.open = !isFeatured(scene);
 for (const asset of ASSETS) {
   const fragment = $("asset-card-template").content.cloneNode(true);
   fragment.querySelector("a").href = `/assets/${asset.id}.png`;
@@ -47,7 +48,9 @@ for (const asset of ASSETS) {
   image.alt = `${asset.name}，独立透明手绘素材`;
   fragment.querySelector("[data-name]").textContent = asset.name;
   fragment.querySelector("[data-note]").textContent = asset.note;
-  $(asset.fresh ? "new-assets" : "original-assets").append(fragment);
+  $(asset.refinement ? "refinement-assets" : asset.fresh ? "new-assets" : "original-assets").append(
+    fragment,
+  );
 }
 
 function fail(error) {
@@ -77,10 +80,19 @@ try {
     preview.width = Math.round(width * dpr);
     preview.height = Math.round(height * dpr);
     const context = preview.getContext("2d");
-    // 按同一场景的 960 × 320 视图等比缩小，保持植物之间的尺度。
-    const factor = width / 960;
-    context.setTransform(dpr * factor, 0, 0, dpr * factor, 0, dpr * (height - 320 * factor));
-    for (const plant of arrangeScene(item, 960, 320, byId)) {
+    // 使用主图的视口尺寸，防止群落数量随宽度变化后缩略图成为另一套排布。
+    const sceneWidth = stage.clientWidth;
+    const sceneHeight = stage.clientHeight;
+    const factor = Math.min(width / sceneWidth, height / sceneHeight);
+    context.setTransform(
+      dpr * factor,
+      0,
+      0,
+      dpr * factor,
+      (dpr * (width - sceneWidth * factor)) / 2,
+      dpr * (height - sceneHeight * factor),
+    );
+    for (const plant of arrangeScene(item, sceneWidth, sceneHeight, byId)) {
       const { asset, x, base, height: plantHeight, flip } = plant;
       const [u, v, du, dv] = asset.crop;
       const image = asset.image;
@@ -141,13 +153,13 @@ try {
     const selected = SCENES.find((item) => item.id === location.hash.slice(1));
     if (selected) {
       scene = selected;
-      if (!scene.accents && !scene.meadow) previousScenes.open = true;
+      if (!isFeatured(scene)) previousScenes.open = true;
       updateScene();
     }
   });
   previousScenes.addEventListener("toggle", () => {
     if (previousScenes.open)
-      for (const item of SCENES.filter((item) => !item.accents && !item.meadow))
+      for (const item of SCENES.filter((item) => !isFeatured(item)))
         drawThumbnail(item, sceneButtons.get(item.id));
   });
   function tick(timestamp) {

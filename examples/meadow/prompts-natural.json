@@ -1,0 +1,31 @@
+{
+  "tool": "built-in ImageGen",
+  "date": "2026-09-19",
+  "purpose": "自然群落草甸的草叶轮廓与白花姿态变体，原始生成 PNG 保留 alpha",
+  "assets": [
+    {
+      "id": "grass-wispy",
+      "name": "疏叶细草",
+      "file": "assets/grass-wispy.png",
+      "reference": "assets/grass-tall.png",
+      "generatedSource": "exec-b55367f2-4af9-49f2-b72a-09acafd69840.png",
+      "prompt": "Use case: stylized-concept. Create a NEW independent transparent PNG plant sprite as a sibling variation of the attached plant artwork. The input is a STYLE and PALETTE reference: match angular painterly gouache brush strokes, faceted color planes, sage/olive foliage and muted teal shadows, warm upper-left light, no smooth vector or photoreal look. Change the silhouette and branching substantially to break repetition when scattered in a 2D website meadow. Fixed front/slight three-quarter viewpoint, complete connected plant with base at bottom center. True transparent alpha outside the plant AND between leaves and stems. Keep all tips visible with 10% margin. Opaque paint inside plant; no atmospheric halo, glow, ground, pot, soil, cast shadow, checkerboard, text, animals, insects. Around 1024px artwork. Subject: One sparse upright tuft of fine narrow meadow grass blades, about 9–13 blades of varied length. Three tall slender blades lean gently in different directions, the tallest bows LEFT; short blades fan out asymmetrically at base. NO seed heads. Many open gaps, no large central spear, not bilateral symmetry. Height about 1.7 times width. The narrower foliage must make an airy silhouette, with painted planes still readable."
+    },
+    {
+      "id": "grass-arching",
+      "name": "弧叶草丛",
+      "file": "assets/grass-arching.png",
+      "reference": "assets/grass-low.png",
+      "generatedSource": "exec-f98718ad-92df-46fb-b3e6-3f7f76c8988f.png",
+      "prompt": "Use case: stylized-concept. Create a NEW independent transparent PNG plant sprite as a sibling variation of the attached plant artwork. The input is a STYLE and PALETTE reference: match angular painterly gouache brush strokes, faceted color planes, sage/olive foliage and muted teal shadows, warm upper-left light, no smooth vector or photoreal look. Change the silhouette and branching substantially to break repetition when scattered in a 2D website meadow. Fixed front/slight three-quarter viewpoint, complete connected plant with base at bottom center. True transparent alpha outside the plant AND between leaves and stems. Keep all tips visible with 10% margin. Opaque paint inside plant; no atmospheric halo, glow, ground, pot, soil, cast shadow, checkerboard, text, animals, insects. Around 1024px artwork. Subject: One low loosely spreading meadow grass tuft, about 12–16 thin ribbon-like blades with several elegant arcs bending RIGHT, and 2 shorter upright blades left of center. Asymmetric mound with a lower left and a longer right silhouette. All blades connected to one compact basal crown. No flowers, no seed heads. Thin leaves rather than the reference's wide sword leaves. Width about 1.5 times height. Keep every visible gap genuinely transparent; absolutely no diffuse haze behind the tuft."
+    },
+    {
+      "id": "flower-daisy-side",
+      "name": "侧向白花",
+      "file": "assets/flower-daisy-side.png",
+      "reference": "assets/flower-daisy.png",
+      "generatedSource": "exec-720da271-5e46-4934-b872-86e265f4455e.png",
+      "prompt": "Use case: stylized-concept. Create a NEW independent transparent PNG plant sprite as a sibling variation of the attached plant artwork. The input is a STYLE and PALETTE reference: match angular painterly gouache brush strokes, faceted color planes, sage/olive foliage and muted teal shadows, warm upper-left light, no smooth vector or photoreal look. Change the silhouette and branching substantially to break repetition when scattered in a 2D website meadow. Fixed front/slight three-quarter viewpoint, complete connected plant with base at bottom center. True transparent alpha outside the plant AND between leaves and stems. Keep all tips visible with 10% margin. Opaque paint inside plant; no atmospheric halo, glow, ground, pot, soil, cast shadow, checkerboard, text, animals, insects. Around 1024px artwork. Subject: One fine-stemmed wild daisy with just ONE modest side-facing white flower at the top and one tiny unopened bud on a lower side branch, 3–5 small irregular leaves. The stem makes a gentle S curve. The bloom tilts to the LEFT so its small ochre-yellow disk is seen obliquely; only an uneven fan of ivory petals is visible, not a full frontal circle. Flower head width about one fifth the full plant height. Much less foliage than the reference, airy delicate vertical silhouette. Height about 2.4 times width."
+    }
+  ]
+}
