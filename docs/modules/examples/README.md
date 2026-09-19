@@ -36,6 +36,8 @@
 
 ## 草甸小猫造型
 
-[cat/README.md](../../../examples/meadow/cat/README.md) 保存按用户猫照片生成的透明坐姿原画、身体/尾巴分层初稿和完整提示词。它匹配花草的手绘明暗色块，作为自然小猫动画的造型参考；当前尚未绑定骨骼、制作动作帧或接入首页。原始私人照片不复制进仓库。
+[cat/README.md](../../../examples/meadow/cat/README.md) 保存按用户猫照片生成的透明坐姿原画、身体/尾巴分层初稿和完整提示词。它匹配花草的手绘明暗色块，已用于尾尖网格摆动实验；当前尚未制作跑跳动作或接入首页。原始私人照片不复制进仓库。
 
-小猫卡片直接放在原花草 demo 的素材区，与三张花草姿态素材并排；入口 <http://localhost:55022/#cat-sample>，点击可打开原图。分层素材与静态叠合对照在同页 <http://localhost:55022/#cat-layers>，使用两个同尺寸同坐标的 PNG，不按各自可见边界居中。预览服务只允许三个猫 PNG 的固定路径，不开放整个猫目录；猫不进入花草场景排布或 WebGL 纹理列表。生成补画会有细节变化，动态连接处尚待动画实验验证。
+小猫卡片直接放在原花草 demo 的素材区，与三张花草姿态素材并排；入口 <http://localhost:55022/#cat-sample>，点击可打开原图。分层素材与静态叠合对照在同页 <http://localhost:55022/#cat-layers>，使用两个同尺寸同坐标的 PNG，不按各自可见边界居中。预览服务仅允许三个猫 PNG 与三个动画模块的固定路径，不开放整个猫目录。
+
+独立动画板 <http://localhost:55022/#cat-board> 由 [cat-board.js](../../../examples/meadow/cat/cat-board.js) 管理，使用 [cat-renderer.js](../../../examples/meadow/cat/cat-renderer.js) 绘制身体和 19 × 9 顶点尾巴网格；[tail-motion.mjs](../../../examples/meadow/cat/tail-motion.mjs) 固定连接区域，使尾尖渐进轻摆并带休息段。猫与花草各有 Canvas、控件和生命周期；屏外、后台与零幅度暂停帧，减少动态效果时默认静止，失败显示静态叠图。`pnpm test:meadow` 已包含尾巴动作边界回归，生成补画的接缝仍须实际看页面。

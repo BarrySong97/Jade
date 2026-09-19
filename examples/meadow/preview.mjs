@@ -1,7 +1,7 @@
 /**
  * @purpose 提供花草素材组合的本地预览
  * @role 开发辅助服务，不进入 Astro 构建
- * @deps node:http、node:fs/promises、tailwindcss、scene-data.mjs 素材白名单与猫原画/分层固定路由
+ * @deps node:http、node:fs/promises、tailwindcss、scene-data.mjs 与猫素材/独立动画模块固定路由
  * @gotcha 仅 loopback 监听与白名单路径；CSS 在启动时编译到内存
  */
 import { createServer } from "node:http";
@@ -44,6 +44,9 @@ const routes = new Map([
   ["/cat/cat-idle-v1.png", ["cat/cat-idle-v1.png", "image/png"]],
   ["/cat/body-no-tail-v1.png", ["cat/body-no-tail-v1.png", "image/png"]],
   ["/cat/tail-v1.png", ["cat/tail-v1.png", "image/png"]],
+  ["/cat/cat-board.js", ["cat/cat-board.js", "text/javascript; charset=utf-8"]],
+  ["/cat/cat-renderer.js", ["cat/cat-renderer.js", "text/javascript; charset=utf-8"]],
+  ["/cat/tail-motion.mjs", ["cat/tail-motion.mjs", "text/javascript; charset=utf-8"]],
 ]);
 for (const { id } of ASSETS) {
   routes.set(`/assets/${id}.png`, [`assets/${id}.png`, "image/png"]);
