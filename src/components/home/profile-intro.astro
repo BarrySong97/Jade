@@ -1,7 +1,13 @@
 ---
+/**
+ * @purpose 呈现首页个人简介与用户确认的黑白三渲二头像
+ * @role 首页静态简介区，桌面左文右图、手机头像置顶
+ * @deps astro:assets、PROFILE、examples/portrait/portrait-monochrome-v2.png
+ * @gotcha 头像仅在首页替换；沿用 424px 构建图片与 212px/190px 显示宽度
+ */
 import { Image } from "astro:assets";
 import { PROFILE } from "@/lib/site";
-import profilePortrait from "@/assets/info/profile-portrait.png";
+import profilePortrait from "../../../examples/portrait/portrait-monochrome-v2.png";
 
 const bioBreak = PROFILE.bio.indexOf("。") + 1;
 const bioLead = PROFILE.bio.slice(0, bioBreak);
@@ -41,7 +47,7 @@ const bioDetail = PROFILE.bio.slice(bioBreak);
   </div>
   <Image
     src={profilePortrait}
-    alt="Barry Song 的手绘肖像"
+    alt="Barry Song 的黑白三渲二手绘肖像"
     width={424}
     quality={90}
     class="order-first h-auto w-[190px] -translate-x-5 justify-self-start sm:order-none sm:w-[212px] sm:-translate-x-4 sm:justify-self-end"

@@ -4,11 +4,11 @@
 
 ## 首页头像三渲二对照
 
-[头像预览](../../../examples/portrait/README.md) 是新的独立页面，运行 `pnpm demo:portrait`，打开 <http://localhost:55024>。以首页实际使用的 `src/assets/info/profile-portrait.png` 为身份与姿态参考，生成透明三渲二手绘头像；用户要求保持黑白，当前展示第二版黑白 PNG。完整提示词和内置 ImageGen 来源记录在示例目录。
+[头像预览](../../../examples/portrait/README.md) 是新的独立页面，运行 `pnpm demo:portrait`，打开 <http://localhost:55024>。以首页替换前的 `src/assets/info/profile-portrait.png` 为身份与姿态参考，生成透明三渲二手绘头像；用户要求保持黑白并确认替换后，首页与预览共同引用第二版黑白 PNG。完整提示词和内置 ImageGen 来源记录在示例目录。
 
 - [页面](../../../examples/portrait/index.html) 展示大图对照及首页实际图片宽度（桌面 212px / 手机 190px），原始画布完整显示，点击大图可查看 PNG。
 - [底色控件](../../../examples/portrait/preview.js) 提供浅色/深色观察，并同步 `aria-pressed`；不修改博客主题。
-- [本地服务](../../../examples/portrait/preview.mjs) 只监听 loopback，Tailwind 在启动时编译，白名单直接读取原头像与新 PNG。未修改首页组件、原头像或生产路由。
+- [本地服务](../../../examples/portrait/preview.mjs) 只监听 loopback，Tailwind 在启动时编译，白名单直接读取原头像与新 PNG。预览页面和脚本不进入 Astro 路由，选定黑白原画由首页组件构建压缩后使用；原线稿保留供对照。
 - 验收：实看人物特征与缩小后的辨识度；确认黑白灰阶、图片解码、透明背景、两种底色切换、键盘可操作、窄屏无水平溢出。彩色初稿仅作为生成历史保存在目录，页面与下载链接都使用黑白版。
 
 ## PNG 草叶动画

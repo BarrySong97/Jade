@@ -24,6 +24,10 @@
 
 - 组件以默认导出为主,经 `@/components/...` 别名引入;`webgl-viewer/index.ts` 是该子模块的公共入口(聚合导出)。
 
+## 首页头像
+
+[profile-intro.astro](../../../src/components/home/profile-intro.astro) 使用用户在 [独立 demo](../../../examples/portrait/README.md) 确认的黑白三渲二原画 `portrait-monochrome-v2.png`，由 Astro Image 构建为 424px、quality 90 的 WebP，显示宽度沿用桌面 212px / 手机 190px，原有排版与平移不变。素材与预览共享同一张 PNG，仅首页替换；原线稿保留供 demo 对照与现有 OG 预览引用，通用头像和作品集头像不受影响。
+
 ## 首页草甸
 
 - [home-meadow.astro](../../../src/components/home/home-meadow.astro) 只由 [首页](../../../src/pages/index.astro) 传入 BaseLayout 的 `page-end` 插槽，位于版权 Footer 之后；通用 Footer、文章及展示页不挂载它。高度手机 176px、宽屏 240px，画布铺满页面宽度，植物根部贴底。

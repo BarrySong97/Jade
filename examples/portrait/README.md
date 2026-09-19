@@ -4,12 +4,13 @@
 pnpm demo:portrait
 ```
 
-打开 <http://localhost:55024>。独立页面展示原头像与黑白三渲二生成稿大图、首页图片宽度（桌面 212px / 手机 190px）、浅深底色和 PNG 原图入口。未修改首页头像，不进入 Astro 构建。
+打开 <http://localhost:55024>。独立页面展示原头像与黑白三渲二生成稿大图、首页图片宽度（桌面 212px / 手机 190px）、浅深底色和 PNG 原图入口。用户已确认黑白第二版并用于首页；此预览页面与脚本不进入 Astro 构建。
 
 ## 素材
 
 - 原头像直接读取 [profile-portrait.png](../../src/assets/info/profile-portrait.png)，1330 × 1182，透明 PNG；身份、眼镜、发型、朝向和衣服的唯一参考。
 - 当前版本：[portrait-monochrome-v2.png](portrait-monochrome-v2.png)，1341 × 1173，透明 PNG；按用户要求以黑白灰阶保留三渲二笔触和明暗，页面及下载入口都使用这张图片。2026-09-19 由内置 `image_gen` 参考第一版进行颜色修改，完整提示词见 [prompt-monochrome-v2.json](prompt-monochrome-v2.json)。输出原样复制，没有抠图、裁切、滤镜或重新编码。
+- 首页 [profile-intro.astro](../../src/components/home/profile-intro.astro) 直接引用同一张黑白 PNG，由 Astro Image 构建为 424px WebP；保留原来的显示宽度、位置和排版。
 - 历史彩色稿：[portrait-painted-v1.png](portrait-painted-v1.png)，1341 × 1173，透明 PNG；2026-09-19 使用内置 `image_gen` 生成。仅留作来源记录，不在页面展示。
 - [小猫原画](../meadow/cat/cat-idle-v1.png) 仅作为手绘笔触和块面明暗的风格参考，不作为人物外形参考。
 - 第一版提示词、参考角色及生成来源见 [prompt-v1.json](prompt-v1.json)。源图为黑白，初稿肤色是生成推定；用户选择保持黑白后改为第二版。
