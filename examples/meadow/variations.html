@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  @purpose 对照自然群落草甸与独立小猫尾巴动画，并查看花草及小猫分层素材
+  @purpose 对照自然群落草甸与独立小猫跑跳动画，并查看花草、小猫分层与姿势素材
   @role 独立设计比较页，可切换可动大图与静态场景缩略图
   @deps variations.js、scene-data.mjs、renderer.js、cat/cat-board.js 与分层 PNG、Tailwind CSS
   @gotcha 缩略图与主画面共享排布，所有花草均使用真实 PNG
@@ -109,9 +109,9 @@
       >
         <div class="flex items-start justify-between gap-5 px-5 pt-5 sm:px-7">
           <div>
-            <h2 id="cat-board-title" class="font-serif text-xl">小猫，先动动尾巴。</h2>
+            <h2 id="cat-board-title" class="font-serif text-xl">跑两步，跳一下。</h2>
             <p class="mt-2 text-xs leading-6 text-[#859178]">
-              身体保持坐姿，尾尖轻摆，偶尔停下来。
+              观察、起跑、跃起、轻轻落地，再停下来歇一会儿。
             </p>
           </div>
           <span id="cat-status" role="status" class="shrink-0 pt-1 text-[11px] text-[#919984]"
@@ -122,6 +122,10 @@
           id="cat-stage"
           class="relative mt-4 h-[380px] overflow-hidden bg-[#f0f1e9] sm:h-[460px]"
         >
+          <div
+            class="pointer-events-none absolute inset-x-6 bottom-[39px] border-t border-[#dde1d3]"
+            aria-hidden="true"
+          ></div>
           <div
             id="cat-fallback"
             class="absolute bottom-6 left-1/2 size-72 max-w-full -translate-x-1/2"
@@ -138,7 +142,7 @@
             id="cat-canvas"
             class="absolute inset-0 size-full"
             role="img"
-            aria-label="奶白小猫保持坐姿，独立尾巴网格让尾尖缓慢摆动"
+            aria-label="奶白小猫在独立画布中跑步、蹲下蓄力、跳跃和落地休息；下方按钮可控制动作"
             hidden
           ></canvas>
           <canvas
@@ -154,47 +158,140 @@
             class="flex flex-wrap items-center gap-x-6 gap-y-4 text-xs text-[#637458] disabled:opacity-50"
           >
             <legend class="sr-only">小猫动画控制</legend>
+            <div class="flex w-full flex-wrap gap-2" role="group" aria-label="选择小猫动作">
+              <button
+                type="button"
+                data-cat-action="auto"
+                aria-pressed="true"
+                class="rounded-full border border-[#ced6c3] px-4 py-2.5 hover:bg-[#e8ecdf] aria-pressed:border-[#425a3c] aria-pressed:bg-[#425a3c] aria-pressed:text-white"
+              >
+                自动演示
+              </button>
+              <button
+                type="button"
+                data-cat-action="run"
+                aria-pressed="false"
+                class="rounded-full border border-[#ced6c3] px-4 py-2.5 hover:bg-[#e8ecdf] aria-pressed:border-[#425a3c] aria-pressed:bg-[#425a3c] aria-pressed:text-white"
+              >
+                跑一段
+              </button>
+              <button
+                type="button"
+                data-cat-action="jump"
+                aria-pressed="false"
+                class="rounded-full border border-[#ced6c3] px-4 py-2.5 hover:bg-[#e8ecdf] aria-pressed:border-[#425a3c] aria-pressed:bg-[#425a3c] aria-pressed:text-white"
+              >
+                跳一下
+              </button>
+              <button
+                type="button"
+                data-cat-action="rest"
+                aria-pressed="false"
+                class="rounded-full border border-[#ced6c3] px-4 py-2.5 hover:bg-[#e8ecdf] aria-pressed:border-[#425a3c] aria-pressed:bg-[#425a3c] aria-pressed:text-white"
+              >
+                坐下休息
+              </button>
+              <button
+                type="button"
+                data-cat-action="tail"
+                aria-pressed="false"
+                class="rounded-full border border-[#ced6c3] px-4 py-2.5 hover:bg-[#e8ecdf] aria-pressed:border-[#425a3c] aria-pressed:bg-[#425a3c] aria-pressed:text-white"
+              >
+                尾巴实验
+              </button>
+            </div>
             <button
               id="cat-pause"
               type="button"
               aria-pressed="false"
               class="min-w-24 rounded-full bg-[#425a3c] px-5 py-3 text-white hover:bg-[#536d4b] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#425a3c]"
             >
-              暂停尾巴
+              暂停
             </button>
-            <label for="cat-amplitude" class="flex items-center gap-3"
-              >摆动幅度
-              <input
-                id="cat-amplitude"
-                type="range"
-                min="0"
-                max="100"
-                value="60"
-                class="w-24 accent-[#425a3c] sm:w-32"
-              />
-              <output id="cat-amplitude-value" for="cat-amplitude" class="w-9 tabular-nums"
-                >60%</output
-              >
+            <label for="cat-speed" class="flex items-center gap-3"
+              >播放速度
+              <select id="cat-speed" class="rounded-lg border border-[#ced6c3] bg-white px-3 py-2">
+                <option value="1">正常</option>
+                <option value="0.5">0.5 × 慢放</option>
+                <option value="0.25">0.25 × 慢放</option>
+              </select>
             </label>
-            <label class="flex items-center gap-2"
-              ><input
-                id="cat-grid"
-                type="checkbox"
-                class="size-4 accent-[#425a3c]"
-              />查看尾巴网格</label
+            <div
+              id="cat-tail-controls"
+              class="flex w-full flex-wrap items-center gap-x-6 gap-y-4"
+              hidden
             >
-            <label class="flex items-center gap-2"
-              ><input
-                id="cat-tail-only"
-                type="checkbox"
-                class="size-4 accent-[#425a3c]"
-              />只看尾巴</label
-            >
+              <label for="cat-amplitude" class="flex items-center gap-3"
+                >摆动幅度
+                <input
+                  id="cat-amplitude"
+                  type="range"
+                  min="0"
+                  max="100"
+                  value="60"
+                  class="w-24 accent-[#425a3c] sm:w-32"
+                />
+                <output id="cat-amplitude-value" for="cat-amplitude" class="w-9 tabular-nums"
+                  >60%</output
+                >
+              </label>
+              <label class="flex items-center gap-2"
+                ><input
+                  id="cat-grid"
+                  type="checkbox"
+                  class="size-4 accent-[#425a3c]"
+                />查看尾巴网格</label
+              >
+              <label class="flex items-center gap-2"
+                ><input
+                  id="cat-tail-only"
+                  type="checkbox"
+                  class="size-4 accent-[#425a3c]"
+                />只看尾巴</label
+              >
+            </div>
           </fieldset>
           <p class="mt-4 text-[11px] leading-6 text-[#89957c]">
-            尾根附近保持固定，越靠近尾尖，摆幅越明显。可以暂停后打开网格，观察连接处。
+            跑跳使用不同的手绘姿势，坐姿保留尾巴网格轻摆。可以慢放观察四肢与落地节奏；单次动作结束后，再点按钮就能重播。
           </p>
           <p id="cat-error" class="mt-3 text-sm text-red-700" role="alert" hidden></p>
+          <details class="mt-4 border-t border-[#e0e4d7] pt-4 text-xs text-[#637458]">
+            <summary class="cursor-pointer">展开看动作原画 · 跑步 8 帧 / 跳跃 8 姿势</summary>
+            <div class="mt-4 grid gap-4 sm:grid-cols-2">
+              <a
+                href="/cat/cat-run-v1.png"
+                target="_blank"
+                rel="noreferrer"
+                class="rounded-xl bg-[#f0f1e9] p-3"
+              >
+                <img
+                  src="/cat/cat-run-v1.png"
+                  width="1774"
+                  height="887"
+                  loading="lazy"
+                  alt="同一只猫的八帧跑步姿势，前后腿交替收拢和伸展"
+                  class="w-full"
+                />
+                <p class="mt-2">跑步 · 收腿与伸展</p>
+              </a>
+              <a
+                href="/cat/cat-jump-v1.png"
+                target="_blank"
+                rel="noreferrer"
+                class="rounded-xl bg-[#f0f1e9] p-3"
+              >
+                <img
+                  src="/cat/cat-jump-v1.png"
+                  width="1774"
+                  height="887"
+                  loading="lazy"
+                  alt="小猫从站立、蹲下、起跳、腾空到落地的八个姿势"
+                  class="w-full"
+                />
+                <p class="mt-2">跳跃 · 蓄力到落地</p>
+              </a>
+            </div>
+          </details>
         </div>
       </section>
       <section

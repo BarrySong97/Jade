@@ -27,3 +27,5 @@
 [meadow.test.mjs](../../../scripts/meadow.test.mjs) 通过 `pnpm test:meadow` 验证迁入首页后的共享排布与已确认预览相同、90% 株数和固定种子稳定，并检查只有首页接入草甸、通用布局只提供 Footer 后插槽；执行 [ADR-0006](../../decisions/0006-home-meadow.md) 的页面边界。它也接入 `pnpm check`。
 
 同一命令还执行 [cat-tail.test.mjs](../../../scripts/cat-tail.test.mjs)：验证独立猫画布的尾巴连接区固定、零幅度保持原形、休息段与周期连续、位移有界且网格列不翻折。实际纹理与控件仍通过页面验收。
+
+[cat-actions.test.mjs](../../../scripts/cat-actions.test.mjs) 同样接入 `pnpm test:meadow`，验证跑跳阶段、完整跑姿、返回方向、休息占比、单次落点与循环连续；解码真实图集 alpha，检查透明留白和主体在桌面/窄屏不越界。首轮生成图集姿势挨得过近，修正后将间隔检查固化为测试，避免后续替换图片时串帧。
