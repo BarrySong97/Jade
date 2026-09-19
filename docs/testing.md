@@ -1,6 +1,6 @@
 # 测试 & 验证策略
 
-> 现状:本仓库是静态个人博客,**暂无自动化测试套件**。验证以「真跑」为主。本文件给出做法约定,新增复杂逻辑时按此补测。
+> 现状:本仓库是静态个人博客,页面验证以「真跑」为主。维护脚本已有 Node 内置测试，见下方 Stop hook 回归测试。
 
 ## 原则
 
@@ -27,4 +27,11 @@
 ## 完成闸门
 
 - 收尾跑 `node scripts/check-docs.mjs`(0 ❌)+ `pnpm check`。
-- 已装 Stop hook(见 [.claude/settings.json](../.claude/settings.json)),文档检查会在收尾自动跑 `check-docs --hook`,有 ❌ 时 `exit 2` 拦截收尾。
+- 已装 Stop hook(见 [.claude/settings.json](../.claude/settings.json) 和 [.codex/hooks.json](../.codex/hooks.json)),文档检查会在收尾自动跑 `check-docs --hook`。成功时 stdout 必须是 JSON；有 ❌ 时诊断只写 stderr，以 `exit 2` 拦截收尾。
+
+## Stop hook 回归测试
+
+- `pnpm test:hooks` 使用 Node 内置 `node:test`，并已接入 `pnpm check`。
+- 在临时目录中真实运行检查器，覆盖成功 JSON、普通 CLI 文本报告、缺文件头、失效链接、非阻断漂移警告和严格模式；同时校验两个 Agent 的 Stop 配置仍调用被测入口。
+- 测试先解析完整 stdout，防止在 JSON 前后混入日志；失败场景验证退出码 `2` 与 stderr 的修复说明，防止为了消除报错而失去检查能力。
+- 本次回归作用于命令行 hook 协议，没有受影响的网页；用实际子进程输出与退出码验收。

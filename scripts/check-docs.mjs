@@ -3,7 +3,7 @@
  * @purpose 跨工具防漂移检查器:校验源文件 AI 文件头、文档与代码是否同步、引用是否失效。
  * @role    AI-Doc-System 的收尾闸门;被 agent 的 DoD、Claude Code Stop hook、人工审计三种方式调用。
  * @deps    node 内置 fs/path/child_process、git(可选)
- * @gotcha  纯 node 无三方依赖;非 git 仓库自动跳过漂移检查;templates/ 与忽略目录不参与检查。
+ * @gotcha  --hook 成功 stdout 只能输出 JSON，失败 exit 2 + stderr；普通 CLI 保留文本报告。协议回归见 docs/modules/scripts/README.md。
  */
 
 import { readFileSync, readdirSync, existsSync } from "node:fs";
@@ -29,7 +29,7 @@ if (rawArgs.includes("--help") || rawArgs.includes("-h")) {
   console.log(`check-docs — AI-Doc-System 防漂移检查器
 用法: node scripts/check-docs.mjs [--strict] [--hook] [--base <ref>]
   --strict       把警告(⚠️)也算作失败
-  --hook         Stop hook 模式:有硬错误时 exit 2 并把原因写 stderr(Claude/Codex 才会真正拦截收尾)
+  --hook         Stop hook 模式:通过时 stdout 输出 JSON，失败时 exit 2 + stderr
   --base <ref>   漂移检测改用 git diff <ref>...HEAD(对比已提交差异,供 CI / 审分支);并入未提交工作区
 检查:
   ① 源文件是否缺 AI 文件头(@purpose 标记)
@@ -285,14 +285,18 @@ lines.push(!hard && !soft ? "✅ 全部通过" : `小结: ${hard} 个错误, ${s
 if (changed === null) lines.push("(提示: 非 git 仓库或 git 不可用,已跳过文档漂移检查)");
 
 const report = lines.join("\n");
-console.log(report);
-
 const failed = hard > 0 || (STRICT && soft > 0);
-if (HOOK && failed) {
-  // 只有 exit 2 才会被 Claude/Codex 当作"阻止收尾",并把 stderr 反馈给模型
-  process.stderr.write(
-    `${report}\n\n[check-docs] 以上问题需先解决再结束本次任务(补文件头 / 修引用 / 同步模块文档)。\n`,
-  );
-  process.exit(2);
+if (HOOK) {
+  if (failed) {
+    // 保留 exit 2 的拦截语义，诊断只写 stderr，避免混入 stdout 协议。
+    process.stderr.write(
+      `${report}\n\n[check-docs] 以上问题需先解决再结束本次任务(补文件头 / 修引用 / 同步模块文档)。\n`,
+    );
+    process.exit(2);
+  }
+  // Codex Stop 不接受纯文本 stdout；非阻断警告通过通用 systemMessage 字段展示。
+  console.log(JSON.stringify(soft > 0 ? { systemMessage: report } : {}));
+} else {
+  console.log(report);
 }
 process.exit(failed ? 1 : 0);

@@ -33,7 +33,8 @@ pnpm preview      # 本地预览生产构建
 ```bash
 pnpm lint         # oxlint
 pnpm format       # oxfmt(原地格式化)
-pnpm check        # oxlint && oxfmt,收尾跑这个
+pnpm check        # hook 回归测试 + oxlint + oxfmt,收尾跑这个
+pnpm test:hooks   # 单独验证 Stop hook 输出协议和文档错误拦截
 ```
 
 > 没有独立的 `typecheck` 脚本;`pnpm build` 即包含类型检查。
@@ -44,6 +45,8 @@ pnpm check        # oxlint && oxfmt,收尾跑这个
 node scripts/check-docs.mjs          # 0 ❌ 才算过
 node scripts/check-docs.mjs --strict # 把 ⚠️ 也当失败
 ```
+
+Stop hook 调用 `node scripts/check-docs.mjs --hook`：通过时 stdout 为 JSON（无问题时 `{}`，非阻断警告用 `systemMessage`）；失败时 stdout 留空，诊断写 stderr 并以 `2` 退出。不要把普通 CLI 的文本报告输出到成功的 hook stdout，否则 Codex 会报 `invalid stop hook JSON output`。详见 [维护脚本模块](modules/scripts/README.md)。
 
 ## 博客图片管线(压缩 + 传 R2 + 生成占位)
 

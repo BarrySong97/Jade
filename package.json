@@ -20,7 +20,8 @@
     "start": "astro dev",
     "format": "oxfmt",
     "lint": "oxlint",
-    "check": "oxlint && oxfmt",
+    "check": "pnpm test:hooks && oxlint && oxfmt",
+    "test:hooks": "node --test scripts/check-docs.test.mjs",
     "download-logos": "node scripts/download-company-logos.js",
     "generate-blogs": "node scripts/generate-blogs.js"
   },
