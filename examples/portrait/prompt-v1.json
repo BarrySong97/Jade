@@ -1,0 +1,18 @@
+{
+  "generator": "OpenAI built-in image_gen",
+  "date": "2026-09-19",
+  "useCase": "style-transfer",
+  "output": "portrait-painted-v1.png",
+  "source": "/Users/songtianjian/.codex/generated_images/01a0b827-c628-7a03-a6a2-9d6ec84766f6/exec-5e6ecf1f-53f0-4dae-b7fa-f8fca78d1a34.png",
+  "references": [
+    {
+      "path": "../../src/assets/info/profile-portrait.png",
+      "role": "Edit target; sole identity, pose, and composition reference"
+    },
+    {
+      "path": "../meadow/cat/cat-idle-v1.png",
+      "role": "Style only; matte brushwork and dimensional painted shading"
+    }
+  ],
+  "prompt": "Use case: style-transfer\nAsset type: transparent portrait illustration for a personal blog homepage, one single portrait.\nInput images: Image 1 is the EDIT TARGET and sole identity / pose / composition reference: the blog owner's existing black-and-white ink portrait. Image 2 is STYLE REFERENCE ONLY for matte hand-painted brush marks and soft dimensional shading; do not borrow the cat subject, animal features, fur, or anatomy.\nPrimary request: Repaint the SAME HUMAN from image 1 in a sophisticated painterly 3D-to-2D cel-shaded style (三渲二): believable sculpted volumes, carefully designed light/shadow planes, visible directional brushwork and restrained painted edges, as a polished hand-painted animated film portrait. It must look like a painted person, not a glossy 3D doll or a flat vector icon.\nIdentity invariants: preserve the same facial proportions, broad cheek/jaw shapes, eye spacing, nose and lips, subtle facial hair, short dark spiky hair with close-cropped sides, rectangular dark glasses, dark crew-neck T-shirt, composed neutral expression, gaze slightly toward viewer's right, head orientation and shoulder pose. Do not beautify into a different person or exaggerate the jaw/eyes. Preserve the original bust silhouette and crop; include the full hair top and both shoulders, with comfortable transparent margins.\nColor and lighting: natural warm skin hues inferred from the monochrome portrait, charcoal hair, dark charcoal glasses and shirt. Soft warm ivory key light, muted cool gray-violet shadow planes, low saturation, gentle contrast, tiny precise glasses highlights. Let brushwork and form carry the richness. Match the calm hand-painted material quality of the style reference while keeping recognizably HUMAN skin and hair.\nBackground: true transparent alpha PNG, no painted background, no gradient rectangle, no circle, no shadow panel. Clean edge with no green chroma-key outline or color spill from the old cutout. No text, caption, border, logo, props, extra characters or flowers.\nOutput: ONE standalone full-color portrait, landscape approximately 8:7 canvas matching image 1 composition. This is a repaint, not a before/after comparison. Preserve identity and pose above all."
+}

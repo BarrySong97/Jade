@@ -21,6 +21,8 @@ pnpm dev          # = astro dev
 - 访问地址:`http://localhost:4321`(端口被占用时 Astro 会自动 +1,如 4322,看启动日志)
 - 无需环境变量
 
+头像风格独立预览：`pnpm demo:portrait`，访问 <http://localhost:55024>。提供首页原头像与三渲二版本的对照，不进入 Astro 生产路由；详见 [预览说明](../examples/portrait/README.md)。
+
 ## 构建 / 预览
 
 ```bash
