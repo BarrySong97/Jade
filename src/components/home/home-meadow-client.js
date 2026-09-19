@@ -1,11 +1,13 @@
 /**
- * @purpose 为首页草甸提供可见时运行的微风动画
+ * @purpose 为首页草甸提供微风与两色蝴蝶的飞行/落花动画
  * @role 自定义元素生命周期，支持 Astro ClientRouter 进入/离开首页
- * @deps meadow-renderer.js、meadow-layout.mjs、ResizeObserver、IntersectionObserver
+ * @deps meadow-renderer.js、meadow-layout.mjs、meadow-butterflies.mjs、butterfly-atlas.mjs、浏览器观察器
  * @gotcha 异步加载必须检查 AbortSignal；断开元素时取消帧、监听器和 GPU 资源
  */
-import { createRenderer, loadPlant } from "./meadow-renderer.js";
+import { createRenderer, loadPlant, loadSprite } from "./meadow-renderer.js";
 import { arrangeNaturalMeadow } from "../../lib/meadow-layout.mjs";
+import { meadowButterflyLayout, sampleMeadowButterfly } from "../../lib/meadow-butterflies.mjs";
+import { butterflySprite } from "../../lib/butterfly-atlas.mjs";
 
 export function defineHomeMeadow() {
   if (customElements.get("home-meadow")) return;
@@ -21,6 +23,7 @@ export function defineHomeMeadow() {
         const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
         let renderer;
         let plants = [];
+        let butterflies;
         let frame = 0;
         let time = 1.1;
         let previous = null;
@@ -28,7 +31,14 @@ export function defineHomeMeadow() {
         let loading = false;
         let failed = false;
         let pageActive = true;
-        const draw = () => renderer?.draw(plants, time, reducedMotion.matches ? 0 : 0.45, false);
+        const draw = () => {
+          if (!renderer || !butterflies) return;
+          const wind = reducedMotion.matches ? 0 : 0.45;
+          const sprites = butterflies.butterflies.map((_, index) =>
+            butterflySprite(sampleMeadowButterfly(butterflies, index, time, wind)),
+          );
+          renderer.draw(plants, time, wind, false, sprites);
+        };
         const tick = (timestamp) => {
           if (previous !== null) time += Math.min((timestamp - previous) / 1000, 0.05);
           previous = timestamp;
@@ -56,6 +66,7 @@ export function defineHomeMeadow() {
           if (!renderer || failed) return;
           const byId = renderer.byId;
           plants = arrangeNaturalMeadow({ seed: 5.6 }, this.clientWidth, this.clientHeight, byId);
+          butterflies = meadowButterflyLayout(this.clientWidth, this.clientHeight, plants);
           renderer.resize(this.clientWidth, this.clientHeight);
           playback();
         });
@@ -64,9 +75,13 @@ export function defineHomeMeadow() {
           loading = true;
           try {
             const sources = JSON.parse(this.dataset.assets);
-            const assets = await Promise.all(sources.map(({ id, src }) => loadPlant(id, src)));
+            const butterflySources = JSON.parse(this.dataset.butterflies);
+            const [assets, sprites] = await Promise.all([
+              Promise.all(sources.map(({ id, src }) => loadPlant(id, src))),
+              Promise.all(butterflySources.map(({ id, src }) => loadSprite(id, src))),
+            ]);
             if (signal.aborted) return;
-            renderer = createRenderer(canvas, null, assets);
+            renderer = createRenderer(canvas, null, [...assets, ...sprites]);
             renderer.byId = Object.fromEntries(assets.map((asset) => [asset.id, asset]));
             plants = arrangeNaturalMeadow(
               { seed: 5.6 },
@@ -74,6 +89,7 @@ export function defineHomeMeadow() {
               this.clientHeight,
               renderer.byId,
             );
+            butterflies = meadowButterflyLayout(this.clientWidth, this.clientHeight, plants);
             renderer.resize(this.clientWidth, this.clientHeight);
             draw();
             canvas.hidden = false;

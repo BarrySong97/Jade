@@ -38,6 +38,7 @@ const routes = new Map([
     "/src/lib/meadow-layout.mjs",
     ["../../src/lib/meadow-layout.mjs", "text/javascript; charset=utf-8"],
   ],
+  ["/src/lib/meadow-wind.mjs", ["../../src/lib/meadow-wind.mjs", "text/javascript; charset=utf-8"]],
   ["/variations.js", ["variations.js", "text/javascript; charset=utf-8"]],
   ["/scene-data.mjs", ["scene-data.mjs", "text/javascript; charset=utf-8"]],
   ["/natural-meadow.mjs", ["natural-meadow.mjs", "text/javascript; charset=utf-8"]],

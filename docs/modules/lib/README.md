@@ -9,6 +9,9 @@
 - `utils.ts` — `cn()`:合并并去重 Tailwind class(clsx + tailwind-merge)。几乎所有组件都用。
 - `site.ts` — `PROFILE` 常量:站点作者身份(姓名、handle、简介、社交链接);另导出 `TWITTER` / `TWITTER_HANDLE`(从 social 派生),供展示页(作品/摄影)联系方式复用,与首页一致。首页与展示页引用。
 - `use-copy-button.ts` — React Hook:复制按钮「已复制」态,1.5s 自动复位。代码块复制用。
+- `meadow-wind.mjs` — 共享 9 行植物网格的风动幅度与内部接触点插值；渲染与首页蝴蝶停驻使用同一投影，根部不动。
+- `butterfly-atlas.mjs` — 四张杏黄/蓝紫振翅与停驻图集的原图采样区和足部注册点。压缩后仍按原始 1774×887 坐标归一化；`butterflySprite()` 输出共享渲染器需要的矩形、UV 和旋转中心。
+- `meadow-butterflies.mjs` — 首页两只蝴蝶的飞行、收翅落花、停驻与起飞，29/37 秒周期和不同候选花株，使用全局飞行时间保证循环连续。独立于猫/demo，回归和边界见 [ADR-0010](../../decisions/0010-home-butterflies.md)。
 - `meadow-layout.mjs` — 首页与设计预览共享的纯草甸排布：`MEADOW_ASSET_IDS` 限定 11 张原画，`meadowReferencePopulation()` 保留旧预览计数边界，`arrangeNaturalMeadow()` 用固定种子生成不规则花簇与草叶分层，株数为旧版的 90%。构建期静态图与客户端 WebGL 都调用它；非正画布尺寸返回空集合，`pnpm test:meadow` 验证与已确认预览一致。
 - `cloud-image-config.ts` — 云图片 CDN 域名常量 + 「Key → 完整 URL」拼接。
 - `cloud-image-utils.ts` — 云图片 Key 解析:拆文件名元信息、推导对应 BlurHash 占位图 Key。

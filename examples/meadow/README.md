@@ -77,7 +77,7 @@
 
 选定自然草甸已接入博客首页最底部，位于 Footer 后，保持全宽铺开与微风；生产页不包含预览控件。首页将实际使用的 11 张原画压缩为 WebP，原始 PNG 留在此处便于追溯和继续设计。`renderer.js` 和 `natural-meadow.mjs` 分别导出 `src/components/home/meadow-renderer.js` 与 `src/lib/meadow-layout.mjs` 的共享实现，预览服务为它们提供明确路由。
 
-猫蝶追逐已在同页完整场景预览，待视觉确认后再合入首页。当前花草整株摆动，未拆独立花瓣和每片叶子。大幅度风动会拉伸原画，因此默认微风。首页生命周期、静态回退与边界见 [组件模块](../../docs/modules/components/README.md) 和 [ADR-0006](../../docs/decisions/0006-home-meadow.md)。
+猫蝶追逐保留在同页 demo。用户最终决定首页只加入杏黄与蓝紫两只蝴蝶，见 [蝴蝶素材说明](butterfly/README.md)。当前花草整株摆动，未拆独立花瓣和每片叶子。大幅度风动会拉伸原画，因此默认微风。首页生命周期、静态回退与边界见 [组件模块](../../docs/modules/components/README.md)、[ADR-0006](../../docs/decisions/0006-home-meadow.md) 和 [ADR-0010](../../docs/decisions/0010-home-butterflies.md)。
 
 ## 文件与验证
 

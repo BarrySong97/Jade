@@ -1,13 +1,18 @@
 ---
 /**
- * @purpose 在博客首页最底部呈现全宽手绘草甸
+ * @purpose 在博客首页最底部呈现手绘草甸和两只不同颜色的蝴蝶
  * @role 仅首页引用的装饰组件，构建期静态画面 + 原生 WebGL 渐进增强
- * @deps astro:assets、meadow-layout.mjs、home-meadow-client.js、已生成 PNG
+ * @deps astro:assets、meadow-layout.mjs、butterfly-atlas.mjs、home-meadow-client.js、花草与蝴蝶 PNG
  * @gotcha 不引入 BaseLayout 或通用 Footer；SVG 只排列原画，不用矢量图形替代笔触
  */
 import { getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import { arrangeNaturalMeadow, MEADOW_ASSET_IDS } from "@/lib/meadow-layout.mjs";
+import { BUTTERFLY_ATLASES } from "@/lib/butterfly-atlas.mjs";
+import amberWing from "../../../examples/meadow/butterfly/butterfly-wingbeat-v1.png";
+import amberPerch from "../../../examples/meadow/chase/butterfly-perch-v1.png";
+import blueWing from "../../../examples/meadow/butterfly/butterfly-blue-wingbeat-v1.png";
+import bluePerch from "../../../examples/meadow/butterfly/butterfly-blue-perch-v1.png";
 
 const originals = import.meta.glob<{ default: ImageMetadata }>("../../../examples/meadow/assets/*.png", { eager: true });
 const assets = await Promise.all(MEADOW_ASSET_IDS.map(async (id) => {
@@ -23,14 +28,23 @@ const assets = await Promise.all(MEADOW_ASSET_IDS.map(async (id) => {
 }));
 const byId = Object.fromEntries(assets.map((asset) => [asset.id, asset]));
 const fallback = arrangeNaturalMeadow({ seed: 5.6 }, 1440, 240, byId);
+const butterflySources = {"amber-wing":amberWing,"amber-perch":amberPerch,"blue-wing":blueWing,"blue-perch":bluePerch};
+const butterflies = await Promise.all(Object.entries(butterflySources).map(async ([id,source])=>{
+  const image=await getImage({src:source,width:1024,format:"webp",quality:88});
+  return {id,src:image.src};
+}));
+const staticButterflies=butterflies.filter(item=>item.id.endsWith("-wing"));
 ---
 
 <home-meadow
+  id="home-meadow"
   class="pointer-events-none relative block h-44 w-full shrink-0 select-none overflow-hidden sm:h-60"
   data-assets={JSON.stringify(assets)}
+  data-butterflies={JSON.stringify(butterflies)}
   aria-hidden="true"
 >
-  <svg data-meadow-fallback class="absolute inset-0 size-full" viewBox="0 0 1440 240" preserveAspectRatio="xMidYMax slice" focusable="false">
+  <div data-meadow-fallback class="absolute inset-0 size-full">
+  <svg class="absolute inset-0 size-full" viewBox="0 0 1440 240" preserveAspectRatio="xMidYMax slice" focusable="false">
     {fallback.map((plant) => (
       <image
         href={plant.asset.src}
@@ -42,6 +56,12 @@ const fallback = arrangeNaturalMeadow({ seed: 5.6 }, 1440, 240, byId);
       />
     ))}
   </svg>
+  {staticButterflies.map((item,index)=>(
+    <svg data-butterfly-static={item.id} class:list={["absolute top-8 size-10",index?"left-[64%]":"left-[32%]"]} viewBox={BUTTERFLY_ATLASES[item.id].frames[0].rect.join(" ")} focusable="false">
+      <image href={item.src} width="1774" height="887" />
+    </svg>
+  ))}
+  </div>
   <canvas class="absolute inset-0 size-full" hidden></canvas>
 </home-meadow>
 

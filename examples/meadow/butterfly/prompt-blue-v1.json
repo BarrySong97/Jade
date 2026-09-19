@@ -1,0 +1,18 @@
+{
+  "tool": "built-in image_gen",
+  "assets": [
+    {
+      "file": "butterfly-blue-wingbeat-v1.png",
+      "source": "/Users/songtianjian/.codex/generated_images/01a0b827-c628-7a03-a6a2-9d6ec84766f6/exec-c32d22e7-9418-42f3-9ad2-f441fb8006cc.png",
+      "reference": "butterfly-wingbeat-v1.png",
+      "prompt": "Use case: precise-object-edit. Asset type: transparent painterly butterfly animation sprite atlas for a personal blog footer. Input image is the EDIT TARGET. Create a sibling color variant of this exact eight-pose atlas. Change ONLY the wing palette: replace warm apricot yellow with soft periwinkle blue and muted lavender-blue, pale icy-cream scalloped edges and slate-violet spots/veins. Keep the olive-brown body. Preserve the existing matte hand-painted brushwork, anatomy, all eight poses, order, pose-specific opening widths, exact body registration, scale, cell layout and transparent gutters. FOUR columns TWO rows on a 2:1 landscape PNG. Preserve the original canvas dimensions if possible. Every butterfly fully inside its cell, no clipped antennae or wings, no pose merging. The wingbeat cycle must remain open → closing → closed → reopening. True alpha background, no checkerboard, backdrop, plant, labels, grid, ground shadow or text. No warm yellow wing fill. This is a blue-violet companion to the approved warm butterfly, not a redesign."
+    },
+    {
+      "file": "butterfly-blue-perch-v1.png",
+      "source": "/Users/songtianjian/.codex/generated_images/01a0b827-c628-7a03-a6a2-9d6ec84766f6/exec-f8ee2667-486a-490b-aff2-3b96740363dc.png",
+      "reference": "../chase/butterfly-perch-v1.png",
+      "prompt": "Use case: precise-object-edit. Asset type: transparent painterly butterfly animation sprite atlas for a personal blog footer. Input image is the EDIT TARGET. Create a sibling color variant of this exact eight-pose atlas. Change ONLY the wing palette: replace warm apricot yellow with soft periwinkle blue and muted lavender-blue, pale icy-cream scalloped edges and slate-violet spots/veins. Keep the olive-brown body. Preserve the existing matte hand-painted brushwork, anatomy, all eight poses, order, pose-specific opening widths, exact body registration, scale, cell layout and transparent gutters. FOUR columns TWO rows on a 2:1 landscape PNG. Preserve the original canvas dimensions if possible. Every butterfly fully inside its cell, no clipped antennae or wings, no pose merging. The top row must retain landing and folding wings, bottom row retain perched to opening for takeoff. True alpha background, no checkerboard, backdrop, plant, labels, grid, ground shadow or text. No warm yellow wing fill. This is a blue-violet companion to the approved warm butterfly, not a redesign."
+    }
+  ],
+  "processing": "生成的透明 PNG 原样保存；构建期由 Astro 压缩 WebP，运行时采样图集。"
+}

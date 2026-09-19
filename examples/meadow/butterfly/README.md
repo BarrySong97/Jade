@@ -6,6 +6,12 @@
 
 后续增加的落花收翅/起飞图集与完整追蝶场景见 [chase/README.md](../chase/README.md)，同页入口为 <http://localhost:55022/#chase-scene>；这里的独立观察画板继续保留。
 
+## 首页采用两只蝴蝶
+
+用户最终决定猫不进入首页，只加入杏黄与蓝紫两只蝴蝶。新增 [蓝紫振翅图集](butterfly-blue-wingbeat-v1.png) 和 [蓝紫落花/起飞图集](butterfly-blue-perch-v1.png)，由内置 ImageGen 编辑既有杏黄原画，只改变翅膀配色，保持八姿势、笔触和透明背景。PNG 原样保存；完整提示词、参考与生成来源见 [prompt-blue-v1.json](prompt-blue-v1.json)。
+
+首页四张图集在 Astro 构建期压缩为 1024×512 WebP。两只使用不同路线、频率和 29/37 秒周期，选择不同花株停驻，随真实网格风动；猫与独立预览逻辑不参与。生产实现和生命周期见 [组件模块](../../../docs/modules/components/README.md) 与 [ADR-0010](../../../docs/decisions/0010-home-butterflies.md)。
+
 ## 原画与来源
 
 - [butterfly-wingbeat-v1.png](butterfly-wingbeat-v1.png)：1774 × 887，4 列 2 行，八个开合姿势。头朝上，身体保持同一视角，翅膀依次展开、抬起、竖起合拢、再展开。

@@ -1,16 +1,21 @@
 /**
- * @purpose 用共享二维网格绘制多株透明花草 PNG
+ * @purpose 用共享二维网格绘制花草及可选的蝴蝶姿势图集
  * @role 首页与设计预览共享的 WebGL 渲染器，独立于页面控制和排布
- * @deps 浏览器 WebGL / Canvas 2D / HTMLImageElement
+ * @deps meadow-wind.mjs、浏览器 WebGL / Canvas 2D / HTMLImageElement
  * @gotcha 纹理坐标不随风变化；根部 h=0，位移为零；使用预乘 alpha 避免黑边
  */
 const COLUMNS = 3;
-const ROWS = 9;
+import { meadowBend, MEADOW_ROWS as ROWS } from "../../lib/meadow-wind.mjs";
 
-export async function loadPlant(id, src = `/assets/${id}.png`) {
+export async function loadSprite(id, src) {
   const image = new Image();
   image.src = src;
   await image.decode();
+  return { id, image };
+}
+
+export async function loadPlant(id, src = `/assets/${id}.png`) {
+  const { image } = await loadSprite(id, src);
   const probe = document.createElement("canvas");
   probe.width = image.width;
   probe.height = image.height;
@@ -68,11 +73,15 @@ export function createRenderer(canvas, overlay, assets) {
     uniform vec4 u_crop;
     uniform float u_bend;
     uniform float u_flip;
+    uniform vec2 u_pivot;
+    uniform float u_angle;
     varying vec2 v_uv;
     void main() {
       float h = 1.0 - a_point.y;
       vec2 p = u_rect.xy + a_point * u_rect.zw;
       p.x += u_bend * h * h;
+      vec2 offset = p - u_pivot;
+      p = u_pivot + vec2(offset.x * cos(u_angle) - offset.y * sin(u_angle), offset.x * sin(u_angle) + offset.y * cos(u_angle));
       vec2 clip = p / u_size * 2.0 - 1.0;
       gl_Position = vec4(clip.x, -clip.y, 0.0, 1.0);
       float u = mix(a_point.x, 1.0 - a_point.x, u_flip);
@@ -130,7 +139,7 @@ export function createRenderer(canvas, overlay, assets) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
   const uniforms = Object.fromEntries(
-    ["size", "rect", "crop", "bend", "flip"].map((key) => [
+    ["size", "rect", "crop", "bend", "flip", "pivot", "angle"].map((key) => [
       key,
       gl.getUniformLocation(program, `u_${key}`),
     ]),
@@ -163,19 +172,18 @@ export function createRenderer(canvas, overlay, assets) {
     gl.uniform2f(uniforms.size, width, height);
   }
 
-  function draw(plants, time, wind, grid) {
+  function draw(plants, time, wind, grid, sprites = []) {
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     if (context) context.clearRect(0, 0, overlay.clientWidth, overlay.clientHeight);
     let maximumBend = 0;
+    gl.uniform1f(uniforms.angle, 0);
     for (const plant of plants) {
-      const { asset, x, base, height, flip, phase, stiffness } = plant;
+      const { asset, x, base, height, flip } = plant;
       const width = height * asset.aspect;
       const left = x - width / 2;
       const top = base - height;
-      const breeze =
-        Math.sin(time * 1.08 + phase) * 0.8 + Math.sin(time * 1.93 + phase * 1.4) * 0.2;
-      const bend = breeze * wind * height * 0.1 * stiffness;
+      const bend = meadowBend(plant, time, wind);
       maximumBend = Math.max(maximumBend, Math.abs(bend));
       gl.bindTexture(gl.TEXTURE_2D, textures.get(asset.id));
       gl.uniform4f(uniforms.rect, left, top, width, height);
@@ -206,9 +214,20 @@ export function createRenderer(canvas, overlay, assets) {
         context.fill();
       }
     }
+    for (const sprite of sprites) {
+      gl.bindTexture(gl.TEXTURE_2D, textures.get(sprite.id));
+      gl.uniform4fv(uniforms.rect, sprite.rect);
+      gl.uniform4fv(uniforms.crop, sprite.crop);
+      gl.uniform1f(uniforms.bend, 0);
+      gl.uniform1f(uniforms.flip, 0);
+      gl.uniform2f(uniforms.pivot, sprite.x, sprite.y);
+      gl.uniform1f(uniforms.angle, sprite.angle);
+      gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+    }
     canvas.dataset.time = time.toFixed(4);
     canvas.dataset.maxBend = maximumBend.toFixed(4);
     canvas.dataset.plants = String(plants.length);
+    canvas.dataset.butterflies = String(sprites.length);
   }
   return { resize, draw, destroy: () => resources.forEach((dispose) => dispose()) };
 }

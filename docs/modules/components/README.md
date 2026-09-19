@@ -27,11 +27,11 @@
 ## 首页草甸
 
 - [home-meadow.astro](../../../src/components/home/home-meadow.astro) 只由 [首页](../../../src/pages/index.astro) 传入 BaseLayout 的 `page-end` 插槽，位于版权 Footer 之后；通用 Footer、文章及展示页不挂载它。高度手机 176px、宽屏 240px，画布铺满页面宽度，植物根部贴底。
-- 构建期用 Astro `getImage` 将选定的 11 张透明原画缩至最长边 640px、WebP quality 82。静态 SVG 只排列这些位图；脚本不可用或 WebGL 失败时仍能显示花草。
+- 构建期用 Astro `getImage` 将选定的 11 张植物原画缩至最长边 640px、WebP quality 82；杏黄/蓝紫蝴蝶的振翅及停驻四张图集缩至 1024×512、quality 88。静态回退用 SVG 排列原画与两只蝴蝶，脚本不可用或 WebGL 失败时仍显示。
 - [home-meadow-client.js](../../../src/components/home/home-meadow-client.js) 注册自定义元素，接近视口时解码素材、创建 WebGL；画面可见且页面在前台才运行微风。减少动态效果时静止，离开首页时释放监听器、动画帧和 GPU 资源，支持 ClientRouter 往返。
-- [meadow-renderer.js](../../../src/components/home/meadow-renderer.js) 是首页与设计预览的共同真源；透明位图通过固定根部的二维网格轻微弯曲。自然排布来自 `src/lib/meadow-layout.mjs`，不在每帧重新随机。
+- [meadow-renderer.js](../../../src/components/home/meadow-renderer.js) 是首页与设计预览的共同真源；透明植物通过固定根部的二维网格轻微弯曲，新增可选图集采样/旋转供两只蝴蝶使用，仍只有一个 WebGL 上下文与时钟。自然排布来自 `src/lib/meadow-layout.mjs`，不在每帧重新随机；`meadow-wind.mjs` 统一植物风动与花头接触投影。
 - 页面边界和排布回归由 `pnpm test:meadow` 强制，见 [ADR-0006](../../decisions/0006-home-meadow.md)。
-- 猫与蝴蝶追逐先在 [原花草 demo](../../../examples/meadow/chase/README.md) 合成验收，复用自然排布但使用自己的画布和共同剧情；目前首页组件仍仅包含花草。
+- 用户决定首页只放花草和两色蝴蝶；猫与追逐逻辑留在 [原花草 demo](../../../examples/meadow/chase/README.md)。首页通过 `meadow-butterflies.mjs` 使用不同路线/频率、29/37 秒周期和不同候选花株，飞行、落花、起飞衔接，停驻跟随花头。没有控件、鼠标追逐或猫资源，见 [ADR-0010](../../decisions/0010-home-butterflies.md)。
 
 ## 注意事项
 
