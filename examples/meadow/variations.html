@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  @purpose 对照自然群落草甸与独立小猫跑跳动画，并查看花草、小猫分层与姿势素材
+  @purpose 对照自然群落草甸与小猫跑跳动画，标注关节辅助线并查看花草、小猫素材
   @role 独立设计比较页，可切换可动大图与静态场景缩略图
   @deps variations.js、scene-data.mjs、renderer.js、cat/cat-board.js 与分层 PNG、Tailwind CSS
   @gotcha 缩略图与主画面共享排布，所有花草均使用真实 PNG
@@ -216,6 +216,35 @@
                 <option value="0.25">0.25 × 慢放</option>
               </select>
             </label>
+            <label class="flex items-center gap-2">
+              <input
+                id="cat-skeleton"
+                type="checkbox"
+                checked
+                aria-describedby="cat-skeleton-note"
+                class="size-4 accent-[#13746e]"
+              />
+              显示骨架辅助线
+            </label>
+            <label class="flex items-center gap-2">
+              <input id="cat-bones-only" type="checkbox" class="size-4 accent-[#13746e]" />
+              只看骨架
+            </label>
+            <div class="flex w-full flex-wrap items-center gap-x-4 gap-y-2">
+              <label for="cat-seek">拖动看动作</label>
+              <input
+                id="cat-seek"
+                type="range"
+                min="0"
+                max="1000"
+                step="1"
+                value="0"
+                class="min-w-32 flex-1 accent-[#425a3c]"
+              />
+              <output id="cat-pose-label" for="cat-seek" aria-live="off" class="w-36 tabular-nums"
+                >坐姿 · 尾巴网格</output
+              >
+            </div>
             <div
               id="cat-tail-controls"
               class="flex w-full flex-wrap items-center gap-x-6 gap-y-4"
@@ -251,6 +280,16 @@
               >
             </div>
           </fieldset>
+          <div id="cat-skeleton-legend" class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-[11px]">
+            <span class="text-[#13746e]">● 躯干与头</span>
+            <span class="text-[#c5690c]">● 前腿</span>
+            <span class="text-[#2563ba]">● 后腿</span>
+            <span class="text-[#8951ae]">● 尾巴</span>
+            <span class="text-[#89957c]">虚线：被遮挡一侧的近似位置</span>
+          </div>
+          <p id="cat-skeleton-note" class="mt-3 text-[11px] leading-6 text-[#637458]">
+            骨架是逐张姿势的人工辅助标注，用来看肢体变化，并未绑定或驱动图片。拖动进度会暂停，可配合慢放观察；尾巴标记跟随实际网格形变。
+          </p>
           <p class="mt-4 text-[11px] leading-6 text-[#89957c]">
             跑跳使用不同的手绘姿势，坐姿保留尾巴网格轻摆。可以慢放观察四肢与落地节奏；单次动作结束后，再点按钮就能重播。
           </p>

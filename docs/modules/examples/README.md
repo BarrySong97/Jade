@@ -38,10 +38,12 @@
 
 [cat/README.md](../../../examples/meadow/cat/README.md) 保存按用户猫照片生成的透明坐姿原画、身体/尾巴分层初稿、跑跳姿势图集和完整提示词。它匹配花草的手绘明暗色块，已用于尾尖网格摆动和独立跑跳实验；当前尚未接入首页。原始私人照片不复制进仓库。
 
-小猫卡片直接放在原花草 demo 的素材区，与三张花草姿态素材并排；入口 <http://localhost:55022/#cat-sample>，点击可打开原图。分层素材与静态叠合对照在同页 <http://localhost:55022/#cat-layers>，使用两个同尺寸同坐标的 PNG，不按各自可见边界居中。预览服务仅允许五个猫 PNG 与五个动画模块的固定路径，不开放整个猫目录。
+小猫卡片直接放在原花草 demo 的素材区，与三张花草姿态素材并排；入口 <http://localhost:55022/#cat-sample>，点击可打开原图。分层素材与静态叠合对照在同页 <http://localhost:55022/#cat-layers>，使用两个同尺寸同坐标的 PNG，不按各自可见边界居中。预览服务仅允许五个猫 PNG 与六个动画模块的固定路径，不开放整个猫目录。
 
 独立动画板 <http://localhost:55022/#cat-board> 由 [cat-board.js](../../../examples/meadow/cat/cat-board.js) 管理，使用 [cat-renderer.js](../../../examples/meadow/cat/cat-renderer.js) 绘制身体和 19 × 9 顶点尾巴网格；[tail-motion.mjs](../../../examples/meadow/cat/tail-motion.mjs) 固定连接区域，使尾尖渐进轻摆并带休息段。猫与花草各有 Canvas、控件和生命周期；屏外、后台暂停帧，尾巴实验零幅度停表，减少动态效果时默认静止，失败显示静态叠图。
 
 跑跳由 [cat-motion.mjs](../../../examples/meadow/cat/cat-motion.mjs) 编排，配合 [cat-atlas.mjs](../../../examples/meadow/cat/cat-atlas.mjs) 注册的两个 4×2 图集。跑步逐姿势改变四肢，跳跃包括蓄力、蹬地、腾空、落地缓冲；自动演示间隔休息，按钮支持单次触发和慢放。图集经 ImageGen 补留白以避免串帧，同组统一比例，原始 PNG 不改像素。架构边界见 [ADR-0007](../../decisions/0007-cat-demo-actions.md)。
 
 `pnpm test:meadow` 包含尾巴边界以及跑跳落点、阶段、循环、alpha 和视口裁切回归；图集原画入口在动画板下的折叠区。坐姿/站姿仍是关键姿势切换，细节一致性与动态接缝需实际看页面；用户选择自行查看，本轮未重新接管浏览器，不能将纯函数/HTTP 检查视为实屏验收。
+
+动画板默认显示关节辅助线，可关闭或切换“只看骨架”，也可拖动进度暂停观察当前姿势。[cat-skeleton.mjs](../../../examples/meadow/cat/cat-skeleton.mjs) 人工标注 16 个跑跳姿势和坐姿，按躯干、前腿、后腿、尾巴配色，遮挡侧腿使用虚线。它是说明性标注，不能表述为驱动图集的真实骨骼或蒙皮；尾巴标记调用实际网格的变形函数。图集与辅助线共用 `cat-atlas.mjs` 的坐标变换，保证镜像、离地与响应式缩放一致；回归同时验证可见标记落在真实 PNG 主体内。

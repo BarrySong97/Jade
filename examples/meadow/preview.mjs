@@ -48,6 +48,7 @@ const routes = new Map([
   ["/cat/cat-jump-v1.png", ["cat/cat-jump-v1.png", "image/png"]],
   ["/cat/cat-atlas.mjs", ["cat/cat-atlas.mjs", "text/javascript; charset=utf-8"]],
   ["/cat/cat-motion.mjs", ["cat/cat-motion.mjs", "text/javascript; charset=utf-8"]],
+  ["/cat/cat-skeleton.mjs", ["cat/cat-skeleton.mjs", "text/javascript; charset=utf-8"]],
   ["/cat/cat-board.js", ["cat/cat-board.js", "text/javascript; charset=utf-8"]],
   ["/cat/cat-renderer.js", ["cat/cat-renderer.js", "text/javascript; charset=utf-8"]],
   ["/cat/tail-motion.mjs", ["cat/tail-motion.mjs", "text/javascript; charset=utf-8"]],

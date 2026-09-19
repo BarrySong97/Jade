@@ -1,12 +1,13 @@
 /**
- * @purpose 在独立 WebGL Canvas 中绘制坐姿尾巴网格和跑跳姿势图集
+ * @purpose 在独立 WebGL Canvas 绘制猫动作，并用 Canvas 2D 标注关节辅助线
  * @role 猫动画板专用渲染器，不复用花草的动作公式或状态
- * @deps tail-motion.mjs、cat-motion.mjs、cat-atlas.mjs、WebGL 1、Canvas 2D 叠加
+ * @deps tail-motion.mjs、cat-motion.mjs、cat-atlas.mjs、cat-skeleton.mjs、WebGL 1 / Canvas 2D
  * @gotcha 坐姿图层保留完整画布坐标；跑跳按注册点播放真实姿势，不能只平移坐姿
  */
 import { CAT_SIZE, deformTailPoint } from "./tail-motion.mjs";
 import { catLayout } from "./cat-motion.mjs";
-import { CAT_ATLASES } from "./cat-atlas.mjs";
+import { CAT_ATLASES, catPoseTransform, projectCatPoint } from "./cat-atlas.mjs";
+import { drawCatSkeleton } from "./cat-skeleton.mjs";
 
 export function createCatRenderer(canvas, overlay, body, tail, atlases) {
   const gl = canvas.getContext("webgl", { alpha: true, antialias: true });
@@ -138,7 +139,7 @@ export function createCatRenderer(canvas, overlay, body, tail, atlases) {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexBuffer);
     gl.drawElements(gl.TRIANGLES, mesh.indices.length, gl.UNSIGNED_SHORT, 0);
   }
-  function draw(time, amplitude, grid, tailOnly, motion, tailStudy = false) {
+  function draw(time, amplitude, grid, tailOnly, motion, tailStudy = false, inspection = {}) {
     if (!view) return;
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -146,6 +147,10 @@ export function createCatRenderer(canvas, overlay, body, tail, atlases) {
     const center = view.width / 2 + motion.x * view.travel;
     const ground = view.ground;
     const unit = view.unit;
+    const transform = catPoseTransform(view, motion, tailStudy);
+    const hideArtwork = inspection.showSkeleton && inspection.bonesOnly;
+    canvas.dataset.skeleton = String(Boolean(inspection.showSkeleton));
+    canvas.dataset.bonesOnly = String(Boolean(hideArtwork));
     if (context && !tailOnly) {
       context.save();
       const shadowWidth = unit * (0.53 - motion.lift * 0.17);
@@ -158,36 +163,36 @@ export function createCatRenderer(canvas, overlay, body, tail, atlases) {
     if (motion.sheet !== "idle") {
       const atlas = CAT_ATLASES[motion.sheet];
       const mesh = spriteMeshes[motion.sheet];
-      const { rect, anchor } = atlas.frames[motion.frame];
-      const pixelScale = (unit * 2.05) / atlas.maxWidth;
+      const { rect } = atlas.frames[motion.frame];
       const [sx, sy, sw, sh] = rect;
       for (let i = 0; i < 4; i++) {
         const column = i % 2;
         const row = Math.floor(i / 2);
-        mesh.data[i * 4] = (column * sw - anchor[0]) * pixelScale * motion.direction;
-        mesh.data[i * 4 + 1] = (row * sh - anchor[1]) * pixelScale;
+        const [x, y] = projectCatPoint([column * sw, row * sh], transform);
+        mesh.data[i * 4] = x;
+        mesh.data[i * 4 + 1] = y;
         mesh.data[i * 4 + 2] = (sx + column * sw) / atlas.width;
         mesh.data[i * 4 + 3] = (sy + row * sh) / atlas.height;
       }
-      gl.uniform2f(origin, center, ground - motion.lift * unit);
+      gl.uniform2f(origin, 0, 0);
       gl.uniform1f(scale, 1);
       gl.bindBuffer(gl.ARRAY_BUFFER, mesh.vertexBuffer);
       gl.bufferSubData(gl.ARRAY_BUFFER, 0, mesh.data);
-      drawMesh(mesh);
+      if (!hideArtwork) drawMesh(mesh);
+      if (inspection.showSkeleton)
+        drawCatSkeleton(context, motion, transform, time, amplitude, false);
       canvas.dataset.pose = `${motion.sheet}-${motion.frame}`;
       canvas.dataset.time = time.toFixed(4);
       canvas.dataset.x = center.toFixed(3);
       canvas.dataset.lift = motion.lift.toFixed(3);
       return;
     }
-    const artworkSize = tailStudy ? Math.min(view.width - 32, view.height - 64, 390) : unit * 1.35;
-    const idleScale = artworkSize / CAT_SIZE;
-    // The composite's visible paws/tail end around y=1244; use that as the ground anchor.
-    const idleY = ground - 1244 * idleScale;
+    const idleScale = transform.scale;
+    const [idleX, idleY] = projectCatPoint([0, 0], transform);
     gl.uniform1f(scale, idleScale);
     // The seated reference is a three-quarter view; keep its original orientation at rest.
-    gl.uniform2f(origin, center - (CAT_SIZE / 2) * idleScale, idleY);
-    if (!tailOnly) drawMesh(bodyMesh);
+    gl.uniform2f(origin, idleX, idleY);
+    if (!tailOnly && !hideArtwork) drawMesh(bodyMesh);
     tailMesh.points.forEach(([x, y], i) => {
       const point = deformTailPoint(x, y, time, amplitude);
       tailMesh.data[i * 4] = point[0];
@@ -195,10 +200,10 @@ export function createCatRenderer(canvas, overlay, body, tail, atlases) {
     });
     gl.bindBuffer(gl.ARRAY_BUFFER, tailMesh.vertexBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, tailMesh.data);
-    drawMesh(tailMesh);
+    if (!hideArtwork) drawMesh(tailMesh);
     if (grid && context) {
       context.save();
-      context.translate(center - artworkSize / 2, idleY);
+      context.translate(idleX, idleY);
       context.scale(idleScale, idleScale);
       context.lineWidth = 0.65 / idleScale;
       context.strokeStyle = "#55744888";
@@ -220,6 +225,8 @@ export function createCatRenderer(canvas, overlay, body, tail, atlases) {
       context.fill();
       context.restore();
     }
+    if (inspection.showSkeleton)
+      drawCatSkeleton(context, motion, transform, time, amplitude, tailOnly);
     const tip = deformTailPoint(680, 1160, time, amplitude);
     canvas.dataset.time = time.toFixed(4);
     canvas.dataset.pose = "idle";

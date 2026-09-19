@@ -1,6 +1,6 @@
 /**
  * @purpose 在原花草 demo 的独立 Canvas 播放猫的跑跳与休息
- * @role 动作按钮、慢放、暂停和动画生命周期
+ * @role 动作按钮、骨架辅助线、拖动进度、慢放、暂停和动画生命周期
  * @deps cat-renderer.js、cat-motion.mjs、cat-atlas.mjs、透明 PNG
  * @gotcha 花草状态独立；单次动作结束保持落点；屏外/后台停表，减少动态效果默认暂停
  */
@@ -17,6 +17,10 @@ const controls = $("cat-controls");
 const pause = $("cat-pause");
 const amplitude = $("cat-amplitude");
 const speed = $("cat-speed");
+const skeleton = $("cat-skeleton");
+const bonesOnly = $("cat-bones-only");
+const seek = $("cat-seek");
+const poseLabel = $("cat-pose-label");
 const grid = $("cat-grid");
 const tailOnly = $("cat-tail-only");
 const status = $("cat-status");
@@ -46,6 +50,18 @@ function draw() {
     tailStudy && tailOnly.checked,
     motion,
     tailStudy,
+    { showSkeleton: skeleton.checked, bonesOnly: bonesOnly.checked },
+  );
+  const position = sequence.loop ? time % sequence.duration : Math.min(time, sequence.duration);
+  seek.value = String(Math.round((position / sequence.duration) * 1000));
+  const description =
+    motion.sheet === "idle"
+      ? "坐姿 · 尾巴网格"
+      : `${motion.sheet === "run" ? "跑步" : "跳跃"} · 姿势 ${motion.frame + 1} / 8`;
+  if (poseLabel.textContent !== description) poseLabel.textContent = description;
+  seek.setAttribute(
+    "aria-valuetext",
+    `${description}，动作进度 ${Math.round((position / sequence.duration) * 100)}%`,
   );
   const label = paused
     ? "已暂停"
@@ -181,6 +197,26 @@ try {
       { signal },
     );
     speed.addEventListener("change", playback, { signal });
+    skeleton.addEventListener(
+      "change",
+      () => {
+        bonesOnly.disabled = !skeleton.checked;
+        $("cat-skeleton-legend").hidden = !skeleton.checked;
+        draw();
+      },
+      { signal },
+    );
+    bonesOnly.addEventListener("change", draw, { signal });
+    seek.addEventListener(
+      "input",
+      () => {
+        paused = true;
+        time = (Number(seek.value) / 1000) * sequence.duration;
+        if (sequence.loop) time = Math.min(time, sequence.duration - 0.00001);
+        playback();
+      },
+      { signal },
+    );
     amplitude.addEventListener(
       "input",
       () => {

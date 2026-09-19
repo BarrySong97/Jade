@@ -1,13 +1,19 @@
 /**
- * @purpose 验证猫跑跳的姿势完整性、落地、循环和图集采样边界
+ * @purpose 验证猫跑跳、图集边界以及辅助关节与原画的坐标一致性
  * @role pnpm test:meadow 中的动作与资源契约回归
- * @deps node:test、node:assert、sharp、cat-motion.mjs、cat-atlas.mjs
+ * @deps node:test、node:assert、sharp、cat-motion.mjs、cat-atlas.mjs、cat-skeleton.mjs
  * @gotcha 解码真实 alpha 检查不串帧和不出界；不能代替浏览器视觉与控件验收
  */
 import test from "node:test";
 import assert from "node:assert/strict";
 import sharp from "sharp";
-import { CAT_ATLASES } from "../examples/meadow/cat/cat-atlas.mjs";
+import {
+  CAT_ATLASES,
+  catPoseTransform,
+  projectCatPoint,
+} from "../examples/meadow/cat/cat-atlas.mjs";
+import { CAT_SKELETONS, catSkeleton } from "../examples/meadow/cat/cat-skeleton.mjs";
+import { deformTailPoint } from "../examples/meadow/cat/tail-motion.mjs";
 import {
   catLayout,
   createCatSequence,
@@ -71,6 +77,51 @@ test("自动演示循环位置连续，休息时间多于运动时间", () => {
   assert.ok(rest > sequence.duration / 2);
 });
 
+test("关节辅助线跟随图集帧、左右镜像和离地位移，不改变标注原数据", () => {
+  const layout = catLayout(1000, 460);
+  const original = JSON.stringify(CAT_SKELETONS);
+  for (const sheet of ["run", "jump"]) {
+    assert.equal(CAT_SKELETONS[sheet].length, CAT_ATLASES[sheet].frames.length);
+    for (let frame = 0; frame < 8; frame++) {
+      const motion = { sheet, frame, x: 0.3, lift: 0.4, direction: 1 };
+      const forward = catPoseTransform(layout, motion);
+      const backward = catPoseTransform(layout, { ...motion, direction: -1 });
+      assert.deepEqual(projectCatPoint(forward.anchor, forward), forward.origin);
+      for (const chain of Object.values(catSkeleton(motion, 1, 0.6))) {
+        assert.equal(chain.length, 4);
+        for (const point of chain) {
+          const [rightX, rightY] = projectCatPoint(point, forward);
+          const [leftX, leftY] = projectCatPoint(point, backward);
+          assert.ok(Math.abs((rightX + leftX) / 2 - forward.origin[0]) < 1e-8);
+          assert.equal(rightY, leftY);
+          const grounded = projectCatPoint(point, catPoseTransform(layout, { ...motion, lift: 0 }));
+          assert.ok(Math.abs(grounded[1] - rightY - layout.unit * 0.4) < 1e-8);
+        }
+      }
+    }
+  }
+  assert.notDeepEqual(
+    catSkeleton({ sheet: "run", frame: 0 }, 0, 1).front,
+    catSkeleton({ sheet: "run", frame: 2 }, 0, 1).front,
+  );
+  assert.equal(JSON.stringify(CAT_SKELETONS), original);
+});
+
+test("坐姿尾巴标记使用实际网格变形，尾根不动，躯干标记不被带动", () => {
+  const motion = { sheet: "idle", x: 0, direction: -1, lift: 0 };
+  const rest = catSkeleton(motion, 1.5, 0);
+  const moving = catSkeleton(motion, 1.5, 1);
+  assert.deepEqual(rest.body, moving.body);
+  assert.deepEqual(rest.tail[0], moving.tail[0]);
+  assert.notDeepEqual(rest.tail.at(-1), moving.tail.at(-1));
+  rest.tail.forEach(([x, y], i) => assert.deepEqual(moving.tail[i], deformTailPoint(x, y, 1.5, 1)));
+  for (const tailStudy of [false, true]) {
+    const transform = catPoseTransform(catLayout(375, 380), motion, tailStudy);
+    assert.equal(transform.direction, 1, "坐姿保留原始朝向，不能只把辅助线镜像");
+    assert.deepEqual(projectCatPoint(transform.anchor, transform), transform.origin);
+  }
+});
+
 test("图集真实透明、每帧留有间隔，所有姿势在窄屏和桌面均不裁掉主体", async () => {
   const bounds = {};
   for (const [name, atlas] of Object.entries(CAT_ATLASES)) {
@@ -81,6 +132,16 @@ test("图集真实透明、每帧留有间隔，所有姿势在窄屏和桌面�
       .toBuffer({ resolveWithObject: true });
     assert.equal(info.width, atlas.width);
     assert.equal(info.height, atlas.height);
+    CAT_SKELETONS[name].forEach((skeleton, frame) => {
+      const [sx, sy] = atlas.frames[frame].rect;
+      // Occluded-side chains are explicitly estimates; visible markers must sit on the artwork.
+      for (const chain of ["body", "front", "rear", "tail"])
+        for (const [x, y] of skeleton[chain])
+          assert.ok(
+            data[((sy + y) * info.width + sx + x) * 4 + 3] > 128,
+            `${name} 姿势 ${frame + 1} 的 ${chain} 标记落到了透明区域`,
+          );
+    });
     bounds[name] = atlas.frames.map(({ rect }) => {
       const [sx, sy, w, h] = rect;
       let left = w,
