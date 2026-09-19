@@ -2,7 +2,7 @@
  * @purpose 注册追蝶新增姿势及复用图集的地面/足部锚点
  * @role 完整场景的素材坐标契约，不改变独立猫/蝴蝶画板
  * @deps cat-atlas.mjs、butterfly-motion.mjs、三张原始透明图集
- * @gotcha 整张图集统一缩放；足部锚点不等于可见轮廓中心，不按单帧裁切重算尺寸
+ * @gotcha 整张图集统一缩放；跑姿落脚帧按脚底注册，腾空帧保留抬脚；不按单帧裁切重算尺寸
  */
 import { CAT_ATLASES } from "../cat/cat-atlas.mjs";
 import { BUTTERFLY_ATLAS } from "../butterfly/butterfly-motion.mjs";
@@ -36,6 +36,15 @@ export const CHASE_ATLASES = {
       { ...CAT_ATLASES[id], file: `/cat/${CAT_ATLASES[id].file}` },
     ]),
   ),
+  run: {
+    ...CAT_ATLASES.run,
+    file: `/cat/${CAT_ATLASES.run.file}`,
+    // Frames 2/4/5 are airborne; 6/7 return to contact rather than hovering 8/4px high.
+    frames: CAT_ATLASES.run.frames.map((frame, i) => ({
+      ...frame,
+      anchor: [frame.anchor[0], [353, 352, 353, 352, 353, 353, 336, 345][i]],
+    })),
+  },
   stalk: atlas("/chase/cat-stalk-v1.png", 340, [
     [224, 377],
     [228, 375],

@@ -1,10 +1,10 @@
 /**
- * @purpose 在同一画布合成风动花草、猫和落花蝴蝶
+ * @purpose 在同一画布合成风动花草、贴地阴影、猫和落花蝴蝶
  * @role 追蝶场景 WebGL 绘制与静态 Canvas 回退
  * @deps chase-layout.mjs、chase-assets.mjs、浏览器 WebGL/Canvas 2D
- * @gotcha 后景→猫→前景草→蝴蝶；UV 保留原图，预乘 alpha；落花点与植物共用投影函数
+ * @gotcha 后景→地面阴影→猫→前景草→蝴蝶；影子固定在地面不随猫上升；UV 保留原图，预乘 alpha
  */
-import { plantPoint } from "./chase-layout.mjs";
+import { plantPoint, catGroundShadow } from "./chase-layout.mjs";
 import { CHASE_ATLASES, spriteTransform, projectSprite } from "./chase-assets.mjs";
 
 export function createChaseRenderer(canvas, images) {
@@ -39,7 +39,17 @@ export function createChaseRenderer(canvas, images) {
       program,
       shader(
         gl.FRAGMENT_SHADER,
-        `precision mediump float; uniform sampler2D u_image; varying vec2 v_uv; void main(){gl_FragColor = texture2D(u_image,v_uv);}`,
+        `precision mediump float;
+        uniform sampler2D u_image;
+        uniform float u_shadow;
+        varying vec2 v_uv;
+        void main(){
+          if (u_shadow > 0.0) {
+            vec2 p = v_uv * 2.0 - 1.0;
+            float a = u_shadow * pow(max(0.0, 1.0 - dot(p,p)), 2.0);
+            gl_FragColor = vec4(vec3(0.19,0.23,0.13) * a, a);
+          } else gl_FragColor = texture2D(u_image,v_uv);
+        }`,
       ),
     );
     gl.linkProgram(program);
@@ -60,6 +70,7 @@ export function createChaseRenderer(canvas, images) {
     }
     gl.uniform1i(gl.getUniformLocation(program, "u_image"), 0);
     const size = gl.getUniformLocation(program, "u_size");
+    const shadowOpacity = gl.getUniformLocation(program, "u_shadow");
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -77,7 +88,7 @@ export function createChaseRenderer(canvas, images) {
     }
     const vertices = new Float32Array(384);
     const draw = (id, count) => {
-      gl.bindTexture(gl.TEXTURE_2D, textures.get(id));
+      if (id) gl.bindTexture(gl.TEXTURE_2D, textures.get(id));
       gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertices.subarray(0, count * 4));
       gl.drawArrays(gl.TRIANGLES, 0, count);
     };
@@ -126,6 +137,26 @@ export function createChaseRenderer(canvas, images) {
       }
       draw(pose.sheet, 6);
     };
+    const shadow = (layout, cat) => {
+      const shape = catGroundShadow(layout, cat);
+      let cursor = 0;
+      for (const [u, v] of [
+        [0, 0],
+        [1, 0],
+        [0, 1],
+        [1, 0],
+        [1, 1],
+        [0, 1],
+      ]) {
+        vertices[cursor++] = shape.x + (u * 2 - 1) * shape.radiusX;
+        vertices[cursor++] = shape.y + (v * 2 - 1) * shape.radiusY;
+        vertices[cursor++] = u;
+        vertices[cursor++] = v;
+      }
+      gl.uniform1f(shadowOpacity, shape.opacity);
+      draw(null, 6);
+      gl.uniform1f(shadowOpacity, 0);
+    };
     return {
       draw(layout, motion, time) {
         gl.viewport(0, 0, canvas.width, canvas.height);
@@ -133,6 +164,7 @@ export function createChaseRenderer(canvas, images) {
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
         for (const item of layout.plants) if (item.layer < 3) plant(item, time, layout.wind);
+        shadow(layout, motion.cat);
         sprite(motion.cat, layout.unit);
         for (const item of layout.plants) if (item.layer === 3) plant(item, time, layout.wind);
         sprite(motion.butterfly, layout.unit);
@@ -180,6 +212,20 @@ export function drawChaseFallback(canvas, layout, motion, images) {
     context.restore();
   };
   for (const item of layout.plants) if (item.layer < 3) plant(item);
+  if (images.has(motion.cat.sheet)) {
+    const shape = catGroundShadow(layout, motion.cat);
+    context.save();
+    context.translate(shape.x, shape.y);
+    context.scale(shape.radiusX, shape.radiusY);
+    const gradient = context.createRadialGradient(0, 0, 0, 0, 0, 1);
+    for (let i = 0; i <= 8; i++) {
+      const r = i / 8;
+      gradient.addColorStop(r, `rgba(48,59,33,${shape.opacity * (1 - r * r) ** 2})`);
+    }
+    context.fillStyle = gradient;
+    context.fillRect(-1, -1, 2, 2);
+    context.restore();
+  }
   sprite(motion.cat);
   for (const item of layout.plants) if (item.layer === 3) plant(item);
   sprite(motion.butterfly);

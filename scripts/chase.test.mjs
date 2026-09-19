@@ -19,6 +19,7 @@ import {
   flowerUV,
   plantPoint,
   FLOWER_CONTACTS,
+  catGroundShadow,
 } from "../examples/meadow/chase/chase-layout.mjs";
 import {
   createChaseStory,
@@ -222,7 +223,7 @@ test("所有阶段及循环位置连续，跑扑不中断速度；缩放保留�
   }
 });
 
-test("桌面及窄屏整轮的真实猫/蝴蝶轮廓不裁切，回草丛不倒着滑行", async () => {
+test("猫只允许脚底埋入底边草根，头身/蝴蝶不裁切，回草丛不倒着滑行", async () => {
   const [byId, all] = await Promise.all([sources, atlases]);
   for (const width of [240, 280, 335, 375, 640, 1327]) {
     const layout = chaseLayout(width, width < 640 ? 300 : 340, byId),
@@ -235,15 +236,53 @@ test("桌面及窄屏整轮的真实猫/蝴蝶轮廓不裁切，回草丛不倒�
         for (const x of [b.left, b.right])
           for (const y of [b.top, b.bottom]) {
             const p = projectSprite([x, y], transform);
+            const floor = pose.butterfly ? layout.height : layout.ground;
             assert.ok(
-              p[0] >= 0 && p[0] <= width && p[1] >= 0 && p[1] <= layout.height,
+              p[0] >= 0 && p[0] <= width && p[1] >= 0 && p[1] <= floor + 1e-8,
               `${width}px ${t.toFixed(2)}s ${pose.sheet}/${pose.frame} 裁切 ${p}`,
             );
+            if (!pose.butterfly && y === b.top)
+              assert.ok(p[1] < layout.height - layout.unit * 0.45, "头身不能随埋脚一起藏出画布");
           }
       }
       if (m.segment.kind === "return")
         assert.ok((m.segment.to - m.segment.from) * m.cat.direction > 0, "回草丛必须沿朝向前进");
     }
+  }
+});
+
+test("ADR-0009：真实落脚帧贴住草根地面，阴影留在地面且腾空变淡", async () => {
+  const [byId, all] = await Promise.all([sources, atlases]);
+  for (const width of [335, 1327]) {
+    const layout = chaseLayout(width, width < 640 ? 300 : 340, byId);
+    assert.ok(
+      layout.ground >= layout.height && layout.ground <= layout.height + layout.unit * 0.15,
+      "脚底线需落在底边草根内，不能踩在草叶上",
+    );
+    for (const [sheet, frames] of Object.entries({
+      run: [0, 1, 3, 6, 7],
+      jump: [0, 6],
+      stalk: [1, 2, 3, 4, 5, 6, 7],
+      dash: [1, 2, 5],
+      gait: [1, 2, 5, 6],
+      prepare: [5, 6],
+      turn: [1, 2, 3, 4, 5, 6],
+    })) {
+      for (const frame of frames) {
+        const pose = { sheet, frame, x: width / 2, y: layout.ground, direction: 1 };
+        const point = projectSprite(
+          [220, all[sheet].boxes[frame].bottom],
+          spriteTransform(pose, layout.unit),
+        );
+        assert.ok(Math.abs(point[1] - layout.ground) < 0.6, `${sheet}/${frame} 的实际脚底悬空`);
+      }
+    }
+    const cat = { x: width / 2, y: layout.ground, direction: 1 };
+    const contact = catGroundShadow(layout, cat);
+    const airborne = catGroundShadow(layout, { ...cat, y: layout.ground - layout.unit * 0.8 });
+    assert.equal(contact.y, airborne.y, "影子不能跟猫一起浮起来");
+    assert.ok(contact.y - contact.radiusY < layout.height, "贴地阴影需部分留在可见区域");
+    assert.ok(airborne.opacity < contact.opacity * 0.6);
   }
 });
 

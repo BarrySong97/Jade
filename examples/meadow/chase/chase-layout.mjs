@@ -1,8 +1,8 @@
 /**
- * @purpose 安排藏身草叶、停驻花头，并按真实网格投影接触点
+ * @purpose 安排草根地面、藏身草叶、接触阴影及随风停驻花头
  * @role 原自然草甸到追蝶舞台的布局适配层
  * @deps meadow-layout.mjs；带 alpha 裁切信息的植物素材
- * @gotcha 只调整已有植物，不增加密度；花头风动按 9 行网格分段插值，避免足部漂移
+ * @gotcha 地面埋在底边草根内，允许脚尖被底边裁住；前草不随猫一起下移；花头按 9 行网格插值
  */
 import { arrangeNaturalMeadow } from "../../../src/lib/meadow-layout.mjs";
 
@@ -37,7 +37,8 @@ export function flowerPoint(plant, time, wind = CHASE_WIND) {
 export function chaseLayout(width, height, byId) {
   const unit = Math.max(1, Math.min(96, width * 0.18, (height - 64) * 0.32));
   const half = Math.max(0, Math.min(width / 2 - unit * 1.2 - 8, unit * 2.75));
-  const ground = height - 12;
+  // The soil is behind the grass roots, not on top of the visible grass strip.
+  const ground = height + unit * 0.12;
   const homes = [width / 2 - half, width / 2 + half];
   const plants = arrangeNaturalMeadow({ seed: 5.6 }, width, height, byId).map((plant) => ({
     ...plant,
@@ -51,7 +52,8 @@ export function chaseLayout(width, height, byId) {
     if (!flower) throw new Error(`场景缺少停驻花朵：${id}`);
     const [u, v] = flowerUV(flower);
     flower.base = height + 10;
-    flower.height = (flower.base - ground + unit * (i === 0 ? 1.28 : 1.1)) / (1 - v);
+    const bloomY = height - 12 - unit * (i === 0 ? 1.28 : 1.1);
+    flower.height = (flower.base - bloomY) / (1 - v);
     flower.x = desiredX - (u - 0.5) * flower.height * flower.asset.aspect;
     flower.stiffness = 0.5;
     return flower;
@@ -68,13 +70,37 @@ export function chaseLayout(width, height, byId) {
       plant.asset = byId[j ? "grass-wispy" : "grass-arching"];
       plant.x = home + (j ? 0.45 : -0.45) * unit;
       plant.height = unit * (j ? 1.22 : 1.04);
-      plant.base = ground + 12;
+      plant.base = height;
       plant.flip = Boolean(i);
     }
+  }
+  // Keep some low leaves in front along the route, not only at the two hiding spots.
+  for (const [i, fraction] of [0.25, 0.5, 0.75].entries()) {
+    const x = homes[0] + (homes[1] - homes[0]) * fraction;
+    const plant = front
+      .filter((item) => !used.has(item))
+      .sort((a, b) => Math.abs(a.x - x) - Math.abs(b.x - x))[0];
+    if (!plant) continue;
+    used.add(plant);
+    plant.asset = byId[i === 1 ? "grass-arching" : "grass-low"];
+    plant.x = x;
+    plant.height = unit * [0.78, 0.92, 0.84][i];
+    plant.base = height + unit * 0.03;
   }
   // Keep the two readable landing flowers in front of other background plants.
   plants.sort(
     (a, b) => a.layer - b.layer || Number(flowers.includes(a)) - Number(flowers.includes(b)),
   );
   return { width, height, unit, half, ground, homes, flowers, plants, wind: CHASE_WIND };
+}
+
+export function catGroundShadow(layout, cat) {
+  const lift = Math.max(0, Math.min(1, (layout.ground - cat.y) / layout.unit));
+  return {
+    x: cat.x - cat.direction * layout.unit * 0.08,
+    y: layout.ground - layout.unit * 0.09,
+    radiusX: layout.unit * (0.8 + lift * 0.16),
+    radiusY: layout.unit * (0.12 + lift * 0.03),
+    opacity: 0.18 * (1 - lift * 0.65),
+  };
 }
