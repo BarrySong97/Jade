@@ -1,0 +1,29 @@
+{
+  "tool": "built-in ImageGen",
+  "date": "2026-09-19",
+  "reference": "cat-idle-v1.png",
+  "purpose": "先生成身体底图和独立尾巴，按相同画布叠合；尚无网格或动作",
+  "canvas": {
+    "width": 1254,
+    "height": 1254
+  },
+  "assets": [
+    {
+      "file": "body-no-tail-v1.png",
+      "generatedSource": "exec-75efaa0b-1b03-4269-8732-78731e087fd6.png",
+      "prompt": "Use case: precise-object-edit. Asset type: cat body plate for layered 2D animation.\nInput image is the EXACT approved hand-painted cream-white sitting cat, supplied as an edit target, not just a style reference. Preserve its painted color planes, short fur brushwork and edge detail. This is preparation of two separable layers for the SAME illustration; geometric registration is critical. Maintain the original 1254 x 1254 transparent canvas and exact original coordinate system, scale and alignment. Do not enlarge, shrink, translate, recenter, zoom or auto-trim the remaining painted content. True transparent RGBA outside the requested artwork, no backdrop, floor, cast shadow, halo, checkerboard texture, labels, border, text or watermark.\nTask: remove ONLY the curved tail that wraps across the bottom-left foreground of the seated cat. The tail is the thick cream-white curved strip near the bottom, from the left hip around the lower-left corner toward the rounded tip at lower center. Remove all visible tail paint. Reconstruct the small parts of the lower left haunch, rear leg and paw that were hidden behind that tail, with anatomically plausible short cream-white fur and matching painted shading. Restore transparency wherever the tail was outside the body's silhouette. Retain the entire rest of the cat: same exact eyes, face, head, ears, whiskers, torso, forelegs, forepaws, pose, facial expression and lighting. In particular the upper 70 percent of the cat should remain visually unchanged. Keep the body seated naturally at the same baseline. Do not cut out any other body part. No remaining tail stub visible outside the body; the later tail layer will attach behind the left haunch. Output one full-body cat WITHOUT its tail, on the original transparent canvas; this is a clean body layer, not a new cat design."
+    },
+    {
+      "file": "tail-v1.png",
+      "generatedSource": "exec-97dc14dc-d827-492c-a8c0-112e8c65b58c.png",
+      "initialSource": "exec-7e613749-8006-4a14-be42-7ac4fb85ad89.png",
+      "initialPrompt": "Use case: background-extraction. Asset type: isolated tail layer for the supplied cat's 2D animation.\nInput image is the EXACT approved hand-painted cream-white sitting cat, supplied as an edit target, not just a style reference. Preserve its painted color planes, short fur brushwork and edge detail. This is preparation of two separable layers for the SAME illustration; geometric registration is critical. Maintain the original 1254 x 1254 transparent canvas and exact original coordinate system, scale and alignment. Do not enlarge, shrink, translate, recenter, zoom or auto-trim the remaining painted content. True transparent RGBA outside the requested artwork, no backdrop, floor, cast shadow, halo, checkerboard texture, labels, border, text or watermark.\nTask: retain ONLY the existing thick curled cream-white tail along the lower-left foreground, preserving its current resting curvature, detailed painted fur, color, lighting and exact scale. Erase the entire cat body, legs, paws, face, eyes, ears and whiskers to transparency. The visible tail is a shallow hooked curve that starts beside the lower-left hip, sweeps around the lower left, then lies across the lower foreground ending in a rounded tip toward lower center-right. It occupies roughly x=105..615 and y=945..1245 in the source image. Keep that visible tail shape aligned at those same original coordinates. At the root near the left hip, add only a short overlapping extension of matching tail fur, curving a little upward behind the original haunch, for a future hidden attachment; this extension must be at the ROOT, not the rounded free tip. Do not include haunch fur, a paw, any body chunk or any other feature of the cat. Do not straighten the tail or invent a different tail. The large upper and right regions must remain truly transparent. Output only this single detached tail, with complete root and tip, at the same position on the full original transparent canvas.",
+      "correctionPrompt": "Use case: precise-object-edit. Image 1 is the detached painted tail EDIT TARGET on a 1254 x 1254 transparent canvas. Image 2 is the ORIGINAL approved sitting cat, for exact tail silhouette and position reference only. Make one narrowly targeted correction to image 1: REMOVE the upright pointed spur at the upper-left root (approximately x=215..315,y=870..970). This sharp vertical tuft is an unwanted protrusion, not an ear and not a lifted tail tip. Restore a smooth low rounded tail-root transition matching the original tail silhouette from image 2. If a hidden root extension is needed, it must run gently RIGHT into the original haunch area around x=285..350, y=980..1040, never upward above the tail's existing rounded left curve. Preserve the entire rest of the isolated curved tail, its visible rounded free tip on the lower right, painted fur, cream and gray tones, resting curl, scale, location and original 1254 x 1254 canvas. Keep all body/leg/head areas completely transparent. Do not add a body, paw, ear, extra tip or any other object. Do not recenter or crop the tail. True alpha-zero transparent surroundings, opaque painted fur, no backdrop, ground, shadow, halo, text, labels or watermark. Output only the corrected tail layer."
+    }
+  ],
+  "notes": [
+    "原图与两个图层使用相同画布尺寸和坐标；没有程序裁切或重绘像素。",
+    "生成式补画并非逐像素无损分割，毛发细节与尾巴轮廓可能和原图略有变化。",
+    "尾根与身体的遮挡、网格和动态接缝需要在后续小幅摆动实验中继续验证。"
+  ]
+}

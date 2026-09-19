@@ -1,8 +1,8 @@
 <!doctype html>
 <!--
-  @purpose 对照自然群落草甸与历次混种花草，并查看花草和小猫独立素材
+  @purpose 对照自然群落草甸与历次混种花草，并查看花草、小猫及尾巴分层素材
   @role 独立设计比较页，可切换可动大图与静态场景缩略图
-  @deps variations.js、scene-data.mjs、renderer.js、cat/cat-idle-v1.png、Tailwind CSS
+  @deps variations.js、scene-data.mjs、renderer.js、cat 目录的原画与分层 PNG、Tailwind CSS
   @gotcha 缩略图与主画面共享排布，所有花草均使用真实 PNG
 -->
 <html lang="zh-CN">
@@ -129,6 +129,82 @@
             <p class="mt-1 text-[11px] leading-5 text-[#8b987e]">照片参考 · 坐姿造型初稿</p>
           </a>
         </div>
+        <section id="cat-layers" class="mt-8 scroll-mt-6" aria-labelledby="cat-layers-title">
+          <div class="mb-4 flex flex-wrap items-baseline justify-between gap-3">
+            <h3 id="cat-layers-title" class="font-serif text-xl">先把尾巴分出来。</h3>
+            <p class="text-xs text-[#89957c]">身体底图 · 独立尾巴 · 静态叠合</p>
+          </div>
+          <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+            <a
+              href="/cat/body-no-tail-v1.png"
+              target="_blank"
+              rel="noreferrer"
+              class="rounded-xl border border-[#e0e4d7] bg-white/60 p-4 transition-colors hover:bg-white"
+            >
+              <img
+                src="/cat/body-no-tail-v1.png"
+                alt="移除尾巴后的小猫身体，已补出被遮挡的后腿与脚"
+                width="1254"
+                height="1254"
+                class="h-64 w-full object-contain"
+                loading="lazy"
+              />
+              <p class="mt-3 text-sm">身体底图</p>
+              <p class="mt-1 text-[11px] leading-5 text-[#8b987e]">补出尾巴原来挡住的身体和后脚</p>
+            </a>
+            <a
+              href="/cat/tail-v1.png"
+              target="_blank"
+              rel="noreferrer"
+              class="rounded-xl border border-[#e0e4d7] bg-white/60 p-4 transition-colors hover:bg-white"
+            >
+              <svg
+                viewBox="80 900 680 354"
+                class="h-64 w-full"
+                role="img"
+                aria-label="独立的奶白弯曲尾巴，放大展示笔触与轮廓"
+              >
+                <image href="/cat/tail-v1.png" width="1254" height="1254" />
+              </svg>
+              <p class="mt-3 text-sm">独立尾巴</p>
+              <p class="mt-1 text-[11px] leading-5 text-[#8b987e]">局部放大，查看轮廓和毛发笔触</p>
+            </a>
+            <figure class="rounded-xl border border-[#e0e4d7] bg-white/60 p-4">
+              <div
+                id="cat-layer-composite"
+                class="relative mx-auto size-64 max-w-full"
+                role="img"
+                aria-label="身体底图与独立尾巴按相同坐标叠合的小猫"
+              >
+                <img
+                  src="/cat/body-no-tail-v1.png"
+                  alt=""
+                  width="1254"
+                  height="1254"
+                  class="absolute inset-0 size-full object-contain"
+                  loading="lazy"
+                />
+                <img
+                  src="/cat/tail-v1.png"
+                  alt=""
+                  width="1254"
+                  height="1254"
+                  class="absolute inset-0 size-full object-contain"
+                  loading="lazy"
+                />
+              </div>
+              <figcaption>
+                <p class="mt-3 text-sm">叠回去看看</p>
+                <p class="mt-1 text-[11px] leading-5 text-[#8b987e]">
+                  两张素材合在一起，先看连接处
+                </p>
+              </figcaption>
+            </figure>
+          </div>
+          <p class="mt-3 text-xs leading-6 text-[#89957c]">
+            这是分层素材初稿，暂未加入摆动。补画后的毛发和尾巴轮廓与原图略有变化。
+          </p>
+        </section>
         <h3 class="mb-4 mt-7 text-sm text-[#7d8a70]">之前的 8 种花型</h3>
         <div id="new-assets" class="grid grid-cols-2 gap-3 md:grid-cols-4"></div>
         <details class="mt-6 text-xs text-[#7d8a70]">
