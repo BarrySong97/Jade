@@ -1,11 +1,12 @@
 /**
  * @purpose 为已生成的小猫姿势标注关节与肢体连接，帮助观察逐帧动作
  * @role Canvas 观察辅助层；数据不驱动 PNG，也不是解剖学骨骼或蒙皮绑定
- * @deps cat-atlas.mjs 的共同坐标变换、tail-motion.mjs 的尾巴实际形变
+ * @deps cat-atlas.mjs、tail-motion.mjs、cat-transition-skeletons.mjs
  * @gotcha 每组坐标来自对应姿势的人工近似标注；遮挡侧腿用虚线，不在帧间虚构插值
  */
 import { projectCatPoint } from "./cat-atlas.mjs";
 import { deformTailPoint } from "./tail-motion.mjs";
+import { CAT_TRANSITION_SKELETONS } from "./cat-transition-skeletons.mjs";
 
 // Body: hip → back → shoulder → head. Legs: root → bend → wrist/hock → paw.
 function pose(body, front, rear, tail, frontFar, rearFar) {
@@ -19,6 +20,7 @@ function pose(body, front, rear, tail, frontFar, rearFar) {
   };
 }
 export const CAT_SKELETONS = {
+  ...CAT_TRANSITION_SKELETONS,
   run: [
     pose(
       [

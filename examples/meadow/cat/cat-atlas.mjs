@@ -1,7 +1,7 @@
 /**
- * @purpose 定义跑步和跳跃透明图集的采样区与身体注册点
+ * @purpose 定义跑跳和四组过渡透明图集的采样区与身体注册点
  * @role 生成姿势、关节标注与 Canvas 播放器之间的共同坐标契约
- * @deps cat-run-v1.png、cat-jump-v1.png（均 1774×887）、tail-motion.mjs
+ * @deps 六张 cat-*-v1.png 图集（均 1774×887）、tail-motion.mjs
  * @gotcha 不按每帧高度缩放；跑步共用地平线，腾空帧按躯干注册，避免贴地滑行和体型抖动
  */
 import { CAT_SIZE } from "./tail-motion.mjs";
@@ -17,6 +17,7 @@ function frames(anchors) {
 
 export const CAT_ATLASES = {
   run: {
+    label: "跑步",
     file: "cat-run-v1.png",
     width: 1774,
     height: 887,
@@ -24,6 +25,7 @@ export const CAT_ATLASES = {
     frames: frames(Array.from({ length: 8 }, () => [220, 353])),
   },
   jump: {
+    label: "跳跃",
     file: "cat-jump-v1.png",
     width: 1774,
     height: 887,
@@ -39,19 +41,87 @@ export const CAT_ATLASES = {
       [204, 334],
     ]),
   },
+  rise: {
+    label: "坐站过渡",
+    file: "cat-rise-v1.png",
+    width: 1774,
+    height: 887,
+    maxWidth: 450,
+    frames: frames([
+      [270, 414],
+      [255, 409],
+      [250, 406],
+      [240, 406],
+      [238, 349],
+      [228, 350],
+      [220, 350],
+      [215, 349],
+    ]),
+  },
+  gait: {
+    label: "起跑收步",
+    file: "cat-gait-v1.png",
+    width: 1774,
+    height: 887,
+    maxWidth: 450,
+    frames: frames([
+      [218, 398],
+      [211, 396],
+      [213, 390],
+      [213, 393],
+      [219, 344],
+      [213, 342],
+      [214, 343],
+      [214, 344],
+    ]),
+  },
+  prepare: {
+    label: "蓄力恢复",
+    file: "cat-prepare-v1.png",
+    width: 1774,
+    height: 887,
+    maxWidth: 325,
+    frames: frames([
+      [219, 365],
+      [224, 367],
+      [211, 370],
+      [206, 370],
+      [231, 333],
+      [222, 329],
+      [210, 328],
+      [197, 329],
+    ]),
+  },
+  turn: {
+    label: "转身",
+    file: "cat-turn-v1.png",
+    width: 1774,
+    height: 887,
+    maxWidth: 402,
+    frames: frames([
+      [215, 390],
+      [222, 392],
+      [232, 390],
+      [204, 392],
+      [232, 357],
+      [258, 355],
+      [255, 355],
+      [237, 352],
+    ]),
+  },
 };
 
 export function catPoseTransform(layout, motion, tailStudy = false) {
-  const center = layout.width / 2 + motion.x * layout.travel;
+  const study = motion.study ?? Number(tailStudy);
+  const center = layout.width / 2 + motion.x * layout.travel * (1 - study);
   if (motion.sheet === "idle") {
-    const size = tailStudy
-      ? Math.min(layout.width - 32, layout.height - 64, 390)
-      : layout.unit * 1.35;
+    const regular = layout.unit * 1.35;
+    const size = regular + study * (Math.min(layout.width - 32, layout.height - 64, 390) - regular);
     return {
       origin: [center, layout.ground],
       anchor: [CAT_SIZE / 2, 1244],
       scale: size / CAT_SIZE,
-      direction: 1,
+      direction: motion.direction,
     };
   }
   const atlas = CAT_ATLASES[motion.sheet];

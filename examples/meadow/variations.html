@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  @purpose 对照自然群落草甸与小猫跑跳动画，标注关节辅助线并查看花草、小猫素材
+  @purpose 对照自然群落草甸与小猫动作衔接，标注关节辅助线并查看花草、小猫素材
   @role 独立设计比较页，可切换可动大图与静态场景缩略图
   @deps variations.js、scene-data.mjs、renderer.js、cat/cat-board.js 与分层 PNG、Tailwind CSS
   @gotcha 缩略图与主画面共享排布，所有花草均使用真实 PNG
@@ -107,14 +107,17 @@
         class="mt-10 scroll-mt-6 overflow-hidden rounded-2xl border border-[#d9dfd1] bg-[#fffefb]"
         aria-labelledby="cat-board-title"
       >
-        <div class="flex items-start justify-between gap-5 px-5 pt-5 sm:px-7">
+        <div class="flex flex-wrap items-start justify-between gap-5 px-5 pt-5 sm:px-7">
           <div>
             <h2 id="cat-board-title" class="font-serif text-xl">跑两步，跳一下。</h2>
             <p class="mt-2 text-xs leading-6 text-[#859178]">
-              观察、起跑、跃起、轻轻落地，再停下来歇一会儿。
+              慢慢起身，迈步小跑；收步站稳，再屈腿坐下。转身和跳跃也有了前后衔接。
             </p>
           </div>
-          <span id="cat-status" role="status" class="shrink-0 pt-1 text-[11px] text-[#919984]"
+          <span
+            id="cat-status"
+            role="status"
+            class="max-w-full pt-1 text-[11px] leading-6 text-[#919984]"
             >加载中</span
           >
         </div>
@@ -291,11 +294,12 @@
             骨架是逐张姿势的人工辅助标注，用来看肢体变化，并未绑定或驱动图片。拖动进度会暂停，可配合慢放观察；尾巴标记跟随实际网格形变。
           </p>
           <p class="mt-4 text-[11px] leading-6 text-[#89957c]">
-            跑跳使用不同的手绘姿势，坐姿保留尾巴网格轻摆。可以慢放观察四肢与落地节奏；单次动作结束后，再点按钮就能重播。
+            动作途中点其他按钮，小猫会先坐稳或站稳再继续；跳在空中会先落地。连续点击以最后一次为准，可用
+            0.25 × 慢放和进度条观察过渡。
           </p>
           <p id="cat-error" class="mt-3 text-sm text-red-700" role="alert" hidden></p>
           <details class="mt-4 border-t border-[#e0e4d7] pt-4 text-xs text-[#637458]">
-            <summary class="cursor-pointer">展开看动作原画 · 跑步 8 帧 / 跳跃 8 姿势</summary>
+            <summary class="cursor-pointer">展开看动作原画 · 跑跳与 4 组过渡</summary>
             <div class="mt-4 grid gap-4 sm:grid-cols-2">
               <a
                 href="/cat/cat-run-v1.png"
@@ -328,6 +332,70 @@
                   class="w-full"
                 />
                 <p class="mt-2">跳跃 · 蓄力到落地</p>
+              </a>
+              <a
+                href="/cat/cat-rise-v1.png"
+                target="_blank"
+                rel="noreferrer"
+                class="rounded-xl bg-[#f0f1e9] p-3"
+              >
+                <img
+                  src="/cat/cat-rise-v1.png"
+                  width="1774"
+                  height="887"
+                  loading="lazy"
+                  alt="小猫从坐下逐渐抬起身体、展开后腿到站立的八个过渡姿势"
+                  class="w-full"
+                />
+                <p class="mt-2">坐下 ↔ 站立 · 抬身与收腿</p>
+              </a>
+              <a
+                href="/cat/cat-gait-v1.png"
+                target="_blank"
+                rel="noreferrer"
+                class="rounded-xl bg-[#f0f1e9] p-3"
+              >
+                <img
+                  src="/cat/cat-gait-v1.png"
+                  width="1774"
+                  height="887"
+                  loading="lazy"
+                  alt="上排为迈步起跑，下排为收步站稳的小猫过渡姿势"
+                  class="w-full"
+                />
+                <p class="mt-2">站立 ↔ 跑步 · 起跑与收步</p>
+              </a>
+              <a
+                href="/cat/cat-prepare-v1.png"
+                target="_blank"
+                rel="noreferrer"
+                class="rounded-xl bg-[#f0f1e9] p-3"
+              >
+                <img
+                  src="/cat/cat-prepare-v1.png"
+                  width="1774"
+                  height="887"
+                  loading="lazy"
+                  alt="上排为跳前屈腿下蹲，下排为落地缓冲后逐渐站起"
+                  class="w-full"
+                />
+                <p class="mt-2">跳跃前后 · 下蹲与落地恢复</p>
+              </a>
+              <a
+                href="/cat/cat-turn-v1.png"
+                target="_blank"
+                rel="noreferrer"
+                class="rounded-xl bg-[#f0f1e9] p-3"
+              >
+                <img
+                  src="/cat/cat-turn-v1.png"
+                  width="1774"
+                  height="887"
+                  loading="lazy"
+                  alt="小猫从朝右经过正面小步转身到朝左的八个姿势"
+                  class="w-full"
+                />
+                <p class="mt-2">原地转身 · 小步换方向</p>
               </a>
             </div>
           </details>

@@ -36,7 +36,7 @@ export function createCatRenderer(canvas, overlay, body, tail, atlases) {
     attribute vec2 a_uv;
     uniform vec2 u_size;
     uniform vec2 u_origin;
-    uniform float u_scale;
+    uniform vec2 u_scale;
     varying vec2 v_uv;
     void main() {
       vec2 p = u_origin + a_position * u_scale;
@@ -144,10 +144,10 @@ export function createCatRenderer(canvas, overlay, body, tail, atlases) {
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     context?.clearRect(0, 0, view.width, view.height);
-    const center = view.width / 2 + motion.x * view.travel;
+    const transform = catPoseTransform(view, motion, tailStudy);
+    const center = transform.origin[0];
     const ground = view.ground;
     const unit = view.unit;
-    const transform = catPoseTransform(view, motion, tailStudy);
     const hideArtwork = inspection.showSkeleton && inspection.bonesOnly;
     canvas.dataset.skeleton = String(Boolean(inspection.showSkeleton));
     canvas.dataset.bonesOnly = String(Boolean(hideArtwork));
@@ -175,7 +175,7 @@ export function createCatRenderer(canvas, overlay, body, tail, atlases) {
         mesh.data[i * 4 + 3] = (sy + row * sh) / atlas.height;
       }
       gl.uniform2f(origin, 0, 0);
-      gl.uniform1f(scale, 1);
+      gl.uniform2f(scale, 1, 1);
       gl.bindBuffer(gl.ARRAY_BUFFER, mesh.vertexBuffer);
       gl.bufferSubData(gl.ARRAY_BUFFER, 0, mesh.data);
       if (!hideArtwork) drawMesh(mesh);
@@ -189,8 +189,8 @@ export function createCatRenderer(canvas, overlay, body, tail, atlases) {
     }
     const idleScale = transform.scale;
     const [idleX, idleY] = projectCatPoint([0, 0], transform);
-    gl.uniform1f(scale, idleScale);
-    // The seated reference is a three-quarter view; keep its original orientation at rest.
+    gl.uniform2f(scale, idleScale * transform.direction, idleScale);
+    // Idle layers and annotations share the facing direction reached by the turn clip.
     gl.uniform2f(origin, idleX, idleY);
     if (!tailOnly && !hideArtwork) drawMesh(bodyMesh);
     tailMesh.points.forEach(([x, y], i) => {
@@ -204,7 +204,7 @@ export function createCatRenderer(canvas, overlay, body, tail, atlases) {
     if (grid && context) {
       context.save();
       context.translate(idleX, idleY);
-      context.scale(idleScale, idleScale);
+      context.scale(idleScale * transform.direction, idleScale);
       context.lineWidth = 0.65 / idleScale;
       context.strokeStyle = "#55744888";
       context.beginPath();

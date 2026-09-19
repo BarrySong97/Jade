@@ -1,13 +1,19 @@
 /**
- * @purpose 在原花草 demo 的独立 Canvas 播放猫的跑跳与休息
- * @role 动作按钮、骨架辅助线、拖动进度、慢放、暂停和动画生命周期
+ * @purpose 在原花草 demo 的独立 Canvas 衔接猫的跑跳与休息
+ * @role 排队切换动作、骨架辅助线、拖动进度、慢放、暂停和动画生命周期
  * @deps cat-renderer.js、cat-motion.mjs、cat-atlas.mjs、透明 PNG
- * @gotcha 花草状态独立；单次动作结束保持落点；屏外/后台停表，减少动态效果默认暂停
+ * @gotcha 新动作等坐稳/站稳再切换并保留落点；花草独立；屏外/后台停表，减少动态效果默认暂停
  */
 import { createCatRenderer } from "./cat-renderer.js";
 import { CAT_SIZE } from "./tail-motion.mjs";
 import { CAT_ATLASES } from "./cat-atlas.mjs";
-import { catLayout, createCatSequence, sampleCatSequence } from "./cat-motion.mjs";
+import {
+  catLayout,
+  createCatSequence,
+  sampleCatSequence,
+  catSequenceTime,
+  nextCatSwitchTime,
+} from "./cat-motion.mjs";
 
 const $ = (id) => document.getElementById(id);
 const board = $("cat-board");
@@ -37,27 +43,36 @@ let renderer;
 let frame = 0;
 let previous = null;
 let time = 0;
+let tailTime = 0;
+let pending = null;
 let mode = "auto";
+const actionNames = {
+  auto: "自动演示",
+  run: "跑一段",
+  jump: "跳一下",
+  rest: "坐下休息",
+  tail: "尾巴实验",
+};
 let sequence = createCatSequence(mode, catLayout(stage.clientWidth, stage.clientHeight));
 
 function draw() {
   const motion = sampleCatSequence(sequence, time);
-  const tailStudy = mode === "tail";
+  const tailStudy = motion.study;
   renderer?.draw(
-    time,
-    Number(amplitude.value) / 100,
-    tailStudy && grid.checked,
-    tailStudy && tailOnly.checked,
+    tailTime,
+    (Number(amplitude.value) / 100) * motion.tailWeight,
+    mode === "tail" && grid.checked,
+    mode === "tail" && tailOnly.checked,
     motion,
     tailStudy,
     { showSkeleton: skeleton.checked, bonesOnly: bonesOnly.checked },
   );
-  const position = sequence.loop ? time % sequence.duration : Math.min(time, sequence.duration);
+  const position = catSequenceTime(sequence, time);
   seek.value = String(Math.round((position / sequence.duration) * 1000));
   const description =
     motion.sheet === "idle"
       ? "坐姿 · 尾巴网格"
-      : `${motion.sheet === "run" ? "跑步" : "跳跃"} · 姿势 ${motion.frame + 1} / 8`;
+      : `${CAT_ATLASES[motion.sheet].label} · ${motion.frame + 1} / 8`;
   if (poseLabel.textContent !== description) poseLabel.textContent = description;
   seek.setAttribute(
     "aria-valuetext",
@@ -65,27 +80,37 @@ function draw() {
   );
   const label = paused
     ? "已暂停"
-    : motion.done
-      ? "休息中 · 可再点一次"
-      : tailStudy
-        ? "尾巴网格实验"
-        : motion.label;
+    : pending
+      ? `${motion.label} · 接着${actionNames[pending.mode]}`
+      : motion.done
+        ? "休息中 · 可再点一次"
+        : tailStudy
+          ? "尾巴网格实验"
+          : motion.label;
   if (status.textContent !== label) status.textContent = label;
   board.dataset.action = mode;
   board.dataset.phase = motion.kind;
   board.dataset.done = String(motion.done);
+  board.dataset.pending = pending?.mode ?? "";
   return motion;
 }
 function canPlay() {
   return !paused && visible && !document.hidden && pageActive && !failed && !signal.aborted;
 }
 function tick(timestamp) {
-  if (previous !== null)
-    time += Math.min((timestamp - previous) / 1000, 0.05) * Number(speed.value);
+  if (previous !== null) {
+    const delta = Math.min((timestamp - previous) / 1000, 0.05) * Number(speed.value);
+    time += delta;
+    tailTime += delta;
+  }
   previous = timestamp;
+  applyPending();
   const motion = draw();
-  if (motion.done) {
-    board.dataset.motion = "finished";
+  if (
+    motion.done ||
+    (mode === "tail" && motion.safe && Number(amplitude.value) === 0 && !pending)
+  ) {
+    board.dataset.motion = motion.done ? "finished" : "paused";
     previous = null;
     frame = 0;
   } else if (canPlay()) frame = requestAnimationFrame(tick);
@@ -97,20 +122,36 @@ function playback() {
   pause.textContent = paused ? "继续播放" : "暂停";
   pause.setAttribute("aria-pressed", String(paused));
   const motion = draw();
-  const running = canPlay() && !motion.done && !(mode === "tail" && Number(amplitude.value) === 0);
+  const running =
+    canPlay() &&
+    !motion.done &&
+    !(mode === "tail" && motion.safe && Number(amplitude.value) === 0 && !pending);
   board.dataset.motion = running ? "playing" : motion.done ? "finished" : "paused";
   if (running) frame = requestAnimationFrame(tick);
 }
-function selectAction(nextMode) {
-  const start = sampleCatSequence(sequence, time);
-  mode = nextMode;
+function updateActionButtons() {
+  for (const button of actionButtons)
+    button.setAttribute(
+      "aria-pressed",
+      String(button.dataset.catAction === (pending?.mode ?? mode)),
+    );
+  $("cat-tail-controls").hidden = mode !== "tail";
+}
+function applyPending() {
+  if (!pending || time + 1e-9 < pending.at) return;
+  const start = sampleCatSequence(sequence, pending.at);
+  mode = pending.mode;
   sequence = createCatSequence(mode, catLayout(stage.clientWidth, stage.clientHeight), start);
   time = 0;
-  // Clicking an action is explicit opt-in, including under reduced-motion preferences.
+  pending = null;
+  updateActionButtons();
+}
+function selectAction(nextMode) {
+  // Latest request wins; the current clip reaches a planted-paw checkpoint first.
+  pending = { mode: nextMode, at: nextCatSwitchTime(sequence, time) };
   paused = false;
-  for (const button of actionButtons)
-    button.setAttribute("aria-pressed", String(button.dataset.catAction === mode));
-  $("cat-tail-controls").hidden = mode !== "tail";
+  applyPending();
+  updateActionButtons();
   playback();
 }
 function fail(error) {
@@ -175,10 +216,13 @@ try {
     ),
   );
   if (!signal.aborted) {
-    renderer = createCatRenderer(canvas, $("cat-mesh"), images.body, images.tail, {
-      run: images.run,
-      jump: images.jump,
-    });
+    renderer = createCatRenderer(
+      canvas,
+      $("cat-mesh"),
+      images.body,
+      images.tail,
+      Object.fromEntries(Object.keys(CAT_ATLASES).map((name) => [name, images[name]])),
+    );
     renderer.resize(stage.clientWidth, stage.clientHeight);
     draw();
     canvas.hidden = false;
@@ -190,8 +234,11 @@ try {
     pause.addEventListener(
       "click",
       () => {
+        if (sampleCatSequence(sequence, time).done) {
+          selectAction(mode);
+          return;
+        }
         paused = !paused;
-        if (!paused && sampleCatSequence(sequence, time).done) time = 0;
         playback();
       },
       { signal },
@@ -210,9 +257,12 @@ try {
     seek.addEventListener(
       "input",
       () => {
+        pending = null;
+        updateActionButtons();
         paused = true;
         time = (Number(seek.value) / 1000) * sequence.duration;
         if (sequence.loop) time = Math.min(time, sequence.duration - 0.00001);
+        tailTime = time;
         playback();
       },
       { signal },

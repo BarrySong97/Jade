@@ -1,5 +1,5 @@
 /**
- * @purpose 验证猫跑跳、图集边界以及辅助关节与原画的坐标一致性
+ * @purpose 验证猫的动作衔接、安全切换、图集边界与辅助关节坐标
  * @role pnpm test:meadow 中的动作与资源契约回归
  * @deps node:test、node:assert、sharp、cat-motion.mjs、cat-atlas.mjs、cat-skeleton.mjs
  * @gotcha 解码真实 alpha 检查不串帧和不出界；不能代替浏览器视觉与控件验收
@@ -16,7 +16,9 @@ import { CAT_SKELETONS, catSkeleton } from "../examples/meadow/cat/cat-skeleton.
 import { deformTailPoint } from "../examples/meadow/cat/tail-motion.mjs";
 import {
   catLayout,
+  catSequenceTime,
   createCatSequence,
+  nextCatSwitchTime,
   sampleCatSequence,
 } from "../examples/meadow/cat/cat-motion.mjs";
 
@@ -38,7 +40,12 @@ test("跑步在桌面和窄屏都改变腿部姿势，单次跑动完成后保�
     assert.equal(final.sheet, "idle");
     assert.equal(final.x, 0.76);
     const back = createCatSequence("run", catLayout(width, 460), final);
-    assert.equal(sampleCatSequence(back, 0).direction, -1);
+    assert.equal(sampleCatSequence(back, 0).direction, final.direction, "先保持原朝向");
+    assert.ok(
+      back.segments.some((s) => s.kind === "turn"),
+      "折返前需要转身",
+    );
+    assert.equal(back.segments.find((s) => s.kind === "run").direction, -1);
   }
 });
 
@@ -51,13 +58,14 @@ test("跳跃有蓄力、腾空和缓冲，只有飞行阶段离地，动作完�
     const pose = sampleCatSequence(sequence, t);
     phases.add(pose.kind);
     if (pose.sheet === "jump") frames.add(pose.frame);
-    assert.equal(pose.direction, -1, "靠近右边时应往里跳");
+    if (pose.kind === "flight") assert.equal(pose.direction, -1, "靠近右边时应转身往里跳");
     assert.ok(pose.lift >= 0 && pose.lift <= 0.74);
     if (pose.kind !== "flight") assert.equal(pose.lift, 0);
     peak = Math.max(peak, pose.lift);
   }
-  for (const phase of ["crouch", "push", "flight", "land", "recover"]) assert.ok(phases.has(phase));
-  assert.equal(frames.size, 8);
+  for (const phase of ["rise", "turn", "crouch", "push", "flight", "land", "recover", "lower"])
+    assert.ok(phases.has(phase));
+  assert.deepEqual([...frames].sort(), [0, 1, 2, 3, 4, 5, 6]);
   assert.ok(peak > 0.73);
   const final = sampleCatSequence(sequence, 100);
   assert.ok(Math.abs(final.x - 0.35) < 1e-6);
@@ -77,10 +85,100 @@ test("自动演示循环位置连续，休息时间多于运动时间", () => {
   assert.ok(rest > sequence.duration / 2);
 });
 
+test("跑跳从坐姿经过起身再运动，结束先恢复站立再坐下", () => {
+  const layout = catLayout(1000, 460);
+  const kinds = (mode) => createCatSequence(mode, layout).segments.map((s) => s.kind);
+  const run = kinds("run");
+  const jump = kinds("jump");
+  for (const [steps, expected] of [
+    [run, ["rise", "start", "run", "brake", "stand", "lower", "sit"]],
+    [jump, ["rise", "crouch", "push", "flight", "land", "recover", "stand", "lower", "sit"]],
+  ]) {
+    let cursor = -1;
+    for (const phase of expected) {
+      cursor = steps.indexOf(phase, cursor + 1);
+      assert.ok(cursor >= 0, `缺少顺序正确的 ${phase}`);
+    }
+  }
+});
+
+test("起跑与收步的位置和速度连续，静坐尾巴与观察距离在边界处连续", () => {
+  const layout = catLayout(1000, 460);
+  for (const mode of ["auto", "run", "jump", "rest", "tail"]) {
+    const sequence = createCatSequence(mode, layout);
+    let boundary = 0;
+    const epsilon = 1e-6;
+    for (const segment of sequence.segments.slice(0, -1)) {
+      boundary += segment.duration;
+      const before = sampleCatSequence(sequence, boundary - epsilon);
+      const after = sampleCatSequence(sequence, boundary + epsilon);
+      assert.ok(Math.abs(before.x - after.x) < 1e-4, `${mode}/${segment.kind} 不能瞬移`);
+      assert.ok(Math.abs(before.study - after.study) < 1e-4, "观察距离不能突然缩放");
+      if (before.sheet === "idle" && after.sheet === "idle")
+        assert.ok(Math.abs(before.tailWeight - after.tailWeight) < 1e-4, "尾巴不能突然归零");
+      if (segment.kind === "start" || segment.kind === "run") {
+        const at = sampleCatSequence(sequence, boundary);
+        const leftVelocity = (at.x - before.x) / epsilon;
+        const rightVelocity = (after.x - at.x) / epsilon;
+        assert.ok(Math.abs(leftVelocity - rightVelocity) < 1e-4, "起跑/匀速/收步衔接不能跳速");
+      }
+    }
+  }
+});
+
+test("ADR-0008：新动作等坐稳或站稳，并继承原位置、朝向与姿势", () => {
+  const layout = catLayout(1000, 460);
+  const modes = ["auto", "run", "jump", "rest", "tail"];
+  for (const mode of modes) {
+    const sequence = createCatSequence(mode, layout);
+    for (let time = 0; time < sequence.duration * 2 + 1; time += 0.073) {
+      const at = nextCatSwitchTime(sequence, time);
+      assert.ok(at >= time - 1e-8, "排队不能倒退时间");
+      const checkpoint = sampleCatSequence(sequence, at);
+      assert.ok(checkpoint.safe, `${mode} ${time} 切在不安全姿势`);
+      assert.equal(checkpoint.lift, 0);
+      for (const next of modes) {
+        const first = sampleCatSequence(createCatSequence(next, layout, checkpoint), 0);
+        for (const key of ["x", "direction", "sheet", "frame", "study", "tailWeight"])
+          assert.equal(first[key], checkpoint[key], `${mode} → ${next} 的 ${key} 没有接上`);
+      }
+    }
+  }
+});
+
+test("ADR-0008：空中切换必须完成落地恢复；自动演示回场只执行一次", () => {
+  const layout = catLayout(1000, 460);
+  const jump = createCatSequence("jump", layout);
+  let flightStart = 0;
+  for (const segment of jump.segments) {
+    if (segment.kind === "flight") break;
+    flightStart += segment.duration;
+  }
+  const airborne = flightStart + 0.3;
+  const at = nextCatSwitchTime(jump, airborne);
+  assert.ok(at >= flightStart + 0.86 + 0.12 + 0.48 - 1e-8);
+  assert.equal(sampleCatSequence(jump, at).posture, "stand");
+  assert.throws(
+    () => createCatSequence("rest", layout, sampleCatSequence(jump, airborne)),
+    /坐稳或站稳/,
+  );
+
+  const auto = createCatSequence("auto", layout, { x: 0.65, direction: -1, posture: "stand" });
+  assert.ok(auto.loopStart > 0);
+  assert.equal(sampleCatSequence(auto, 0).x, 0.65);
+  const start = sampleCatSequence(auto, auto.loopStart);
+  for (const loops of [1, 2, 10]) {
+    const elapsed = auto.loopStart + (auto.duration - auto.loopStart) * loops;
+    assert.ok(Math.abs(catSequenceTime(auto, elapsed) - auto.loopStart) < 1e-8);
+    const pose = sampleCatSequence(auto, elapsed);
+    for (const key of ["x", "direction", "sheet", "frame"]) assert.equal(pose[key], start[key]);
+  }
+});
+
 test("关节辅助线跟随图集帧、左右镜像和离地位移，不改变标注原数据", () => {
   const layout = catLayout(1000, 460);
   const original = JSON.stringify(CAT_SKELETONS);
-  for (const sheet of ["run", "jump"]) {
+  for (const sheet of Object.keys(CAT_ATLASES)) {
     assert.equal(CAT_SKELETONS[sheet].length, CAT_ATLASES[sheet].frames.length);
     for (let frame = 0; frame < 8; frame++) {
       const motion = { sheet, frame, x: 0.3, lift: 0.4, direction: 1 };
@@ -117,7 +215,7 @@ test("坐姿尾巴标记使用实际网格变形，尾根不动，躯干标记�
   rest.tail.forEach(([x, y], i) => assert.deepEqual(moving.tail[i], deformTailPoint(x, y, 1.5, 1)));
   for (const tailStudy of [false, true]) {
     const transform = catPoseTransform(catLayout(375, 380), motion, tailStudy);
-    assert.equal(transform.direction, 1, "坐姿保留原始朝向，不能只把辅助线镜像");
+    assert.equal(transform.direction, -1, "坐姿图片和辅助线一起镜像，保留落地朝向");
     assert.deepEqual(projectCatPoint(transform.anchor, transform), transform.origin);
   }
 });
