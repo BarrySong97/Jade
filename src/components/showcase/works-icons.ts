@@ -14,6 +14,7 @@ import post from "@/assets/works/icons/post.png";
 import journalTodo from "@/assets/works/icons/journal-todo.png";
 import supplysmart from "@/assets/works/icons/supplysmart.png";
 import limitless320 from "@/assets/works/icons/limitless-320.png";
+import seperate from "@/assets/works/icons/seperate.png";
 
 export const WORK_ICONS = {
   flowm,
@@ -25,6 +26,7 @@ export const WORK_ICONS = {
   "journal-todo": journalTodo,
   supplysmart,
   "limitless-320": limitless320,
+  seperate,
 } as const;
 
 export type WorkIconKey = keyof typeof WORK_ICONS;

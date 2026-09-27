@@ -77,6 +77,36 @@ const R2 = "https://blogassets.4real.ink/works";
 
 export const WORKS: Work[] = [
   {
+    slug: "seperate",
+    t: "Seperate",
+    y: "2026",
+    cat: "macOS",
+    icon: "seperate",
+    url: "https://seperate.vercel.app",
+    desc: "把 Claude Code、Codex 和终端并排放进一个窗口，按项目和 worktree 管理，agent 需要你时再提醒",
+    images: [
+      {
+        img: `${R2}/9d44f46e5a18c8e2f72862b35e491764.webp`,
+        width: 1200,
+        height: 630,
+        thumbhash: "CvgBBICmWIS5iGdwl1SiYvAEuw==",
+      },
+      /* 官网长图紧接封面 → 右列;App 截图落左列 OG 下方 */
+      {
+        img: `${R2}/90428b0639ba049c73d058f563025992.webp`,
+        width: 2400,
+        height: 4745,
+        thumbhash: "C/gFDAB6iIcHt51YCZZwpQReag==",
+      },
+      {
+        img: `${R2}/a09fc45862463650a75acbc8071ae3d9.webp`,
+        width: 1920,
+        height: 1080,
+        thumbhash: "D/cFLIL1pNeXl4mcl3ZHhYD2mA==",
+      },
+    ],
+  },
+  {
     slug: "flowm",
     t: "FLOWM 流记",
     y: "2025",
