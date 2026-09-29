@@ -1,6 +1,6 @@
 ---
 /**
- * @purpose 展示出生年份、长简介、工作经历和教育背景的无分隔线墨白简历页
+ * @purpose 展示出生年份、无标题长简介、工作经历和教育背景的墨白简历页，不设社交模块
  * @role /about 静态路由
  * @deps BaseLayout、PROFILE、ABOUT
  * @gotcha 简历数据中的经历与教育暂为示例，页面需保留说明；窄屏时间栏堆叠；简介用 flex gap 保持段距，避免 m-0 覆盖 space-y
@@ -25,13 +25,12 @@ import { ABOUT } from "@/lib/about";
       </p>
     </header>
 
-    <section aria-labelledby="intro-heading" class="grid gap-5 py-9 sm:grid-cols-[104px_minmax(0,1fr)] sm:gap-8 sm:py-10">
-      <h2 id="intro-heading" class="m-0 pt-1 text-[12px] font-normal tracking-[0.06em] text-[var(--ink-3)]">简介</h2>
-      <div class="flex flex-col items-start gap-5 text-[15px] leading-[1.9] text-[var(--ink-2)]">
+    <div class="grid py-9 sm:grid-cols-[104px_minmax(0,1fr)] sm:gap-8 sm:py-10">
+      <div class="flex flex-col items-start gap-5 text-[15px] leading-[1.9] text-[var(--ink-2)] sm:col-start-2">
         {ABOUT.introduction.map((paragraph) => <p class="m-0">{paragraph}</p>)}
         <a href="/products" class="ulink inline-block text-[13px] text-[var(--accent-ink)]">看看我的作品 ↗</a>
       </div>
-    </section>
+    </div>
 
     <section aria-labelledby="experience-heading" class="py-9 sm:py-10">
       <div class="mb-8 flex flex-wrap items-baseline gap-x-6 gap-y-2">
@@ -68,13 +67,5 @@ import { ABOUT } from "@/lib/about";
       </ul>
     </section>
 
-    <section aria-labelledby="contact-heading" class="grid gap-5 pt-9 sm:grid-cols-[104px_minmax(0,1fr)] sm:gap-8 sm:pt-10">
-      <h2 id="contact-heading" class="m-0 text-[12px] font-normal tracking-[0.06em] text-[var(--ink-3)]">找到我</h2>
-      <div class="flex flex-wrap gap-x-6 gap-y-3 text-[13px]">
-        {PROFILE.social.map((social) => (
-          <a href={social.url} target="_blank" rel="noopener noreferrer" class="ulink text-[var(--accent-ink)]">{social.label} ↗</a>
-        ))}
-      </div>
-    </section>
   </article>
 </BaseLayout>
