@@ -2,12 +2,12 @@
 /**
  * @purpose 展示出生年份、无标题长简介、工作经历和教育背景的墨白简历页，不设社交模块
  * @role /about 静态路由
- * @deps BaseLayout、PROFILE、ABOUT
- * @gotcha 简历数据中的经历与教育暂为示例，页面需保留说明；窄屏时间栏堆叠；简介用 flex gap 保持段距，避免 m-0 覆盖 space-y
+ * @deps BaseLayout、PROFILE、lib/about.json（可直接编辑的内容）
+ * @gotcha 简历数据中的经历与教育暂为示例，页面需保留说明；简介占满版心，不保留标题空栏；用 flex gap 保持段距，避免 m-0 覆盖 space-y
  */
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { PROFILE } from "@/lib/site";
-import { ABOUT } from "@/lib/about";
+import ABOUT from "@/lib/about.json";
 ---
 
 <BaseLayout title="关于我" description={`${PROFILE.name} 的简介、经历与教育背景。`}>
@@ -19,14 +19,14 @@ import { ABOUT } from "@/lib/about";
         {PROFILE.name}
       </h1>
       <p class="mb-0 mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px] text-[var(--ink-2)]">
-        <span>1997 年生</span>
+        <span>{ABOUT.birthYear} 年生</span>
         <span aria-hidden="true" class="text-[var(--ink-4)]">/</span>
         <span>{PROFILE.location}</span>
       </p>
     </header>
 
-    <div class="grid py-9 sm:grid-cols-[104px_minmax(0,1fr)] sm:gap-8 sm:py-10">
-      <div class="flex flex-col items-start gap-5 text-[15px] leading-[1.9] text-[var(--ink-2)] sm:col-start-2">
+    <div class="py-9 sm:py-10">
+      <div class="flex flex-col items-start gap-5 text-[15px] leading-[1.9] text-[var(--ink-2)]">
         {ABOUT.introduction.map((paragraph) => <p class="m-0">{paragraph}</p>)}
         <a href="/products" class="ulink inline-block text-[13px] text-[var(--accent-ink)]">看看我的作品 ↗</a>
       </div>
@@ -35,7 +35,7 @@ import { ABOUT } from "@/lib/about";
     <section aria-labelledby="experience-heading" class="py-9 sm:py-10">
       <div class="mb-8 flex flex-wrap items-baseline gap-x-6 gap-y-2">
         <h2 id="experience-heading" class="m-0 text-[12px] font-normal tracking-[0.06em] text-[var(--ink-3)]">经历</h2>
-        <p class="m-0 text-[11px] text-[var(--ink-3)]">{ABOUT.sampleNotice}</p>
+        {ABOUT.sampleNotice && <p class="m-0 text-[11px] text-[var(--ink-3)]">{ABOUT.sampleNotice}</p>}
       </div>
       <ol class="m-0 list-none space-y-9 p-0">
         {ABOUT.experience.map((entry) => (
