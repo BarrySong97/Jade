@@ -1,11 +1,80 @@
 ---
 /**
- * @purpose 为首页关于我链接提供空白页面
+ * @purpose 展示长简介、工作经历和教育背景的墨白简历页
  * @role /about 静态路由
- * @deps BaseLayout
- * @gotcha 正文按用户要求暂留空，后续再补内容；保留站点导航与页脚
+ * @deps BaseLayout、PROFILE、ABOUT
+ * @gotcha 简历数据中的经历与教育暂为示例，页面需保留说明；窄屏时间栏堆叠；简介用 flex gap 保持段距，避免 m-0 覆盖 space-y
  */
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { PROFILE } from "@/lib/site";
+import { ABOUT } from "@/lib/about";
 ---
 
-<BaseLayout title="关于我" description="关于 Barry Song" />
+<BaseLayout title="关于我" description={`${PROFILE.name} 的简介、经历与教育背景。`}>
+  <article class="mx-auto max-w-[728px] px-6 pb-[104px] pt-[72px] min-[728px]:max-w-[680px] min-[728px]:px-0">
+    <header class="pb-12 sm:pb-16">
+      <a href="/" class="back-link font-mono text-[12.5px] text-[var(--ink-3)]">← 返回首页</a>
+      <p class="mb-3 mt-10 text-[12px] tracking-[0.08em] text-[var(--ink-3)]">关于我</p>
+      <h1 class="m-0 text-[clamp(32px,5vw,42px)] font-semibold leading-[1.12] tracking-[-0.035em]">
+        {PROFILE.name}
+      </h1>
+      <p class="mb-0 mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px] text-[var(--ink-2)]">
+        <span>{PROFILE.title}</span>
+        <span aria-hidden="true" class="text-[var(--ink-4)]">/</span>
+        <span>{PROFILE.location}</span>
+      </p>
+    </header>
+
+    <section aria-labelledby="intro-heading" class="grid gap-5 border-t border-[var(--line)] py-9 sm:grid-cols-[104px_minmax(0,1fr)] sm:gap-8 sm:py-10">
+      <h2 id="intro-heading" class="m-0 pt-1 text-[12px] font-normal tracking-[0.06em] text-[var(--ink-3)]">简介</h2>
+      <div class="flex flex-col items-start gap-5 text-[15px] leading-[1.9] text-[var(--ink-2)]">
+        {ABOUT.introduction.map((paragraph) => <p class="m-0">{paragraph}</p>)}
+        <a href="/products" class="ulink inline-block text-[13px] text-[var(--accent-ink)]">看看我的作品 ↗</a>
+      </div>
+    </section>
+
+    <section aria-labelledby="experience-heading" class="border-t border-[var(--line)] py-9 sm:py-10">
+      <div class="mb-8 flex flex-wrap items-baseline gap-x-6 gap-y-2">
+        <h2 id="experience-heading" class="m-0 text-[12px] font-normal tracking-[0.06em] text-[var(--ink-3)]">经历</h2>
+        <p class="m-0 text-[11px] text-[var(--ink-3)]">{ABOUT.sampleNotice}</p>
+      </div>
+      <ol class="m-0 list-none space-y-9 p-0">
+        {ABOUT.experience.map((entry) => (
+          <li class="grid gap-3 sm:grid-cols-[104px_minmax(0,1fr)] sm:gap-8">
+            <span class="pt-1 font-mono text-[11px] leading-[1.7] text-[var(--ink-3)]">{entry.period}</span>
+            <div>
+              <h3 class="m-0 text-[15px] font-medium leading-[1.6] text-[var(--ink)]">{entry.role}</h3>
+              <p class="mb-0 mt-1 text-[12px] text-[var(--ink-3)]">{entry.organization}</p>
+              <p class="mb-0 mt-3 text-[14px] leading-[1.85] text-[var(--ink-2)]">{entry.description}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section aria-labelledby="education-heading" class="border-t border-[var(--line)] py-9 sm:py-10">
+      <h2 id="education-heading" class="mb-8 mt-0 text-[12px] font-normal tracking-[0.06em] text-[var(--ink-3)]">教育背景</h2>
+      <ul class="m-0 list-none space-y-9 p-0">
+        {ABOUT.education.map((entry) => (
+          <li class="grid gap-3 sm:grid-cols-[104px_minmax(0,1fr)] sm:gap-8">
+            <span class="pt-1 font-mono text-[11px] leading-[1.7] text-[var(--ink-3)]">{entry.period}</span>
+            <div>
+              <h3 class="m-0 text-[15px] font-medium leading-[1.6] text-[var(--ink)]">{entry.school}</h3>
+              <p class="mb-0 mt-1 text-[12px] text-[var(--ink-3)]">{entry.qualification}</p>
+              <p class="mb-0 mt-3 text-[14px] leading-[1.85] text-[var(--ink-2)]">{entry.description}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section aria-labelledby="contact-heading" class="grid gap-5 border-t border-[var(--line)] pt-9 sm:grid-cols-[104px_minmax(0,1fr)] sm:gap-8 sm:pt-10">
+      <h2 id="contact-heading" class="m-0 text-[12px] font-normal tracking-[0.06em] text-[var(--ink-3)]">找到我</h2>
+      <div class="flex flex-wrap gap-x-6 gap-y-3 text-[13px]">
+        {PROFILE.social.map((social) => (
+          <a href={social.url} target="_blank" rel="noopener noreferrer" class="ulink text-[var(--accent-ink)]">{social.label} ↗</a>
+        ))}
+      </div>
+    </section>
+  </article>
+</BaseLayout>

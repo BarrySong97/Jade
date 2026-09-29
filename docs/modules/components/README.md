@@ -33,7 +33,9 @@
 
 ## 首页头像
 
-首页简介在「这是我的作品」后显示「更多关于我的内容」，其中「关于我」链接到 [空白关于页](../../../src/pages/about.astro) `/about`。该页暂不放正文，沿用 BaseLayout 的站点导航和页脚，后续再补内容。
+首页简介在「这是我的作品」后显示「更多关于我的内容」，其中「关于我」链接到 [关于页](../../../src/pages/about.astro) `/about`。
+
+关于页沿用 BaseLayout、首页 680px 版心和墨白令牌，包含姓名、长简介、经历、教育与社交链接。桌面使用 104px 时间/栏目栏，手机堆叠，细分隔线划分章节。内容集中在 `src/lib/about.ts`，姓名与社交入口复用 `PROFILE`；经历与学历暂为用户授权的虚构示例，页面保留说明，替换真实资料后再去掉。纯 Astro，无新增客户端交互，不挂载草甸。
 
 [profile-intro.astro](../../../src/components/home/profile-intro.astro) 使用用户在 [独立 demo](../../../examples/portrait/README.md) 确认的黑白三渲二原画 `portrait-monochrome-v2.png`，由 Astro Image 构建为 424px、quality 90 的 WebP，显示宽度沿用桌面 212px / 手机 190px，原有排版与平移不变。素材与预览共享同一张 PNG，仅首页替换；原线稿保留供 demo 对照与现有 OG 预览引用，通用头像和作品集头像不受影响。
 
