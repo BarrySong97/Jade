@@ -1,6 +1,6 @@
 ---
 /**
- * @purpose 呈现首页个人简介与用户确认的黑白三渲二头像
+ * @purpose 呈现首页个人简介、作品与关于我入口及黑白三渲二头像
  * @role 首页静态简介区，桌面左文右图、手机头像置顶
  * @deps astro:assets、PROFILE、examples/portrait/portrait-monochrome-v2.png
  * @gotcha 头像仅在首页替换；沿用 424px 构建图片与 212px/190px 显示宽度
@@ -42,6 +42,7 @@ const bioDetail = PROFILE.bio.slice(bioBreak);
       <span class="block">
         这是我的 <a href="/products" class="ulink text-[var(--accent-ink)]">作品</a>。
         {/* 图片暂未整理,先隐藏;整理好恢复: 和 <a href="/photos" class="ulink text-[var(--accent-ink)]">图片</a> */}
+        更多<a href="/about" class="ulink text-[var(--accent-ink)]">关于我</a>的内容。
       </span>
     </p>
   </div>
