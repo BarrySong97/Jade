@@ -29,6 +29,7 @@
 - 文章 frontmatter 可选 `series`，由 [内容 schema](../../../src/content.config.ts) 校验已注册标识。[文章布局](../../../src/layouts/BlogPost.astro) 在阅读时长后显示系列名称链接，元信息支持窄屏换行；无系列时不显示入口。
 - [系列页](../../../src/pages/series/[series].astro) 在 `/series/:series` 只生成包含文章的系列，并复用 `home/post-archive.astro` 的 `posts` prop，按年份、新文章优先排列；首页不传 prop，仍显示全部文章。系列页使用 BaseLayout，不挂载首页草甸。
 - 首个系列为「炒股日记」，包含两篇炒股月记；系列标题与描述在 `src/lib/series.ts` 维护。
+- 系列目录可选 `heroImage`，显示在返回链接与系列标题之间，并用于分享预览。提供 `heroWidth` / `heroHeight` 时复用博客 `BlogImage`（可选 `heroThumbhash`，不开灯箱）；只提供地址时显示普通响应式图片。省略封面时不生成图片区、不预留空白，当前炒股日记默认无封面。
 
 ## 首页头像
 

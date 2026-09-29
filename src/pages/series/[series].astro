@@ -2,13 +2,14 @@
 /**
  * @purpose 生成系列文章归档页
  * @role /series/:series 静态路由
- * @deps blog collection、lib/series、BaseLayout、PostArchive
- * @gotcha 仅生成有文章的系列；沿用首页按年份分组、新文章优先的列表
+ * @deps blog collection、lib/series、BaseLayout、PostArchive、BlogImage
+ * @gotcha 仅生成有文章的系列；封面可省略，有尺寸时复用博客图片渐进加载，否则直接显示图片
  */
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PostArchive from "@/components/home/post-archive.astro";
-import { SERIES, SERIES_IDS } from "@/lib/series";
+import { SERIES, SERIES_IDS, type Series } from "@/lib/series";
+import BlogImage from "@/components/blogs/blog-image";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -21,17 +22,46 @@ export async function getStaticPaths() {
 }
 
 interface Props {
-  series: { title: string; description: string };
+  series: Series;
   posts: CollectionEntry<"blog">[];
 }
 
 const { series, posts } = Astro.props;
 ---
 
-<BaseLayout title={series.title} description={series.description}>
+<BaseLayout
+  title={series.title}
+  description={series.description}
+  ogImage={series.heroImage ? new URL(series.heroImage, Astro.url).href : undefined}
+>
   <div class="mx-auto max-w-[728px] px-6 min-[728px]:max-w-[680px] min-[728px]:px-0">
     <header class="pb-8 pt-[72px]">
       <a href="/" class="back-link font-mono text-[12.5px] text-[var(--ink-3)]">← 返回首页</a>
+      {
+        series.heroImage && (
+          series.heroWidth && series.heroHeight ? (
+            <BlogImage
+              client:load
+              src={series.heroImage}
+              alt={series.title}
+              width={series.heroWidth}
+              height={series.heroHeight}
+              thumbhash={series.heroThumbhash}
+              zoomable={false}
+              className="mt-6 rounded-[var(--radius-media)]"
+            />
+          ) : (
+            <img
+              src={series.heroImage}
+              alt={series.title}
+              width={series.heroWidth}
+              height={series.heroHeight}
+              loading="eager"
+              class="mt-6 h-auto w-full rounded-[var(--radius-media)]"
+            />
+          )
+        )
+      }
       <p class="mb-3 mt-8 text-[12px] text-[var(--ink-3)]">系列 · {posts.length} 篇文章</p>
       <h1 class="m-0 text-[clamp(26px,3.6vw,36px)] font-semibold leading-[1.1] tracking-[-0.02em]">
         {series.title}
