@@ -1,5 +1,5 @@
 /**
- * @purpose 定义站点作者身份信息（PROFILE 常量：姓名、简介、社交链接等）
+ * @purpose 定义站点作者身份信息（PROFILE 常量：姓名、简介、Twitter / 小红书社交链接等）
  * @role    单一数据源，被首页/关于/页脚等展示个人信息的组件统一 import
  * @deps    无外部依赖，纯常量
  * @gotcha  as const 只读对象，修改身份信息只在此处改；详见 docs/modules/lib/README.md
@@ -15,6 +15,7 @@ export const PROFILE = {
   social: [
     { label: "GitHub", url: "https://github.com/BarrySong97" },
     { label: "Twitter", url: "https://x.com/BarrySong97" },
+    { label: "小红书", url: "https://www.xiaohongshu.com/user/profile/648339340000000012036a5" },
   ],
 } as const;
 

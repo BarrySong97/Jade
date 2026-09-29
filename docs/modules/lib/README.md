@@ -21,6 +21,7 @@
 ## 对外接口
 
 - 全部经 `@/lib/...` 别名引入(如 `@/lib/utils` 的 `cn`)。
+- 首页「找到我」按 `PROFILE.social` 顺序展示 Twitter、小红书，链接在新标签页打开；展示页仍通过 `TWITTER` 仅引用 Twitter。
 
 ## 注意事项
 
