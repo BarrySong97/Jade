@@ -1,0 +1,43 @@
+---
+/**
+ * @purpose 生成系列文章归档页
+ * @role /series/:series 静态路由
+ * @deps blog collection、lib/series、BaseLayout、PostArchive
+ * @gotcha 仅生成有文章的系列；沿用首页按年份分组、新文章优先的列表
+ */
+import { getCollection, type CollectionEntry } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PostArchive from "@/components/home/post-archive.astro";
+import { SERIES, SERIES_IDS } from "@/lib/series";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return SERIES_IDS.flatMap((id) => {
+    const seriesPosts = posts.filter((post) => post.data.series === id);
+    return seriesPosts.length
+      ? [{ params: { series: id }, props: { series: SERIES[id], posts: seriesPosts } }]
+      : [];
+  });
+}
+
+interface Props {
+  series: { title: string; description: string };
+  posts: CollectionEntry<"blog">[];
+}
+
+const { series, posts } = Astro.props;
+---
+
+<BaseLayout title={series.title} description={series.description}>
+  <div class="mx-auto max-w-[728px] px-6 min-[728px]:max-w-[680px] min-[728px]:px-0">
+    <header class="pb-8 pt-[72px]">
+      <a href="/" class="back-link font-mono text-[12.5px] text-[var(--ink-3)]">← 返回首页</a>
+      <p class="mb-3 mt-8 text-[12px] text-[var(--ink-3)]">系列 · {posts.length} 篇文章</p>
+      <h1 class="m-0 text-[clamp(26px,3.6vw,36px)] font-semibold leading-[1.1] tracking-[-0.02em]">
+        {series.title}
+      </h1>
+      <p class="mb-0 mt-4 text-[15px] leading-[1.7] text-[var(--ink-2)]">{series.description}</p>
+    </header>
+    <PostArchive posts={posts} />
+  </div>
+</BaseLayout>

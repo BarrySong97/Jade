@@ -1,4 +1,10 @@
 ---
+/**
+ * @purpose 文章阅读布局与日期、阅读时长、系列入口
+ * @role 博客文章布局
+ * @deps BaseLayout、目录、图片组件、lib/series
+ * @gotcha 系列链接仅在 frontmatter 声明 series 时显示；窄屏元信息可换行
+ */
 import type { CollectionEntry } from "astro:content";
 import type { MarkdownHeading } from "astro";
 import BaseLayout from "./BaseLayout.astro";
@@ -6,6 +12,7 @@ import { Toc } from "@/components/blogs/Toc";
 import MobileToc from "@/components/blogs/MobileToc";
 import CloudImage from "@/components/common/cloud-image-astro.astro";
 import BlogImage from "@/components/blogs/blog-image";
+import { SERIES } from "@/lib/series";
 
 type NavLink = { slug: string; title: string };
 
@@ -27,6 +34,7 @@ const {
   heroThumbhash,
   headings,
   readMin,
+  series,
   prev,
   next,
 } = Astro.props;
@@ -91,7 +99,7 @@ const hasToc = (headings?.length ?? 0) >= 2;
       >
         {title}
       </h1>
-      <div class="mt-4 flex items-center gap-2.5 text-[13px] text-[var(--ink-3)]">
+      <div class="mt-4 flex flex-wrap items-center gap-2.5 text-[13px] text-[var(--ink-3)]">
         <time datetime={pubDate.toISOString()} class="whitespace-nowrap font-mono">
           {fmtDate(pubDate)}
         </time>
@@ -101,6 +109,16 @@ const hasToc = (headings?.length ?? 0) >= 2;
               <span class="text-[var(--ink-4)]">·</span>
               <span class="whitespace-nowrap font-mono">{readMin} 分钟阅读</span>
             </>
+          )
+        }
+        {
+          series && (
+            <span class="inline-flex min-w-0 items-baseline gap-2.5">
+              <span aria-hidden="true" class="text-[var(--ink-4)]">·</span>
+              <a href={`/series/${series}`} class="ulink text-[var(--accent-ink)]">
+                {SERIES[series].title}
+              </a>
+            </span>
           )
         }
         {

@@ -1,5 +1,15 @@
 ---
-import { getCollection } from "astro:content";
+/**
+ * @purpose 首页与系列页共用按年份归档的文章列表
+ * @role 静态文章列表展示
+ * @deps astro:content
+ * @gotcha 未传 posts 时读取全部文章；传入空数组时保持空列表；排序不修改调用方数组
+ */
+import { getCollection, type CollectionEntry } from "astro:content";
+
+interface Props {
+  posts?: CollectionEntry<"blog">[];
+}
 
 type Item = {
   id: string;
@@ -8,7 +18,7 @@ type Item = {
   md: string; // "MM / DD"
 };
 
-const posts = (await getCollection("blog")).sort(
+const posts = [...(Astro.props.posts ?? (await getCollection("blog")))].sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 

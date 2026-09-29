@@ -24,6 +24,12 @@
 
 - 组件以默认导出为主,经 `@/components/...` 别名引入;`webgl-viewer/index.ts` 是该子模块的公共入口(聚合导出)。
 
+## 系列归档
+
+- 文章 frontmatter 可选 `series`，由 [内容 schema](../../../src/content.config.ts) 校验已注册标识。[文章布局](../../../src/layouts/BlogPost.astro) 在阅读时长后显示系列名称链接，元信息支持窄屏换行；无系列时不显示入口。
+- [系列页](../../../src/pages/series/[series].astro) 在 `/series/:series` 只生成包含文章的系列，并复用 `home/post-archive.astro` 的 `posts` prop，按年份、新文章优先排列；首页不传 prop，仍显示全部文章。系列页使用 BaseLayout，不挂载首页草甸。
+- 首个系列为「炒股日记」，包含两篇炒股月记；系列标题与描述在 `src/lib/series.ts` 维护。
+
 ## 首页头像
 
 [profile-intro.astro](../../../src/components/home/profile-intro.astro) 使用用户在 [独立 demo](../../../examples/portrait/README.md) 确认的黑白三渲二原画 `portrait-monochrome-v2.png`，由 Astro Image 构建为 424px、quality 90 的 WebP，显示宽度沿用桌面 212px / 手机 190px，原有排版与平移不变。素材与预览共享同一张 PNG，仅首页替换；原线稿保留供 demo 对照与现有 OG 预览引用，通用头像和作品集头像不受影响。

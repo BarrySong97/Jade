@@ -1,12 +1,13 @@
 /**
  * @purpose 定义 Astro `blog` 内容集合：加载 src/content/blog 下 md/mdx 并用 zod 校验 frontmatter
  * @role    内容层 schema 入口，Astro 构建时读取，getCollection("blog") 据此提供类型化文章数据
- * @deps    astro:content（defineCollection/z）、astro/loaders（glob）
+ * @deps    astro:content（defineCollection/z）、astro/loaders（glob）、lib/series（系列标识）
  * @gotcha  frontmatter 字段（title/description/pubDate 等）须符合此 schema，否则构建报错；pubDate/updatedDate 由字符串 coerce 为 Date
  */
 
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
+import { SERIES_IDS } from "./lib/series";
 
 const blog = defineCollection({
   // Load Markdown and MDX files in the `src/content/blog/` directory.
@@ -19,6 +20,7 @@ const blog = defineCollection({
       // Transform string to Date object
       pubDate: z.coerce.date(),
       updatedDate: z.coerce.date().optional(),
+      series: z.enum(SERIES_IDS).optional(),
       heroImage: z.string().optional(),
       // 由 scripts/img.mjs 处理封面后写入,供 BlogImage 做 blur-up 占位
       heroWidth: z.number().optional(),

@@ -7,6 +7,7 @@
 ## 文件清单与关系
 
 - `utils.ts` — `cn()`:合并并去重 Tailwind class(clsx + tailwind-merge)。几乎所有组件都用。
+- `series.ts` — `SERIES_IDS` 与 `SERIES` 定义博客系列的稳定标识、名称和描述，供内容校验、文章头部和系列归档共享；添加系列需补目录并在文章 frontmatter 设置 `series`。
 - `site.ts` — `PROFILE` 常量:站点作者身份(姓名、handle、简介、社交链接);另导出 `TWITTER` / `TWITTER_HANDLE`(从 social 派生),供展示页(作品/摄影)联系方式复用,与首页一致。首页与展示页引用。
 - `use-copy-button.ts` — React Hook:复制按钮「已复制」态,1.5s 自动复位。代码块复制用。
 - `meadow-wind.mjs` — 共享 9 行植物网格的风动幅度与内部接触点插值；渲染与首页蝴蝶停驻使用同一投影，根部不动。
