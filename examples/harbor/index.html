@@ -1,0 +1,131 @@
+<!doctype html>
+<!-- @purpose 海港出航独立预览；@role Demo 入口；@deps harbor.js、Tailwind；@gotcha 用户确认前不进入 About 生产路由 -->
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>海风与远行 · About 页尾预览</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script type="module" src="/harbor.js"></script>
+  </head>
+  <body class="m-0 bg-white font-sans text-[#302e2b] antialiased">
+    <main>
+      <header class="mx-auto max-w-[760px] px-6 pb-3 pt-14 sm:pt-20">
+        <p class="mb-4 font-mono text-[11px] tracking-[0.15em] text-[#97928b]">
+          ABOUT ME · SCENE STUDY 01
+        </p>
+        <h1 class="m-0 text-[30px] font-medium tracking-[-0.035em] sm:text-[38px]">海风与远行</h1>
+        <p class="mt-5 max-w-[520px] text-[14px] leading-7 text-[#817c75]">
+          从熟悉的港口，驶向还没去过的地方。<br />小船慢慢远去，海鸥偶尔掠过。
+        </p>
+      </header>
+
+      <section aria-label="海港出航动画预览" class="mt-1">
+        <div id="scene" class="relative h-[250px] w-full overflow-hidden sm:h-[360px] lg:h-[470px]">
+          <img
+            id="fallback"
+            src="/assets/harbor-v1.webp"
+            alt="左侧石砌港口与灯塔，右侧蓝绿色海湾伸向远方"
+            class="absolute inset-x-0 bottom-0 w-full"
+          />
+          <canvas
+            id="harbor"
+            role="img"
+            aria-label="小帆船离开左侧港口驶向远海，三只海鸥交替振翅与滑翔"
+            class="absolute inset-0 hidden h-full w-full"
+          ></canvas>
+        </div>
+        <div class="mx-auto max-w-[760px] px-6 pt-8">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex flex-wrap gap-2">
+              <button
+                id="toggle"
+                type="button"
+                disabled
+                class="rounded-sm bg-[#302e2b] px-4 py-2 text-[12px] text-white hover:bg-[#514c46] disabled:opacity-40"
+              >
+                暂停
+              </button>
+              <button
+                id="restart"
+                type="button"
+                disabled
+                class="rounded-sm border border-[#dedbd5] px-4 py-2 text-[12px] hover:bg-[#f5f3ef] disabled:opacity-40"
+              >
+                重新出航
+              </button>
+              <button
+                id="speed"
+                type="button"
+                disabled
+                aria-pressed="false"
+                class="rounded-sm border border-[#dedbd5] px-4 py-2 text-[12px] hover:bg-[#f5f3ef] disabled:opacity-40"
+              >
+                慢放 0.5×
+              </button>
+            </div>
+            <p id="status" role="status" class="m-0 text-[12px] text-[#817c75]">正在准备出航…</p>
+          </div>
+          <div class="mt-5 flex items-center gap-4">
+            <label for="progress" class="shrink-0 text-[11px] text-[#97928b]">航程</label>
+            <input
+              id="progress"
+              type="range"
+              min="0"
+              max="64"
+              step="0.1"
+              value="2.5"
+              disabled
+              class="h-1 w-full accent-[#727f7c]"
+            />
+            <output
+              id="time"
+              for="progress"
+              class="w-20 shrink-0 text-right font-mono text-[10px] text-[#97928b]"
+              >00 / 64s</output
+            >
+          </div>
+          <p class="mt-4 text-[11px] leading-6 text-[#97928b]">
+            独立预览 · 一次出航约 1 分钟 · 拖动航程可暂停观察
+          </p>
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-[760px] px-6 pb-16 pt-12">
+        <details class="text-[12px] text-[#817c75]">
+          <summary class="w-fit cursor-pointer py-2">查看独立原画</summary>
+          <div class="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-3">
+            <a href="/assets/harbor-v1.png" target="_blank" rel="noopener noreferrer" class="block"
+              ><img
+                src="/assets/harbor-v1.webp"
+                loading="lazy"
+                alt="海港与海面透明原画"
+                class="h-28 w-full object-contain"
+              /><span class="mt-3 block">01 · 海港与海面 ↗</span></a
+            >
+            <a href="/assets/boat-v1.png" target="_blank" rel="noopener noreferrer" class="block"
+              ><img
+                src="/assets/boat-v1.webp"
+                loading="lazy"
+                alt="小帆船透明原画"
+                class="h-28 w-full object-contain"
+              /><span class="mt-3 block">02 · 小帆船 ↗</span></a
+            >
+            <a
+              href="/assets/gull-wingbeat-v2.png"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="block"
+              ><img
+                src="/assets/gull-wingbeat-v2.webp"
+                loading="lazy"
+                alt="海鸥八姿势图集"
+                class="h-28 w-full object-contain"
+              /><span class="mt-3 block">03 · 海鸥振翅 ↗</span></a
+            >
+          </div>
+        </details>
+      </section>
+    </main>
+  </body>
+</html>

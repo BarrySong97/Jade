@@ -1,0 +1,9 @@
+{
+  "tool": "built-in image_gen",
+  "date": "2026-10-02",
+  "input": "gull-wingbeat-v1.png",
+  "output": "assets/gull-wingbeat-v2.png",
+  "source": "exec-250cfe01-0c62-4fa3-bbd9-c4fb13110258.png",
+  "reason": "第一版水平翼尖接近格边，重新生成安全留白；通过真实 alpha 检查",
+  "prompt": "Edit this seagull sprite sheet for safe animation sampling. Keep the SAME gouache art style, bird colors, body design, right-facing camera angle and the same eight wing poses in the same row-major order. Maintain an EXACT uniform 4-column by 2-row grid with no visible dividers. Critical correction: make EVERY whole bird, including the longest horizontal spread wings, smaller and fully inside its own cell, maximum silhouette extent 68% of cell width and 68% of cell height. At least 16% empty transparent padding from every bird to ALL FOUR edges of its cell. No bird can cross or touch a cell boundary. Align each bird's SHOULDER/wing root to exactly 50% of cell width and 50% of cell height in ALL EIGHT frames; body proportions and scale identical across cells. Do not align bounding boxes; align shoulders. Frame 1 wings high up, 2 half up, 3 horizontal, 4 half down, 5 low down, 6 half down rising, 7 horizontal, 8 half up rising. Genuine transparent alpha. No labels, no numbers, no lines, no new scenery. Keep entire canvas 2:1, eight identical square cells."
+}

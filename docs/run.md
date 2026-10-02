@@ -18,6 +18,8 @@ pnpm install
 pnpm dev          # = astro dev
 ```
 
+海港出航独立预览：`pnpm demo:harbor`，打开 <http://localhost:55025>；制作方式与控制见 [海港说明](../examples/harbor/README.md)，暂未接入 About。
+
 - 访问地址:`http://localhost:4321`(端口被占用时 Astro 会自动 +1,如 4322,看启动日志)
 - 无需环境变量
 
