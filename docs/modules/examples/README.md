@@ -6,6 +6,8 @@
 
 [海港 Demo](../../../examples/harbor/README.md) 沿用草甸的透明生成原画路线，运行 `pnpm demo:harbor` 打开 <http://localhost:55025>。左侧港口与海面为静态背景，小帆船出港、轻摇并缩小驶向远海，三只海鸥使用八姿势图集交替振翅滑翔。Canvas 2D 合成，提供暂停、慢放、重启和进度拖动；屏外/后台停表，减少动态效果默认暂停，失败显示静态原画。原 PNG、压缩 WebP 与完整提示词留在独立目录。`pnpm test:harbor` 检查连续性、透明图集和窄屏边界。用户确认前不接入 About。
 
+海港第二版新增 `shipyard-v1` / `workers-v1` 透明原画：出航船约放大六成，左侧干船坞固定展示未完成船体，三位工人用四姿势图集错峰敲打与休息；动作共享暂停、慢放和进度。测试覆盖新素材透明度、布局和四帧动作。
+
 ## 首页头像三渲二对照
 
 [头像预览](../../../examples/portrait/README.md) 是新的独立页面，运行 `pnpm demo:portrait`，打开 <http://localhost:55024>。以首页替换前的 `src/assets/info/profile-portrait.png` 为身份与姿态参考，生成透明三渲二手绘头像；用户要求保持黑白并确认替换后，首页与预览共同引用第二版黑白 PNG。完整提示词和内置 ImageGen 来源记录在示例目录。

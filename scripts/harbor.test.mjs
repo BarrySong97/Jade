@@ -17,6 +17,8 @@ import {
   sampleBoat,
   sampleGull,
   sceneLayout,
+  shipyardLayout,
+  sampleWorker,
 } from "../examples/harbor/scene.mjs";
 
 test("boat leaves harbor, recedes, and resets only while invisible", () => {
@@ -50,6 +52,26 @@ test("entire boat and gull frames fit from narrow mobile to desktop", () => {
         assert.ok(bird.x - bird.span >= 0 && bird.x + bird.span <= width);
         assert.ok(bird.y - bird.span >= 0 && bird.y + bird.span <= layout.height);
       }
+    }
+  }
+});
+
+test("larger boat and three workers remain planted inside shipyard", () => {
+  assert.ok(sceneLayout(1280, 470).boatWidth > 180);
+  for (const width of [240, 375, 1280, 1920]) {
+    const layout = sceneLayout(width, width < 640 ? 250 : 470);
+    const yard = shipyardLayout(layout);
+    assert.ok(yard.x >= 0 && yard.x + yard.width <= width);
+    assert.ok(yard.y + yard.height <= layout.height);
+    for (let i = 0; i < 3; i++) {
+      const frames = new Set();
+      for (let t = 0; t < 8; t += 0.1) {
+        const worker = sampleWorker(t, i, yard);
+        assert.equal(worker.y, sampleWorker(0, i, yard).y);
+        assert.ok(worker.x > yard.x && worker.x < yard.x + yard.width);
+        frames.add(worker.frame);
+      }
+      assert.equal(frames.size, 4);
     }
   }
 });

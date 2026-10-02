@@ -1,11 +1,17 @@
 /**
  * @purpose 海港 Demo 的航行、海鸥图集与响应式几何
  * @role 无 DOM 的可采样动画数据，支持暂停、拖动和回归
- * @deps 三张 ImageGen 原画，素材来源见 prompts.json
+ * @deps 五张 ImageGen 原画，素材来源见 prompts*.json
  * @gotcha 船只在透明阶段回到港口；坐标基于完整 3:1 原画，窄屏不裁掉航线；图集用肩部注册点统一定位
  */
 export const VOYAGE_SECONDS = 64;
-export const ASSET_NAMES = ["harbor-v1", "boat-v1", "gull-wingbeat-v2"];
+export const ASSET_NAMES = [
+  "harbor-v1",
+  "boat-v1",
+  "gull-wingbeat-v2",
+  "shipyard-v1",
+  "workers-v1",
+];
 export const GULL_ATLAS = {
   width: 1774,
   height: 887,
@@ -39,7 +45,7 @@ export function sceneLayout(width, height) {
     plateHeight: plateWidth / 3,
     left: (w - plateWidth) / 2,
     top: h - plateWidth / 3,
-    boatWidth: clamp(plateWidth * 0.088, 44, 130),
+    boatWidth: clamp(plateWidth * 0.145, 64, 210),
   };
 }
 
@@ -47,7 +53,7 @@ export function sampleBoat(time, layout) {
   const phase = phaseAt(time);
   const p = smooth((phase - 2) / 52);
   // 先从石堤前的泊位向右驶出，再渐渐远离到右上方的开阔海面。
-  const x = mix(0.265, 0.82, p);
+  const x = mix(0.36, 0.82, p);
   const y = 0.805 - 0.265 * p * p;
   const scale = mix(1, 0.13, p);
   return {
@@ -58,6 +64,29 @@ export function sampleBoat(time, layout) {
     opacity: smooth(phase / 1.8) * (1 - smooth((phase - 47) / 8)),
     progress: p,
     stage: phase < 9 ? "离开港口" : phase < 35 ? "沿海航行" : phase < 55 ? "驶向远海" : "海风稍歇",
+  };
+}
+
+export function shipyardLayout(layout) {
+  const width = layout.plateWidth * 0.27;
+  return {
+    x: layout.left + layout.plateWidth * 0.015,
+    y: layout.top + layout.plateHeight * 0.43,
+    width,
+    height: (width * 2) / 3,
+  };
+}
+
+export function sampleWorker(time, index, yard) {
+  // 三位工人错峰敲击、停顿；脚部锚点固定，避免整个人上下漂浮。
+  const cycle = (time + index * 1.13) % 3.6;
+  const sequence = [0, 1, 2, 1, 0, 1, 2, 3];
+  return {
+    x: yard.x + yard.width * [0.24, 0.51, 0.79][index],
+    y: yard.y + yard.height * [0.61, 0.73, 0.72][index],
+    height: yard.width * 0.24,
+    frame: cycle < 2 ? sequence[Math.floor(cycle / 0.25)] : 3,
+    direction: index === 2 ? -1 : 1,
   };
 }
 

@@ -12,6 +12,8 @@ import {
   phaseAt,
   sampleBoat,
   sampleGull,
+  sampleWorker,
+  shipyardLayout,
   sceneLayout,
 } from "./scene.mjs";
 
@@ -102,6 +104,29 @@ function draw() {
   context.setTransform(dpr, 0, 0, dpr, 0, 0);
   context.clearRect(0, 0, layout.width, layout.height);
   context.drawImage(images[0], layout.left, layout.top, layout.plateWidth, layout.plateHeight);
+  const yard = shipyardLayout(layout);
+  context.drawImage(images[3], yard.x, yard.y, yard.width, yard.height);
+  for (let i = 0; i < 3; i++) {
+    const worker = sampleWorker(time, i, yard);
+    const cellWidth = images[4].width / 4;
+    const h = worker.height;
+    const w = (h * cellWidth) / images[4].height;
+    context.save();
+    context.translate(worker.x, worker.y);
+    context.scale(worker.direction, 1);
+    context.drawImage(
+      images[4],
+      worker.frame * cellWidth,
+      0,
+      cellWidth,
+      images[4].height,
+      -w * 0.5,
+      -h * 0.83,
+      w,
+      h,
+    );
+    context.restore();
+  }
   const boat = sampleBoat(time, layout);
   drawBoat(boat);
   for (let i = 2; i >= 0; i--) drawGull(sampleGull(time, i, layout));

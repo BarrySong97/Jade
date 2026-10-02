@@ -1,0 +1,11 @@
+{
+  "mode": "built-in imagegen",
+  "shipyard": {
+    "prompt": "Use case: stylized-concept. Generate a separate transparent game scene asset matching the supplied harbor reference's painterly gouache, muted cream/olive/teal and warm timber angular 3D-to-2D color planes. A small wooden sailboat UNDER CONSTRUCTION, no sails and no mast, visible curved ribs and half-planked hull, bow points right. Set on timber trestles on a compact pale stone drydock platform, a few planks and short scaffolding beside it. Elevated three quarter view same camera as reference. Entire compact platform isolated, no water, no scenery, no people (workers added separately), no text. Wide 3:2 canvas, object fills central 85%, transparent margin on all sides, genuine transparent background. This is a new standalone asset, not an edit of the harbor.",
+    "asset": "assets/shipyard-v1.png"
+  },
+  "workers": {
+    "prompt": "Use case: stylized-concept. Transparent sprite sheet for a tiny shipyard carpenter in muted painterly gouache 3D-to-2D style, cream shirt rolled sleeves, ochre cap, dark muted teal trousers, brown shoes. Elevated three-quarter side view facing right. EXACTLY 4 equal cells in ONE horizontal row. SAME worker SAME size and fixed planted feet baseline at 85% cell height and body centered x50%. Frame1 holding hammer raised; frame2 hammer halfway down; frame3 hammer striking waist-high imaginary boat timber (do NOT draw timber); frame4 holding hammer low resting. Only arm and slight torso posture change. Full body in each cell, no ground, no background, no panels, no outlines, no text, no extra people or objects. Wide 3:1 canvas. Each person occupies central 50% cell width and 65% cell height; keep large genuine transparent margins between cells. Simple sculpted color planes, handmade warm Mediterranean harbor miniature style.",
+    "asset": "assets/workers-v1.png"
+  }
+}

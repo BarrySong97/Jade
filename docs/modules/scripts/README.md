@@ -22,7 +22,7 @@
 
 ## 回归验证
 
-[harbor.test.mjs](../../../scripts/harbor.test.mjs) 通过 `pnpm test:harbor` 检查独立海港 Demo 的远航/渐隐重置、宽窄屏坐标边界、振翅滑翔、真实 PNG/WebP 透明通道、八帧安全留白与肩部注册点，并约束尚未进入 About。已接入 `pnpm check`；视觉观感仍须浏览器验收。
+[harbor.test.mjs](../../../scripts/harbor.test.mjs) 通过 `pnpm test:harbor` 检查独立海港 Demo 的远航/渐隐重置、宽窄屏坐标边界、振翅滑翔、真实 PNG/WebP 透明通道、八帧安全留白与肩部注册点，并约束尚未进入 About。第二版增加放大船体、船坞边界及三位工人固定脚底和四姿势覆盖。已接入 `pnpm check`；视觉观感仍须浏览器验收。
 
 [check-docs.test.mjs](../../../scripts/check-docs.test.mjs) 使用临时文件和实际 Node 子进程验证输出、JSON 可解析性与退出码；通过 `pnpm test:hooks` 执行，已接入 `pnpm check`。更多流程见 [测试策略](../../testing.md) 和 [运行手册](../../run.md)。
 
