@@ -24,6 +24,8 @@
 
 ## 对外接口
 
+- About 已由用户填入个人简介、任职经历和学历，`sampleNotice` 当前用于经历区补充说明，不再限定为示例警告；设为 `""` 即隐藏。首页 `PROFILE.bio` 同步为用户提供的简短介绍，社交入口保留 Twitter 与小红书。
+
 - 全部经 `@/lib/...` 别名引入(如 `@/lib/utils` 的 `cn`)。
 - `Series` 可选 `heroImage`（完整 URL 或 public 下 `/` 开头的路径）、`heroWidth`、`heroHeight`、`heroThumbhash`，与博客封面字段一致。只填图片地址也可显示；全部省略即无封面，不自动继承文章图片。
 - 首页「找到我」按 `PROFILE.social` 顺序展示 Twitter、小红书，链接在新标签页打开；展示页仍通过 `TWITTER` 仅引用 Twitter。

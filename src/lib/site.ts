@@ -11,9 +11,8 @@ export const PROFILE = {
   handle: "barrysong",
   title: "什么都会点软件工程师",
   location: "贵阳",
-  bio: "什么都会做一点的工程师。日常健身、写代码和设计、学习语言。",
+  bio: "工程师。健身、指挥AI写代码做产品、学习语言。",
   social: [
-    { label: "GitHub", url: "https://github.com/BarrySong97" },
     { label: "Twitter", url: "https://x.com/BarrySong97" },
     { label: "小红书", url: "https://www.xiaohongshu.com/user/profile/648339340000000012036a5" },
   ],
