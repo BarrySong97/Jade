@@ -21,14 +21,16 @@ import {
   sampleWorker,
 } from "../examples/harbor/scene.mjs";
 
-test("boat leaves harbor, recedes, and resets only while invisible", () => {
+test("boat sails horizontally at constant scale and resets invisibly", () => {
   const layout = sceneLayout(1280, 470);
   const start = sampleBoat(2, layout);
   const middle = sampleBoat(28, layout);
   const far = sampleBoat(50, layout);
   assert.ok(start.x < middle.x && middle.x < far.x);
-  assert.ok(start.y > middle.y && middle.y > far.y);
-  assert.ok(start.width > middle.width && middle.width > far.width);
+  assert.equal(start.y, middle.y);
+  assert.equal(start.y, far.y);
+  assert.equal(start.width, middle.width);
+  assert.equal(start.width, far.width);
   assert.equal(sampleBoat(VOYAGE_SECONDS - 0.001, layout).opacity, 0);
   assert.equal(sampleBoat(VOYAGE_SECONDS, layout).opacity, 0);
   for (let t = 1; t < 54; t += 0.25) {
@@ -68,13 +70,17 @@ test("footer stays full bleed with small ships and planted workers", () => {
     assert.ok(yard.y + yard.height <= layout.height);
     for (let i = 0; i < 3; i++) {
       const frames = new Set();
-      for (let t = 0; t < 8; t += 0.1) {
+      const positions = [];
+      for (let t = 0; t < 44; t += 0.1) {
         const worker = sampleWorker(t, i, yard);
-        assert.equal(worker.y, sampleWorker(0, i, yard).y);
+        assert.ok(worker.y > yard.y + yard.height * 0.6 && worker.y < yard.y + yard.height * 0.82);
         assert.ok(worker.x > yard.x && worker.x < yard.x + yard.width);
         frames.add(worker.frame);
+        positions.push(worker.x);
+        assert.ok(Math.abs(worker.x - sampleWorker(t + 0.001, i, yard).x) < 0.02);
       }
-      assert.equal(frames.size, 4);
+      assert.ok(frames.size >= 7);
+      assert.ok(Math.max(...positions) - Math.min(...positions) > yard.width * 0.2);
     }
   }
 });
@@ -85,6 +91,31 @@ test("gulls have a full flap cycle and a longer gliding interval", () => {
     [0, 1, 2, 3, 4, 5, 6, 7],
   );
   for (const time of [1.7, 2, 3, 4.3]) assert.equal(gullFrame(time), 2);
+});
+
+test("industrial worker atlas has eight separate frames and safe gutters", async () => {
+  const buffer = await readFile(
+    new URL("../examples/harbor/assets/industrial-workers-v1.png", import.meta.url),
+  );
+  const { data, info } = await sharp(buffer)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  for (let f = 0; f < 8; f++) {
+    const x0 = Math.round(((f % 4) * info.width) / 4),
+      y0 = Math.round((Math.floor(f / 4) * info.height) / 2);
+    const w = Math.floor(info.width / 4),
+      h = Math.floor(info.height / 2);
+    let pixels = 0;
+    for (let y = 0; y < h; y++)
+      for (let x = 0; x < w; x++) {
+        if (data[((y0 + y) * info.width + x0 + x) * 4 + 3] > 100) {
+          pixels++;
+          assert.ok(x >= 20 && x < w - 20 && y >= 20 && y < h - 20, `worker cell ${f} clips`);
+        }
+      }
+    assert.ok(pixels > 5000);
+  }
 });
 
 test("generated originals and runtime assets have real transparent backgrounds", async () => {

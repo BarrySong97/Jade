@@ -6,11 +6,11 @@
  */
 export const VOYAGE_SECONDS = 64;
 export const ASSET_NAMES = [
-  "harbor-v1",
-  "boat-v1",
+  "industrial-harbor-v1",
+  "industrial-boat-v1",
   "gull-wingbeat-v2",
-  "shipyard-v1",
-  "workers-v1",
+  "industrial-yard-v1",
+  "industrial-workers-v1",
 ];
 export const GULL_ATLAS = {
   width: 1774,
@@ -53,19 +53,17 @@ export function sceneLayout(width, height) {
 
 export function sampleBoat(time, layout) {
   const phase = phaseAt(time);
-  const p = smooth((phase - 2) / 52);
-  // 先从石堤前的泊位向右驶出，再渐渐远离到右上方的开阔海面。
-  const x = mix(layout.artWidth * 0.36, layout.width - layout.artWidth * 0.18, p);
-  const y = 0.805 - 0.265 * p * p;
-  const scale = mix(1, 0.13, p);
+  const p = clamp((phase - 2) / 52);
+  // 水平直航：水线、船体大小固定，不再向右上远海缩小。
+  const x = mix(layout.artWidth * 0.36, layout.width - layout.boatWidth * 0.6, p);
   return {
     x,
-    y: layout.top + y * layout.plateHeight + Math.sin(phase * 1.9) * scale * 0.8,
-    width: layout.boatWidth * scale,
-    angle: Math.sin(phase * 1.35) * 0.018 * scale,
+    y: layout.top + 0.805 * layout.plateHeight,
+    width: layout.boatWidth,
+    angle: 0,
     opacity: smooth(phase / 1.8) * (1 - smooth((phase - 47) / 8)),
     progress: p,
-    stage: phase < 9 ? "离开港口" : phase < 35 ? "沿海航行" : phase < 55 ? "驶向远海" : "海风稍歇",
+    stage: phase < 9 ? "离开港口" : phase < 55 ? "向右直航" : "海风稍歇",
   };
 }
 
@@ -80,15 +78,34 @@ export function shipyardLayout(layout) {
 }
 
 export function sampleWorker(time, index, yard) {
-  // 三位工人错峰敲击、停顿；脚部锚点固定，避免整个人上下漂浮。
-  const cycle = (time + index * 1.13) % 3.6;
-  const sequence = [0, 1, 2, 1, 0, 1, 2, 3];
+  // 携工具走到作业点，停下施工，再走回；折返只在静止段发生。
+  const duration = 18 + index * 2;
+  const cycle = (((time + index * 5.1) % duration) + duration) % duration;
+  const a = [0.17, 0.37, 0.58][index];
+  const b = [0.4, 0.64, 0.82][index];
+  const outbound = cycle < 5;
+  const working = cycle >= 5 && cycle < 10;
+  const returning = cycle >= 10 && cycle < 15;
+  const walking = outbound || returning;
+  const progress = outbound
+    ? smooth(cycle / 5)
+    : returning
+      ? 1 - smooth((cycle - 10) / 5)
+      : working
+        ? 1
+        : 0;
+  const frame = walking
+    ? Math.floor(cycle * 5) % 4
+    : working
+      ? 5 + (Math.floor(cycle * 2.5) % 2)
+      : 7;
   return {
-    x: yard.x + yard.width * [0.24, 0.51, 0.79][index],
-    y: yard.y + yard.height * [0.61, 0.73, 0.72][index],
-    height: yard.width * 0.24,
-    frame: cycle < 2 ? sequence[Math.floor(cycle / 0.25)] : 3,
-    direction: index === 2 ? -1 : 1,
+    x: yard.x + yard.width * mix(a, b, progress),
+    y: yard.y + yard.height * (0.59 + mix(a, b, progress) * 0.2 + index * 0.015),
+    height: yard.width * 0.2,
+    frame,
+    direction: returning || cycle >= 15 ? -1 : 1,
+    walking,
   };
 }
 

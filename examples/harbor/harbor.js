@@ -1,5 +1,5 @@
 /**
- * @purpose 将透明港口、帆船与海鸥原画合成为可暂停的海边小景
+ * @purpose 将工业港口、直航货船、行走施工工人与海鸥合成为页脚小景
  * @role 独立 Canvas 2D Demo 控制与渲染
  * @deps scene.mjs、assets/*.webp
  * @gotcha 原图不重绘；两岸等比，中间海面通栏延展；船以水线定位；屏外/后台停表，减少动态默认暂停
@@ -70,7 +70,8 @@ function drawBoat(pose) {
     context.stroke();
   }
   context.rotate(pose.angle);
-  context.drawImage(images[1], -w * 0.51, -w * 0.913, w, w);
+  const h = (w * images[1].height) / images[1].width;
+  context.drawImage(images[1], -w * 0.5, -h * 0.75, w, h);
   context.restore();
 }
 
@@ -142,19 +143,20 @@ function draw() {
   for (let i = 0; i < 3; i++) {
     const worker = sampleWorker(time, i, yard);
     const cellWidth = images[4].width / 4;
+    const cellHeight = images[4].height / 2;
     const h = worker.height;
-    const w = (h * cellWidth) / images[4].height;
+    const w = (h * cellWidth) / cellHeight;
     context.save();
     context.translate(worker.x, worker.y);
     context.scale(worker.direction, 1);
     context.drawImage(
       images[4],
-      worker.frame * cellWidth,
-      0,
+      (worker.frame % 4) * cellWidth,
+      Math.floor(worker.frame / 4) * cellHeight,
       cellWidth,
-      images[4].height,
+      cellHeight,
       -w * 0.5,
-      -h * 0.83,
+      -h * (worker.frame < 4 ? 0.93 : 0.887),
       w,
       h,
     );
