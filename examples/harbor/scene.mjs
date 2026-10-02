@@ -2,7 +2,7 @@
  * @purpose 海港 Demo 的航行、海鸥图集与响应式几何
  * @role 无 DOM 的可采样动画数据，支持暂停、拖动和回归
  * @deps 五张 ImageGen 原画，素材来源见 prompts*.json
- * @gotcha 船只在透明阶段回到港口；坐标基于完整 3:1 原画，窄屏不裁掉航线；图集用肩部注册点统一定位
+ * @gotcha 通栏海面中段延展，两岸保持等比小尺寸；底边裁掉原画透明收边；船只在透明阶段重置
  */
 export const VOYAGE_SECONDS = 64;
 export const ASSET_NAMES = [
@@ -37,15 +37,17 @@ export const phaseAt = (time) => ((time % VOYAGE_SECONDS) + VOYAGE_SECONDS) % VO
 export function sceneLayout(width, height) {
   const w = Math.max(1, width);
   const h = Math.max(1, height);
-  const plateWidth = Math.min(w, h * 3);
+  const plateWidth = w;
+  const artWidth = Math.min(w, 660, h * 3);
   return {
     width: w,
     height: h,
     plateWidth,
-    plateHeight: plateWidth / 3,
-    left: (w - plateWidth) / 2,
-    top: h - plateWidth / 3,
-    boatWidth: clamp(plateWidth * 0.145, 64, 210),
+    artWidth,
+    plateHeight: artWidth / 3,
+    left: 0,
+    top: h - (artWidth / 3) * 0.9,
+    boatWidth: clamp(artWidth * 0.1, 24, 66),
   };
 }
 
@@ -53,11 +55,11 @@ export function sampleBoat(time, layout) {
   const phase = phaseAt(time);
   const p = smooth((phase - 2) / 52);
   // 先从石堤前的泊位向右驶出，再渐渐远离到右上方的开阔海面。
-  const x = mix(0.36, 0.82, p);
+  const x = mix(layout.artWidth * 0.36, layout.width - layout.artWidth * 0.18, p);
   const y = 0.805 - 0.265 * p * p;
   const scale = mix(1, 0.13, p);
   return {
-    x: layout.left + x * layout.plateWidth,
+    x,
     y: layout.top + y * layout.plateHeight + Math.sin(phase * 1.9) * scale * 0.8,
     width: layout.boatWidth * scale,
     angle: Math.sin(phase * 1.35) * 0.018 * scale,
@@ -68,10 +70,10 @@ export function sampleBoat(time, layout) {
 }
 
 export function shipyardLayout(layout) {
-  const width = layout.plateWidth * 0.27;
+  const width = layout.artWidth * 0.18;
   return {
-    x: layout.left + layout.plateWidth * 0.015,
-    y: layout.top + layout.plateHeight * 0.43,
+    x: layout.artWidth * 0.035,
+    y: layout.top + layout.plateHeight * 0.49,
     width,
     height: (width * 2) / 3,
   };
@@ -102,7 +104,7 @@ export function sampleGull(time, index, layout) {
   const theta = cycle * Math.PI * 2;
   const direction = index === 1 ? -1 : 1;
   const unitX = direction === 1 ? cycle : 1 - cycle;
-  const span = clamp(layout.plateWidth * (0.034 - index * 0.005), 17 - index * 2, 46);
+  const span = clamp(layout.artWidth * (0.029 - index * 0.004), 9 - index, 20);
   return {
     x:
       layout.left +

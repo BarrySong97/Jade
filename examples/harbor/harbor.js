@@ -2,7 +2,7 @@
  * @purpose 将透明港口、帆船与海鸥原画合成为可暂停的海边小景
  * @role 独立 Canvas 2D Demo 控制与渲染
  * @deps scene.mjs、assets/*.webp
- * @gotcha 原图不重绘；船以水线定位，海鸥以肩部注册点对齐；屏外/后台停表，减少动态默认暂停；卸载清理事件与观察器
+ * @gotcha 原图不重绘；两岸等比，中间海面通栏延展；船以水线定位；屏外/后台停表，减少动态默认暂停
  */
 import {
   ASSET_NAMES,
@@ -103,7 +103,40 @@ function draw() {
   const dpr = Math.min(devicePixelRatio || 1, 2);
   context.setTransform(dpr, 0, 0, dpr, 0, 0);
   context.clearRect(0, 0, layout.width, layout.height);
-  context.drawImage(images[0], layout.left, layout.top, layout.plateWidth, layout.plateHeight);
+  // 只延展无建筑的中央海面，保持两端港口/海岸的比例与小尺寸。
+  const background = images[0];
+  // 用原画中央的纯海水铺底，覆盖原插画下沿/两角的透明收边，真正贴满页脚。
+  const waterTop = layout.top + layout.plateHeight * 0.64;
+  context.drawImage(
+    background,
+    background.width * 0.43,
+    background.height * 0.64,
+    background.width * 0.3,
+    background.height * 0.23,
+    0,
+    waterTop,
+    layout.width,
+    layout.height - waterTop,
+  );
+  const leftWidth = layout.artWidth * 0.4;
+  const rightWidth = layout.artWidth * 0.2;
+  for (const [sx, sw, dx, dw] of [
+    [0, 0.4, 0, leftWidth],
+    [0.4, 0.4, leftWidth, layout.width - leftWidth - rightWidth],
+    [0.8, 0.2, layout.width - rightWidth, rightWidth],
+  ]) {
+    context.drawImage(
+      background,
+      sx * background.width,
+      0,
+      sw * background.width,
+      background.height,
+      dx,
+      layout.top,
+      dw,
+      layout.plateHeight,
+    );
+  }
   const yard = shipyardLayout(layout);
   context.drawImage(images[3], yard.x, yard.y, yard.width, yard.height);
   for (let i = 0; i < 3; i++) {

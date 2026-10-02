@@ -56,10 +56,13 @@ test("entire boat and gull frames fit from narrow mobile to desktop", () => {
   }
 });
 
-test("larger boat and three workers remain planted inside shipyard", () => {
-  assert.ok(sceneLayout(1280, 470).boatWidth > 180);
+test("footer stays full bleed with small ships and planted workers", () => {
+  assert.ok(sceneLayout(1280, 240).boatWidth <= 66);
   for (const width of [240, 375, 1280, 1920]) {
-    const layout = sceneLayout(width, width < 640 ? 250 : 470);
+    const layout = sceneLayout(width, width < 640 ? 176 : 240);
+    assert.equal(layout.plateWidth, width);
+    assert.equal(layout.left, 0);
+    assert.ok(Math.abs(layout.top + layout.plateHeight * 0.9 - layout.height) < 0.001);
     const yard = shipyardLayout(layout);
     assert.ok(yard.x >= 0 && yard.x + yard.width <= width);
     assert.ok(yard.y + yard.height <= layout.height);

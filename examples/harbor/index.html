@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="/style.css" />
     <script type="module" src="/harbor.js"></script>
   </head>
-  <body class="m-0 bg-white font-sans text-[#302e2b] antialiased">
-    <main>
+  <body class="m-0 flex min-h-screen flex-col bg-white font-sans text-[#302e2b] antialiased">
+    <main class="flex-1">
       <header class="mx-auto max-w-[760px] px-6 pb-3 pt-14 sm:pt-20">
         <p class="mb-4 font-mono text-[11px] tracking-[0.15em] text-[#97928b]">
           ABOUT ME · SCENE STUDY 01
@@ -21,20 +21,6 @@
       </header>
 
       <section aria-label="海港出航动画预览" class="mt-1">
-        <div id="scene" class="relative h-[250px] w-full overflow-hidden sm:h-[360px] lg:h-[470px]">
-          <img
-            id="fallback"
-            src="/assets/harbor-v1.webp"
-            alt="左侧石砌港口与灯塔，右侧蓝绿色海湾伸向远方"
-            class="absolute inset-x-0 bottom-0 w-full"
-          />
-          <canvas
-            id="harbor"
-            role="img"
-            aria-label="帆船离开港口驶向远海，岸边另一艘木船正在建造，三位工人错峰敲打，三只海鸥振翅与滑翔"
-            class="absolute inset-0 hidden h-full w-full"
-          ></canvas>
-        </div>
         <div class="mx-auto max-w-[760px] px-6 pt-8">
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div class="flex flex-wrap gap-2">
@@ -127,5 +113,21 @@
         </details>
       </section>
     </main>
+    <footer class="mt-6 w-full shrink-0" aria-label="通栏海岸页脚预览">
+      <div id="scene" class="relative h-44 w-full overflow-hidden sm:h-60">
+        <img
+          id="fallback"
+          src="/assets/harbor-v1.webp"
+          alt="左侧港口、右侧海岸的通栏海面"
+          class="absolute inset-x-0 bottom-0 h-full w-full object-fill"
+        />
+        <canvas
+          id="harbor"
+          role="img"
+          aria-label="通栏海岸线，小帆船远航，左岸木船旁三位工人施工，海鸥掠过"
+          class="absolute inset-0 hidden h-full w-full"
+        ></canvas>
+      </div>
+    </footer>
   </body>
 </html>
