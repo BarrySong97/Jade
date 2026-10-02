@@ -161,7 +161,18 @@ test("gull atlas has safe gutters and shoulder registration on real pixels", asy
   }
 });
 
-test("harbor demo remains outside production about route", async () => {
+test("harbor is mounted only by About and shares demo scene logic", async () => {
   const about = await readFile(new URL("../src/pages/about.astro", import.meta.url), "utf8");
-  assert.doesNotMatch(about, /harbor|55025/);
+  assert.match(about, /<AboutHarbor slot="page-end"/);
+  for (const path of [
+    "src/pages/index.astro",
+    "src/layouts/BaseLayout.astro",
+    "src/layouts/BlogPost.astro",
+  ]) {
+    const source = await readFile(new URL(`../${path}`, import.meta.url), "utf8");
+    assert.doesNotMatch(source, /import AboutHarbor|<about-harbor|<AboutHarbor/);
+  }
+  const shared = await import("../src/lib/harbor-scene.mjs");
+  assert.equal(shared.sampleBoat, sampleBoat);
+  assert.equal(shared.sampleWorker, sampleWorker);
 });

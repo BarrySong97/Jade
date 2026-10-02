@@ -35,9 +35,15 @@
 
 首页简介在「这是我的作品」后显示「更多关于我的内容」，其中「关于我」链接到 [关于页](../../../src/pages/about.astro) `/about`。
 
-关于页沿用 BaseLayout、首页 680px 版心和墨白令牌，包含姓名、无标题长简介、经历与教育，不设「找到我」社交模块。姓名下显示出生年与所在地，不展示职业称谓。简介正文占满版心，不保留左侧标题空栏；经历与教育在桌面使用 104px 时间栏，手机堆叠。章节只靠留白区分，不加分隔线。页面直接读取 `src/lib/about.json`，出生年、简介与简历可直接编辑，姓名与所在地复用 `PROFILE`；经历与学历初始为用户授权的虚构示例，填好真实资料后将 `sampleNotice` 留空即可隐藏说明。纯 Astro，无新增客户端交互，不挂载草甸。
+关于页沿用 BaseLayout、首页 680px 版心和墨白令牌，包含姓名、无标题长简介、经历与教育，不设「找到我」社交模块。姓名下显示出生年与所在地，不展示职业称谓。简介正文占满版心，不保留左侧标题空栏；经历与教育在桌面使用 104px 时间栏，手机堆叠。章节只靠留白区分，不加分隔线。页面直接读取 `src/lib/about.json`，出生年、简介与简历可直接编辑，姓名与所在地复用 `PROFILE`；经历与学历初始为用户授权的虚构示例，填好真实资料后将 `sampleNotice` 留空即可隐藏说明。正文为静态 Astro，不挂载草甸；页尾工业海港使用独立原生客户端动画，见下文。
 
 [profile-intro.astro](../../../src/components/home/profile-intro.astro) 使用用户在 [独立 demo](../../../examples/portrait/README.md) 确认的黑白三渲二原画 `portrait-monochrome-v2.png`，由 Astro Image 构建为 424px、quality 90 的 WebP，显示宽度沿用桌面 212px / 手机 190px，原有排版与平移不变。素材与预览共享同一张 PNG，仅首页替换；原线稿保留供 demo 对照与现有 OG 预览引用，通用头像和作品集头像不受影响。
+
+## About 工业海港
+
+[about-harbor.astro](../../../src/components/about/about-harbor.astro) 仅由 About 传入 `page-end`，位于版权 Footer 后，通栏 176/240px，保留用户确认的小尺度工业港口、水平直航货船、三位往返施工工人与海鸥。五张选定原 PNG 构建压缩为 WebP；无脚本/Canvas 失败显示静态港口。正式页不包含 Demo 控件。
+
+[about-harbor-client.js](../../../src/components/about/about-harbor-client.js) 接近视口时初始化，屏外/后台/减少动态效果时停表，元素断开清理观察器、监听器与动画帧，支持 ClientRouter 往返。渲染真源 [harbor-renderer.js](../../../src/components/about/harbor-renderer.js) 与 Demo 共用；不改首页草甸、文章或展示页。见 [ADR-0012](../../decisions/0012-about-harbor.md)。
 
 ## 首页草甸
 

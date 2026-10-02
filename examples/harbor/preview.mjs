@@ -23,6 +23,14 @@ const css = compiler.build(
   [...html.matchAll(/class="([^"]+)"/g)].flatMap((match) => match[1].split(/\s+/)),
 );
 const routes = new Map([
+  [
+    "/src/lib/harbor-scene.mjs",
+    ["../../src/lib/harbor-scene.mjs", "text/javascript; charset=utf-8"],
+  ],
+  [
+    "/src/components/about/harbor-renderer.js",
+    ["../../src/components/about/harbor-renderer.js", "text/javascript; charset=utf-8"],
+  ],
   ["/", ["index.html", "text/html; charset=utf-8"]],
   ["/harbor.js", ["harbor.js", "text/javascript; charset=utf-8"]],
   ["/scene.mjs", ["scene.mjs", "text/javascript; charset=utf-8"]],

@@ -1,6 +1,6 @@
 # 海风与远行 · 独立 Demo
 
-运行 `pnpm demo:harbor`，打开 <http://localhost:55025>。仅监听本机，不进入 Astro 生产路由。用户看过后再决定如何接到 About 页尾。
+运行 `pnpm demo:harbor`，打开 <http://localhost:55025>。仅监听本机，Demo 控件不进入生产页面。用户确认后工业海港已接入 `/about` 页尾，场景纯逻辑和渲染器提取到 `src/` 共同使用；以下版本描述保留迭代历史。
 
 ## 制作方式
 

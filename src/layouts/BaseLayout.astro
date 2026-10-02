@@ -3,7 +3,7 @@
  * @purpose 博客页面基础布局
  * @role Header、内容、Footer 与可选页尾插槽
  * @deps HeadSEO、ClientRouter、Header、Footer
- * @gotcha page-end 只提供插槽；首页自行传入草甸，其他页面不会挂载或加载它
+ * @gotcha page-end 只提供插槽；首页传入草甸，About 传入海港，布局本身不导入任何装饰
  */
 import { ClientRouter } from "astro:transitions";
 import HeadSEO from "@/components/HeadSEO.astro";

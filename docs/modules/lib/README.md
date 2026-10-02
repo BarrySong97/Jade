@@ -6,6 +6,8 @@
 
 ## 文件清单与关系
 
+- `harbor-scene.mjs` — About 与海港 Demo 共享排布、水平货船航迹、工人往返/施工及海鸥图集。`examples/harbor/scene.mjs` 仅重导出；`pnpm test:harbor` 约束通栏、小尺寸、水平等尺寸与连续移动。
+
 - `utils.ts` — `cn()`:合并并去重 Tailwind class(clsx + tailwind-merge)。几乎所有组件都用。
 - [about.json](../../../src/lib/about.json) — 可直接编辑的关于页内容：`birthYear` 出生年、`introduction` 段落数组、`experience` 经历数组（period 时间 / role 职位 / organization 公司 / description 描述）、`education` 学历数组（period 时间 / school 学校 / qualification 专业与学位 / description 描述）。顺序即显示顺序，可增删条目。简历条目初始为用户授权的虚构示例；填好真实内容后把 `sampleNotice` 设为 `""` 隐藏提示。姓名与所在地继续复用 `site.ts`。JSON 不支持注释或末尾逗号。
 - `series.ts` — `SERIES_IDS` 与 `SERIES` 定义博客系列的稳定标识、名称和描述，供内容校验、文章头部和系列归档共享；添加系列需补目录并在文章 frontmatter 设置 `series`。

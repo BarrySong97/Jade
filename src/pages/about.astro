@@ -2,12 +2,13 @@
 /**
  * @purpose 展示出生年份、无标题长简介、工作经历和教育背景的墨白简历页，不设社交模块
  * @role /about 静态路由
- * @deps BaseLayout、PROFILE、lib/about.json（可直接编辑的内容）
+ * @deps BaseLayout、PROFILE、lib/about.json（可直接编辑的内容）、AboutHarbor 页尾装饰
  * @gotcha 简历数据中的经历与教育暂为示例，页面需保留说明；简介占满版心，不保留标题空栏；用 flex gap 保持段距，避免 m-0 覆盖 space-y
  */
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { PROFILE } from "@/lib/site";
 import ABOUT from "@/lib/about.json";
+import AboutHarbor from "@/components/about/about-harbor.astro";
 ---
 
 <BaseLayout title="关于我" description={`${PROFILE.name} 的简介、经历与教育背景。`}>
@@ -68,4 +69,5 @@ import ABOUT from "@/lib/about.json";
     </section>
 
   </article>
+  <AboutHarbor slot="page-end" />
 </BaseLayout>

@@ -1,0 +1,27 @@
+---
+/**
+ * @purpose About 最底部的工业港口装饰
+ * @role 构建期图片优化、静态回退与客户端入口
+ * @deps astro:assets、harbor-scene、about-harbor-client、已确认工业原画
+ * @gotcha 仅 About 传入 page-end，不含 Demo 控件，不修改首页草甸
+ */
+import { getImage } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { ASSET_NAMES } from "../../lib/harbor-scene.mjs";
+const originals = import.meta.glob<{ default: ImageMetadata }>("../../../examples/harbor/assets/*.png", { eager: true });
+const assets = await Promise.all(ASSET_NAMES.map(async (name) => {
+  const source = Object.entries(originals).find(([path]) => path.endsWith(`/${name}.png`))?.[1].default;
+  if (!source) throw new Error(`Missing harbor asset: ${name}`);
+  const width = name.includes("harbor") ? 2048 : name.includes("workers") || name.includes("gull") ? 1536 : 768;
+  const image = await getImage({src: source, width, format: "webp", quality: 88});
+  return image.src;
+}));
+---
+<about-harbor class="pointer-events-none relative block h-44 w-full shrink-0 select-none overflow-hidden sm:h-60" aria-hidden="true" data-assets={JSON.stringify(assets)}>
+  <img data-harbor-fallback src={assets[0]} alt="" loading="lazy" width="2048" height="683" class="absolute inset-0 h-full w-full object-fill" />
+  <canvas class="absolute inset-0 h-full w-full" hidden></canvas>
+</about-harbor>
+<script>
+  import { defineAboutHarbor } from "./about-harbor-client.js";
+  defineAboutHarbor();
+</script>
