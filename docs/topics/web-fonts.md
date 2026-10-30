@@ -48,6 +48,7 @@ uv run scripts/subset-fonts.py --no-build   # dist/ 已是最新时省一次构�
 - **hinting**:Google 给 Windows 下发带 TrueType hinting 的 Plex Mono,给 Mac 下发不带的;自托管只能一份,默认保留(Windows 不变,macOS 忽略 hinting)。`--strip-hinting` 每页再省约 2.7 KB,但会改变 Windows 上 Plex Mono 的渲染。
 - **可变轴收窄**:默认值 300 不在实际用到的 400–700 内,收窄会重建默认母版并取整坐标(±1 单位),只省约 0.2 KB。默认不做,`--limit-axes` 开启;收窄必须先子集化再 instancer,反过来 fontTools 会因字形名报 KeyError。
 - **产物要确定**:保存时保留 `head.modified`,否则每次运行哈希文件名都变。
+- **缓存头**:`public/` 下的文件在 Vercel 默认是 `max-age=0, must-revalidate`,老访客每次都要为字体发一次 304 请求。`vercel.json`(及 `netlify.toml`)给 `/fonts/*.woff2` 设了一年 `immutable`——前提是文件名带内容哈希,脚本输出的命名规则不能去掉哈希。
 - **OFL 保留名**:IBM Plex Mono 声明 Reserved Font Name「Plex」,子集是修改版,内部名称表与 CSS 族名都改为 **Jade Mono**;Space Grotesk 无保留名,不改。许可文本随字体放在 `public/fonts/OFL-*.txt`。
 
 ## 以后可以考虑

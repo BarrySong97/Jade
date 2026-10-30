@@ -1,3 +1,9 @@
 [build]
 command = "astro build"
 publish = "dist"
+
+# 子集字体文件名带内容哈希(scripts/subset-fonts.py 生成),可永久缓存
+[[headers]]
+for = "/fonts/*.woff2"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
