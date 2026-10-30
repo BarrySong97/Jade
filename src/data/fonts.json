@@ -1,0 +1,80 @@
+{
+  "generatedBy": "scripts/subset-fonts.py",
+  "preload": [
+    "/fonts/space-grotesk-core.c6a2e218.woff2",
+    "/fonts/jade-mono-400-core.62acb3f7.woff2"
+  ],
+  "families": {
+    "space-grotesk": {
+      "cssFamily": "Space Grotesk",
+      "pagesUsing": 53,
+      "faces": {
+        "400": 67,
+        "500": 44,
+        "600": 25,
+        "700": 31
+      },
+      "features": ["ccmp", "kern", "liga", "mark", "mkmk", "tnum"],
+      "axis": null,
+      "hinting": true,
+      "fellBackBeforeToo": "→↗≠⚠💡",
+      "files": {
+        "space-grotesk-core.c6a2e218.woff2": {
+          "bytes": 12420,
+          "glyphs": 128,
+          "chars": 105
+        },
+        "space-grotesk-ext.69e5cd8b.woff2": {
+          "bytes": 16588,
+          "glyphs": 326,
+          "chars": 245
+        }
+      }
+    },
+    "jade-mono": {
+      "cssFamily": "Jade Mono",
+      "pagesUsing": 53,
+      "faces": {
+        "400": 61,
+        "500": 0,
+        "600": 0
+      },
+      "features": ["ccmp", "mark"],
+      "axis": null,
+      "hinting": true,
+      "fellBackBeforeToo": "←→↗↘↙✅❌",
+      "files": {
+        "jade-mono-400-core.62acb3f7.woff2": {
+          "bytes": 7848,
+          "glyphs": 106,
+          "chars": 105
+        },
+        "jade-mono-400-ext.e08e62d6.woff2": {
+          "bytes": 13056,
+          "glyphs": 305,
+          "chars": 243
+        },
+        "jade-mono-500-core.53e3d16a.woff2": {
+          "bytes": 7904,
+          "glyphs": 106,
+          "chars": 105
+        },
+        "jade-mono-500-ext.07fa4fb7.woff2": {
+          "bytes": 13172,
+          "glyphs": 305,
+          "chars": 243
+        },
+        "jade-mono-600-core.49c42cbe.woff2": {
+          "bytes": 8680,
+          "glyphs": 106,
+          "chars": 105
+        },
+        "jade-mono-600-ext.cb733568.woff2": {
+          "bytes": 14260,
+          "glyphs": 305,
+          "chars": 243
+        }
+      }
+    }
+  }
+}

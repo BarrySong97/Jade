@@ -15,6 +15,7 @@
     "build": "astro build",
     "img": "node scripts/img.mjs",
     "linkcard": "node scripts/link-card.mjs",
+    "fonts": "uv run scripts/subset-fonts.py",
     "dev": "astro dev",
     "demo:grass": "node examples/png-grass/preview.mjs",
     "demo:meadow": "node examples/meadow/preview.mjs",

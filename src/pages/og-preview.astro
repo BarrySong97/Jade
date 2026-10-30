@@ -1,6 +1,8 @@
 ---
 import { Image } from "astro:assets";
 import profilePortrait from "@/assets/info/profile-portrait.png";
+import FontPreloads from "@/components/font-preloads.astro";
+import "@/styles/fonts.css";
 ---
 
 <!doctype html>
@@ -9,12 +11,7 @@ import profilePortrait from "@/assets/info/profile-portrait.png";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Space+Grotesk:wght@700&display=swap"
-      rel="stylesheet"
-    />
+    <FontPreloads />
     <title>Site OG Preview</title>
   </head>
   <body
@@ -38,7 +35,7 @@ import profilePortrait from "@/assets/info/profile-portrait.png";
           Barry Song
         </h1>
         <p
-          style="margin: 28px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 23px; font-weight: 400; line-height: 1; letter-spacing: 0.8px; color: #777777;"
+          style="margin: 28px 0 0; font-family: 'Jade Mono', monospace; font-size: 23px; font-weight: 400; line-height: 1; letter-spacing: 0.8px; color: #777777;"
         >
           Explore the World
         </p>

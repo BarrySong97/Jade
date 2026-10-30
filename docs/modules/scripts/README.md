@@ -4,6 +4,10 @@
 
 `scripts/` 保存构建辅助、内容处理与 Agent 质量检查工具；它们在本地命令行执行，不进入网站客户端。本文记录文档检查器、Stop hook 接口与草甸回归测试。
 
+## Web 字体子集
+
+[subset-fonts.py](../../../scripts/subset-fonts.py) 是手动运行的 Python 脚本(`pnpm fonts`,依赖由 PEP 723 头声明、`uv` 安装),不进构建:构建并用 Chrome 抓全站计算样式下的字符/字重/特性,从钉死的 google/fonts 源文件生成 core / extended 子集,再按原 Google 分段模拟全站排版做校验,写入 `public/fonts/`、`src/styles/fonts.css`、`src/data/fonts.json`。规则与踩坑见 [Web 字体子集专题](../../topics/web-fonts.md) 和 [ADR-0013](../../decisions/0013-self-hosted-font-subsets.md)。
+
 ## 文档检查器
 
 - [check-docs.mjs](../../../scripts/check-docs.mjs) 检查 AI 文件头、文档链接和模块文档漂移；规则来自 [check-docs.config.json](../../../check-docs.config.json)。

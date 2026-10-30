@@ -9,7 +9,7 @@
 - **墨色文字阶**(由深到浅,做层级):`--ink` `oklch(0.26 …)` 正文/标题 → `--ink-2` `oklch(0.5)` 次要 → `--ink-3` `oklch(0.64)` 更弱 → `--ink-4` `oklch(0.76)` 最弱/元信息。Tailwind 经 `text-[var(--ink-2)]` 等使用,或 `text-ink-2`(已映射 `--color-ink-*`)。
 - **强调色**:`--accent` `#2a2a2a`、`--accent-ink` `#000`(链接 hover、激活态)。
 - **表面**:`--surface` `#ffffff`、`--surface-2` `#f7f7f7`(卡片/次级背景)。
-- **字体**:`--font-sans` = Space Grotesk + PingFang SC 等(正文/标题);`--font-mono` = IBM Plex Mono(日期、代码、元信息)。
+- **字体**:`--font-sans` = Space Grotesk + PingFang SC 等(正文/标题);`--font-mono` = IBM Plex Mono 子集,按 OFL 保留名改名为 Jade Mono(日期、代码、元信息)。两套字体均为自托管子集,见 [docs/topics/web-fonts.md](docs/topics/web-fonts.md)。
 - **圆角**:`--radius: 2px`(UI 基调,克制、几乎方);**大块视觉元素**(引用卡片、文章封面、正文插图)统一走 `--radius-media: 6px`——整块的图/卡略圆一点更像「一件东西」。别在组件里按需各写各的,之前卡片大图档写 10px、紧凑档写 2px 就漂了。阴影极少用,例外是引用卡片的大图档(见 [引用卡片专题](docs/topics/link-cards.md))。
 - **选区**:`::selection` 用 accent 16% 混色。
 
@@ -30,7 +30,7 @@
 
 ## 展示页设计语言(独立)
 
-- **作品集 `/products`**:浅色单主题,色全走 `.works-page` 作用域 CSS 变量;正文字族与站点对齐(Space Grotesk via `--font-sans`),元信息 IBM Plex Mono。
+- **作品集 `/products`**:浅色单主题,色全走 `.works-page` 作用域 CSS 变量;正文字族与站点对齐(Space Grotesk via `--font-sans`),元信息 IBM Plex Mono(Jade Mono)。
 - **摄影 `/photos`**:单一浅色调(`.photo-page`),横向照片流 + 拨盘时间轴。
 - 颜色令牌在 `showcase.css` 独立;字族复用站点 `--font-sans` / `--font-mono`(由 ProductsLayout 引入 global.css)。
 

@@ -63,6 +63,15 @@ pnpm img <slug>             # 实跑:压缩→传 R2→把 ![]() 改写成 <Blog
 
 > 详见专题 [topics/blog-images.md](topics/blog-images.md)。
 
+## Web 字体子集(手动,不进构建)
+
+```bash
+pnpm fonts                                  # = uv run scripts/subset-fonts.py:构建 → 抓全站用量 → 子集化 → 校验 → 写产物
+uv run scripts/subset-fonts.py --no-build   # dist/ 已是最新时跳过构建
+```
+
+需要本机有 `uv`(自动装 fontTools / uharfbuzz / playwright)和 Google Chrome。新内容出现新的非 ASCII 字符、新字重或字体特性后重跑并提交 `public/fonts/`、`src/styles/fonts.css`、`src/data/fonts.json`。详见专题 [topics/web-fonts.md](topics/web-fonts.md)。
+
 ## 外链卡片元数据(抓 OG + 传 R2 + 写缓存)
 
 ```bash

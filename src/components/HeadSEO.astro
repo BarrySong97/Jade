@@ -1,6 +1,7 @@
 ---
 import "@/styles/global.css";
 import { CLOUD_IMAGE_DOMAIN } from "@/lib/cloud-image-config";
+import FontPreloads from "@/components/font-preloads.astro";
 
 interface Props {
   title?: string;
@@ -40,6 +41,7 @@ const ogImageURL = ogImage
 <!-- Basic -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<FontPreloads />
 <meta name="generator" content={Astro.generator} />
 <meta name="robots" content="index, follow" />
 

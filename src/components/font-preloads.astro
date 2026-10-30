@@ -1,0 +1,11 @@
+---
+/**
+ * @purpose 预加载每页都会用到的子集字体 core 文件
+ * @role HeadSEO / ProductsLayout / og-preview 的 <head> 里各放一份
+ * @deps src/data/fonts.json(scripts/subset-fonts.py 生成)
+ * @gotcha 字体预加载必须带 crossorigin,否则与 @font-face 的 CORS 请求对不上、会下载两次;extended 文件靠 unicode-range 按需加载,不要预加载
+ */
+import fonts from "@/data/fonts.json";
+---
+
+{fonts.preload.map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
