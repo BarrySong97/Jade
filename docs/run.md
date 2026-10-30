@@ -37,7 +37,7 @@ pnpm preview      # 本地预览生产构建
 ```bash
 pnpm lint         # oxlint
 pnpm format       # oxfmt(原地格式化)
-pnpm check        # hook / 草甸回归测试 + oxlint + oxfmt,收尾跑这个
+pnpm check        # hook / 草甸 / 海港 / Tailwind 扫描范围回归测试 + oxlint + oxfmt,收尾跑这个
 pnpm test:hooks   # 单独验证 Stop hook 输出协议和文档错误拦截
 pnpm test:meadow  # 草甸排布/页面边界、猫蝶独立动作、草丛追逐与真实图集约束
 ```

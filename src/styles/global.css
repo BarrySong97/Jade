@@ -1,6 +1,10 @@
 /* 自托管子集字体(由 scripts/subset-fonts.py 生成);IBM Plex Mono 子集按 OFL 保留名要求改名为 Jade Mono */
 @import "./fonts.css";
-@import "tailwindcss";
+/* Tailwind 只扫 src/(默认会扫整个仓库,examples/docs 里的类名也会被生成),并跳过未使用的 shadcn 组件:
+   全站 CSS gzip 32.6 KB → 14.0 KB。开始使用某个 ui 组件时,把它从下面的列表里删掉,
+   否则它的类不会生成(scripts/tailwind-sources.test.mjs 会在 pnpm check 里拦住)。 */
+@import "tailwindcss" source("../");
+@source not "../components/ui/{accordion,alert-dialog,alert,aspect-ratio,avatar,badge,breadcrumb,button-group,calendar,card,carousel,chart,checkbox,collapsible,combobox,command,context-menu,dialog,drawer,dropdown-menu,empty,field,form,hover-card,input-group,input-otp,input,item,kbd,label,menubar,native-select,navigation-menu,pagination,popover,progress,radio-group,resizable,select,separator,sheet,sidebar,skeleton,slider,sonner,spinner,switch,table,tabs,textarea,toast,toaster,toggle-group,toggle,tooltip}.tsx";
 
 @import "tw-animate-css";
 

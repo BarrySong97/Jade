@@ -22,6 +22,7 @@
 
 - **Tailwind 优先**:能用工具类(含任意值 `[...]`)表达的,就别写自定义 CSS。自定义 CSS 只留给「无法用 Tailwind 表达」的部分(设计令牌、字体 `@import`、`@theme`)。
 - Tailwind 4 经 Vite 插件接入(非 PostCSS);全局令牌/主题在 [src/styles/global.css](../src/styles/global.css),用 OKLCH 色彩空间。
+- Tailwind 只扫描 `src/`,并用 `@source not` 跳过未使用的 shadcn 组件(全站 CSS gzip 32.6 → 14.0 KB)。**开始使用某个 `ui/` 组件时,把它从 `global.css` 的排除列表里删掉**,否则它的类不会生成;`pnpm test:css` 会拦住遗漏。
 - 暗色模式靠 html 上的 `.dark` class(存 localStorage);自定义变体:`dark:`、`fixed:`。
 - 字体族任意值必须写 `font-[family-name:var(--x)]`(漏 `family-name:` 不生效)。
 - 展示页(showcase)令牌独立在 [src/styles/showcase.css](../src/styles/showcase.css),作用域 `.works-page` / `.photo-page`,**不与站点主题耦合**。

@@ -25,6 +25,11 @@
 - 引入纯逻辑工具(如 `src/lib/` 下新算法、cloud-image Key 解析规则)→ 加单元测试。
 - 引入测试框架时:Web E2E 用 Playwright CLI / agent-browser(读无障碍树,确定性、可进 CI),并把测试命令接进 `pnpm check` 或 pre-commit 才算真强制。
 
+## Tailwind 扫描范围
+
+- `pnpm test:css`([tailwind-sources.test.mjs](../scripts/tailwind-sources.test.mjs))已接入 `pnpm check`:被任何源码 import 的 shadcn 组件(含组件之间的依赖)不得出现在 `global.css` 的 `@source not` 排除列表里。被排除的组件照样能构建成功、只是样式缺失,所以只能靠这个测试拦。
+- 改动扫描范围后,用前后两次构建逐页截图对比(桌面 1× 与 390px 2×),并确认被删除的类名没有出现在构建产物的 `class` 属性或 JS 中。
+
 ## 完成闸门
 
 - 收尾跑 `node scripts/check-docs.mjs`(0 ❌)+ `pnpm check`。
