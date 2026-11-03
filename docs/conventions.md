@@ -30,6 +30,7 @@
 ## React in Astro
 
 - 交互组件作为「岛」用 `client:load` 等指令水合;静态内容保持纯 Astro/HTML。
+- 文章里的 `<BlogImage>`、`<ImageStrip>`、`<LinkCard>`、视频嵌入**单独成行、前后空一行**,别和正文写在同一行(`pnpm test:mdx` 会拦)。首屏大图给 `BlogImage` 传 `priority`,其余保持懒加载。
 
 ## 提交规范
 

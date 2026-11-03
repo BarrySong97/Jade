@@ -2,7 +2,7 @@
  * @purpose 作品集项目详情：左栏项目 Header(返回+右上角图标 / 名+年份·平台 / url / 说明)+ 底角头像栏 + 右栏图片瀑布流;每个产品第二张图(单图则第一张)叠加 Web Tag
  * @role    被 products/[slug].astro 以 client:load 挂载;纯展示
  * @deps    本目录 works-data(Work/workDetailImages/workSkipsCoverMorph/WorkImage)、works-icons(WORK_ICONS)、works-avatar-bar、@/components/blogs/blog-image
- * @gotcha  默认首图 `data-work-cover` 供 morph;`detailSolo` 时不挂、右栏只渲染 solo 图且全宽(官网长截图不收半宽)。文案块 `data-works-aside` 横滑转场;头像栏 `data-works-avatar` 单独挂名。右栏**只放本项目图**;两列贪心装箱;单张竖图(非 detailSolo)收到半宽;详情图走 BlogImage 灯箱。
+ * @gotcha  默认首图 `data-work-cover` 供 morph;`detailSolo` 时不挂、右栏只渲染 solo 图且全宽(官网长截图不收半宽)。文案块 `data-works-aside` 横滑转场;头像栏 `data-works-avatar` 单独挂名。右栏**只放本项目图**;两列贪心装箱;单张竖图(非 detailSolo)收到半宽;详情图走 BlogImage 灯箱,首图传 priority。
  */
 
 import {
@@ -113,6 +113,7 @@ export default function WorkDetail({ work }: { work: Work }) {
                   height={image.height}
                   thumbhash={image.thumbhash}
                   zoomable
+                  priority={index === 0}
                   className="rounded-[3px]"
                 />
                 {index === tagIndex && (

@@ -23,6 +23,10 @@
 
 - `<BlogImage>` 在 **SSR 时**就把 thumbhash 解码成模糊 PNG dataURL 作背景(零额外请求、无布局跳动,靠 `width/height` 撑 aspect-ratio)。
 - 真图 `loading="lazy"` 加载完淡入;点击放大走简单 `<img>` 灯箱(**不走 WebGL**:WebGL 取纹理需 CORS,而 R2 不发 CORS 头会黑屏),并用 **Motion React 的 `layoutId` 共享布局动画**让缩略图「原地放大」morph 进灯箱(缩略图与灯箱图同一 React 树,全浏览器可用)。灯箱内提供 100%–400% 的放大/缩小/复位,放大后可用拖拽、触控或方向键平移,滚轮调整倍率,并禁用浏览器原生拖图避免长图拖拽出现链接图标,Esc 关闭。
+- **淡入不等水合**:SSR 出来的真图是 `opacity-0`,原先要等 React 水合后设 `loaded` 才淡入,首屏大图因此晚 1.7 s(文章)到 2.8 s(/products)才被算作 LCP。现在 `<head>` 里的 [blur-up-script.astro](../../src/components/blur-up-script.astro) 在图片 `load` 时给带 `data-blur-up` 的 img 打 `data-loaded`,`data-loaded:opacity-100` 直接触发同样的 700ms 淡入;水合后由 React 的 `loaded` 接管。
+- **首屏图传 `priority`**:不懒加载 + `fetchpriority="high"`,让预加载扫描器在解析 HTML 时就开始下载。目前用于文章头图、/products 第一张封面、作品详情页首图;每页只给一两张,多了会互相抢带宽。
+- Chrome 要等淡入结束才记 LCP(实测去掉 700ms 淡入,文章 LCP 再快约 0.8 s);淡入是设计的一部分,保留。
+- **块级组件必须单独成行**:`<BlogImage …/>正文` 会被 MDX 包进 `<p>`,浏览器遇到 `<figure>` 就把 p 连同 astro-island 一起关掉,图落到岛外、`client:visible` 永不触发 → 不水合、不能放大。`pnpm test:mdx` 会拦。
 - 灯箱目前显示的仍是限宽 WebP(非原图);若要看原图,需在上传时**额外存一份原图**并让灯箱指向它(TODO,见注意事项)。
 
 ## 注意事项

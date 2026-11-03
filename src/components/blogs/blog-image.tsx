@@ -2,7 +2,7 @@
  * @purpose 博客正文图片组件:blur-up 渐进加载——thumbhash 平均色(瞬时)+ 模糊图打底,真图加载完 opacity 淡入盖上;点击放大走 <img> 灯箱,支持缩放/复位/平移,缩略图经 Motion React 的 layoutId 共享布局「原地放大」morph 进灯箱。
  * @role    MDX 中由 scripts/img.mjs 改写生成的 <BlogImage/>;blog 专用,替代老 cloud-image 占位机制。
  * @deps    react;motion/react(motion / AnimatePresence,layoutId 共享布局动画);thumbhash(thumbHashToDataURL / thumbHashToAverageRGBA);@/lib/utils(cn)
- * @gotcha  灯箱用普通 <img>(不走 WebGL:WebGL 取纹理需 CORS,R2 不发 CORS 头会黑屏)。放大转场用 layoutId(缩略图与灯箱图同一 React 树、共享 useId() 生成的 layoutId)→ 全浏览器可用,无需 View Transitions。Motion 共享布局自带 crossfade,会逐帧重写两图内联 opacity(style prop 拦不住),缩回时提前显形缩略图造成重影 → 用 !important 类(invisible!/opacity-100!)压住,缩略图等 onExitComplete 才瞬时接棒。灯箱内缩放上限 4 倍,放大后可拖拽/触控平移;两张 img 都禁用浏览器原生拖图,避免长图拖拽时出现链接拖拽图标;Esc 关闭;当前显示限宽 WebP(无原图),接原图见 docs/topics/blog-images.md TODO。
+ * @gotcha  灯箱用普通 <img>(不走 WebGL:WebGL 取纹理需 CORS,R2 不发 CORS 头会黑屏)。放大转场用 layoutId(缩略图与灯箱图同一 React 树、共享 useId() 生成的 layoutId)→ 全浏览器可用,无需 View Transitions。Motion 共享布局自带 crossfade,会逐帧重写两图内联 opacity(style prop 拦不住),缩回时提前显形缩略图造成重影 → 用 !important 类(invisible!/opacity-100!)压住,缩略图等 onExitComplete 才瞬时接棒。灯箱内缩放上限 4 倍,放大后可拖拽/触控平移;两张 img 都禁用浏览器原生拖图,避免长图拖拽时出现链接拖拽图标;Esc 关闭;当前显示限宽 WebP(无原图),接原图见 docs/topics/blog-images.md TODO。淡入不等水合:<head> 里的 blur-up-script.astro 在图片 load 时打 data-loaded(否则首屏图要等 React 执行完才显示,LCP 晚 1.7 s 以上);首屏大图传 priority(eager + fetchpriority=high)。
  */
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -26,6 +26,8 @@ interface BlogImageProps {
   className?: string;
   /** 是否可点击放大查看原图,默认 true */
   zoomable?: boolean;
+  /** 首屏大图(LCP):不懒加载并提高下载优先级。每页只给一两张 */
+  priority?: boolean;
 }
 
 // 「原地放大 / 缩回」的共享布局过渡
@@ -55,6 +57,7 @@ export default function BlogImage({
   thumbhash,
   className,
   zoomable = true,
+  priority = false,
 }: BlogImageProps) {
   // 用户要求:图下那句小标题和 alt 是同一句话,只写一遍
   const altText = caption ?? alt ?? "";
@@ -151,7 +154,7 @@ export default function BlogImage({
     }
   }, [thumbhash]);
 
-  // 真图加载完成(含水合前已缓存命中的情况)→ 触发淡入
+  // 真图加载完成(含水合前已缓存命中的情况)→ 触发淡入;水合前的淡入由 data-loaded 负责,这里接管之后的状态
   useEffect(() => {
     const img = imgRef.current;
     if (!img) return;
@@ -221,14 +224,18 @@ export default function BlogImage({
             alt={altText}
             width={width}
             height={height}
-            loading="lazy"
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : undefined}
             decoding="async"
+            // 水合前由 blur-up-script.astro 在下载完时打上 data-loaded,淡入不必等 React
+            data-blur-up
+            suppressHydrationWarning
             draggable={false}
             onDragStart={(event) => event.preventDefault()}
             onClick={zoomable ? () => setOpen(true) : undefined}
             className={cn(
               "h-full w-full object-cover transition-opacity duration-700 ease-out",
-              loaded ? "opacity-100" : "opacity-0",
+              loaded ? "opacity-100" : "opacity-0 data-loaded:opacity-100",
               zoomable && "cursor-zoom-in",
               // Motion 的共享布局 crossfade 会逐帧重写内联样式(opacity/transform,连 style prop 都会被抹掉),
               // 缩回途中就把缩略图淡入到全显,造成原位重影;只有 !important 类能压住它。

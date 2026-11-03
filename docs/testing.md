@@ -30,6 +30,11 @@
 - `pnpm test:css`([tailwind-sources.test.mjs](../scripts/tailwind-sources.test.mjs))已接入 `pnpm check`:被任何源码 import 的 shadcn 组件(含组件之间的依赖)不得出现在 `global.css` 的 `@source not` 排除列表里。被排除的组件照样能构建成功、只是样式缺失,所以只能靠这个测试拦。
 - 改动扫描范围后,用前后两次构建逐页截图对比(桌面 1× 与 390px 2×),并确认被删除的类名没有出现在构建产物的 `class` 属性或 JS 中。
 
+## 文章里的块级组件
+
+- `pnpm test:mdx`([mdx-blocks.test.mjs](../scripts/mdx-blocks.test.mjs))已接入 `pnpm check`:`BlogImage` / `ImageStrip` / `LinkCard` / 视频嵌入不得和正文写在同一行。写在同一行会生成非法的 `<p><figure>`,构建和控制台都不报错,但组件不会水合(曾经让一张图永远停在模糊占位)。
+- 改图片加载方式后,截图对比要把远程图片区域遮掉再逐像素比(远程 WebP 每次光栅化有 ±几级的抖动),图片本身另比 src、位置、尺寸和最终 opacity;并用同一构建跑两次做对照。
+
 ## 完成闸门
 
 - 收尾跑 `node scripts/check-docs.mjs`(0 ❌)+ `pnpm check`。

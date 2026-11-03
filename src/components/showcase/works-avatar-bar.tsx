@@ -2,7 +2,7 @@
  * @purpose 作品集左栏底角:头像 + 右侧 Blog / Twitter 链接(列表与详情共用)
  * @role    被 works.tsx / work-detail.tsx 挂在 aside 底;外层 `data-works-avatar` 供列表↔详情原地 VT
  * @deps    @/assets/info/profile-portrait-avatar.webp;@/lib/site(PROFILE/TWITTER)
- * @gotcha  手绘肖像约为首页尺寸的 81%，不加圆形头像容器；用负平移抵消图片内部透明留白，使人物轮廓与上方文字对齐。使用 424px WebP 衍生资源避免下载原始 PNG。Twitter 链接与首页同源(TWITTER.url)。Blog 链回站点首页 `/`。本块整体不进文案横滑转场。
+ * @gotcha  手绘肖像约为首页尺寸的 81%，不加圆形头像容器；用负平移抵消图片内部透明留白，使人物轮廓与上方文字对齐。使用 424px WebP 衍生资源避免下载原始 PNG;带 width/height 让浏览器在图片到达前按比例占位(显示宽度仍由类名决定)。Twitter 链接与首页同源(TWITTER.url)。Blog 链回站点首页 `/`。本块整体不进文案横滑转场。
  */
 
 import profilePortrait from "@/assets/info/profile-portrait-avatar.webp";
@@ -19,6 +19,8 @@ export default function WorksAvatarBar() {
     >
       <img
         src={profilePortrait.src}
+        width={profilePortrait.width}
+        height={profilePortrait.height}
         alt={`${PROFILE.name} 的手绘肖像`}
         className="h-auto w-[154px] -translate-x-[22px] min-[881px]:w-[172px] min-[881px]:-translate-x-[25px]"
       />

@@ -2,6 +2,7 @@
 import "@/styles/global.css";
 import { CLOUD_IMAGE_DOMAIN } from "@/lib/cloud-image-config";
 import FontPreloads from "@/components/font-preloads.astro";
+import BlurUpScript from "@/components/blur-up-script.astro";
 
 interface Props {
   title?: string;
@@ -42,6 +43,7 @@ const ogImageURL = ogImage
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <FontPreloads />
+<BlurUpScript />
 <meta name="generator" content={Astro.generator} />
 <meta name="robots" content="index, follow" />
 

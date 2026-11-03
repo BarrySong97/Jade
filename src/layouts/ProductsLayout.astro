@@ -3,6 +3,7 @@
 import { ClientRouter } from "astro:transitions";
 import CubeTransition from "@/components/showcase/cube-transition.astro";
 import FontPreloads from "@/components/font-preloads.astro";
+import BlurUpScript from "@/components/blur-up-script.astro";
 import "@/styles/global.css";
 
 const { title = "Products" } = Astro.props;
@@ -14,6 +15,7 @@ const { title = "Products" } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <FontPreloads />
+    <BlurUpScript />
     <title>{title}</title>
     <ClientRouter />
     <CubeTransition />

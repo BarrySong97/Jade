@@ -1,0 +1,22 @@
+---
+/**
+ * @purpose BlogImage 真图下载完就淡入,不用等 React 水合
+ * @role HeadSEO / ProductsLayout 的 <head> 里各放一份(必须在 <body> 之前注册)
+ * @deps blog-image.tsx 的 `data-blur-up` 与 `data-loaded:opacity-100`
+ * @gotcha 图片 load 事件不冒泡,只能在 document 上用捕获阶段监听;水合前 img 还是 SSR 的 opacity-0,原先要等 React 下载并执行完才淡入,首屏大图因此晚 1.7–2.8 s 才算 LCP。ClientRouter 换页时 document 不变,监听只需注册一次
+ */
+---
+
+<script is:inline>
+  if (!window.__blurUp) {
+    window.__blurUp = true;
+    document.addEventListener(
+      "load",
+      (e) => {
+        const t = e.target;
+        if (t instanceof HTMLImageElement && t.hasAttribute("data-blur-up")) t.setAttribute("data-loaded", "");
+      },
+      true,
+    );
+  }
+</script>
